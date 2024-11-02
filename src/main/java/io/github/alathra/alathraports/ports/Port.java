@@ -41,16 +41,12 @@ public class Port {
 
     @Override
     public boolean equals(Object object) {
-        if (object instanceof Port) {
-            Port port = (Port) object;
-            if (port.getName().equalsIgnoreCase( this.getName()) &&
+        if (object instanceof Port port) {
+            return port.getName().equalsIgnoreCase(this.getName()) &&
                 port.signLocation.equals(this.getSignLocation()) &&
                 port.getTeleportLocation().equals(this.getTeleportLocation()) &&
                 port.getPortSize().equals(this.getPortSize()) &&
-                port.getUuid().equals(this.uuid)
-            ) {
-                return true;
-            }
+                port.getUuid().equals(this.uuid);
         }
         return false;
     }
@@ -71,6 +67,16 @@ public class Port {
             }
         }
         return false;
+    }
+
+    // Convert port size enum to formatted string
+    public String getPortSizeName() {
+        String[] words = portSize.name().toLowerCase().split("_");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            result.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1)).append(" ");
+        }
+        return result.toString().trim();
     }
 
     public UUID getUuid() {
