@@ -22,7 +22,8 @@ public abstract class DB {
      */
     @NotNull
     public static Connection getConnection() throws SQLException {
-        return AlathraPorts.getInstance().getDataHandler().getConnection();
+        //return AlathraPorts.getInstance().getDataHandler().getConnection();
+        return null;
     }
 
     /**
@@ -33,7 +34,8 @@ public abstract class DB {
      */
     @NotNull
     public static DSLContext getContext(Connection con) {
-        return AlathraPorts.getInstance().getDataHandler().getJooqContext().createContext(con);
+        //return AlathraPorts.getInstance().getDataHandler().getJooqContext().createContext(con);
+        return null;
     }
 
     /**
@@ -41,7 +43,7 @@ public abstract class DB {
      *
      * @return the database
      */
-    public static DatabaseType getDB() {
-        return AlathraPorts.getInstance().getDataHandler().getDB();
-    }
+    //public static DatabaseType getDB() {
+        //return AlathraPorts.getInstance().getDataHandler().getDB();
+    //}
 }

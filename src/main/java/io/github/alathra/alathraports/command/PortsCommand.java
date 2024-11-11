@@ -3,6 +3,7 @@ package io.github.alathra.alathraports.command;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.ports.Port;
@@ -31,7 +32,8 @@ class PortsCommand {
             .withShortDescription("Example command.")
             .withSubcommands(
                 createCommand(),
-                deletesCommand()
+                deleteCommand(),
+                listCommand()
             )
             .executesPlayer(this::helpCommand)
             .register();
@@ -44,7 +46,8 @@ class PortsCommand {
         return new CommandAPICommand("create")
             .withPermission(ADMIN_PERM)
             .withArguments(
-                new StringArgument("portname"),
+                new StringArgument("portname")
+                    .replaceSuggestions(ArgumentSuggestions.strings("Port_Name")),
                 CommandUtil.portSizeArgument("portsize")
             )
             .executesPlayer((Player sender, CommandArguments args) -> {
@@ -78,7 +81,7 @@ class PortsCommand {
                             }
                             break;
                         default:
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Abnormal blockface found").build());
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Abnormal block face found").build());
                     }
                 } else {
                     throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement").build());
@@ -86,7 +89,7 @@ class PortsCommand {
             });
     }
 
-    public CommandAPICommand deletesCommand() {
+    public CommandAPICommand deleteCommand() {
         return new CommandAPICommand("delete")
             .withPermission(ADMIN_PERM)
             .withArguments(
@@ -95,6 +98,18 @@ class PortsCommand {
             .executesPlayer((Player sender, CommandArguments args) -> {
                 Port port = (Port) args.get("portname");
                 Ports.deletePortFromSign(sender, port);
+            });
+    }
+
+    public CommandAPICommand listCommand() {
+        return new CommandAPICommand("list")
+            .withPermission(ADMIN_PERM)
+            .executesPlayer((Player sender, CommandArguments args) -> {
+                String portList = "<yellow>Ports: ";
+                for (Port port : Ports.getPorts()) {
+                    portList += port.getName() + ", ";
+                }
+                sender.sendMessage(ColorParser.of(portList).build());
             });
     }
 }

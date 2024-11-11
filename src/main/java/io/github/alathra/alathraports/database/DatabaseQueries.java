@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static io.github.exampleuser.exampleplugin.database.schema.Tables.SOME_LIST;
+import static io.github.alathra.alathraports.database.schema.Tables.SOME_LIST;
 
 /**
  * A holder class for all SQL queries
