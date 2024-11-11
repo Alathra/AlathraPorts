@@ -3,36 +3,61 @@ package io.github.alathra.alathraports.ports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
-import org.bukkit.Location;
+import io.github.alathra.alathraports.utility.Logger;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class Ports {
-    public static final double MINIMUM_PORT_DISTANCE = 1.0;
 
+    public static final double MINIMUM_PORT_DISTANCE = 1.0;
     private static final Set<Port> ports = new HashSet<>();
 
-    public static void createPort(Player creator, Port port, BlockFace blockface) {
-        try {
-            // TODO: place port sign
+    public static Component getTagline() {
+        return ColorParser.of("<blue>⚓⚓⚓").build();
+    }
 
+    public static void createPortFromSign(Player creator, Port port, BlockFace blockFace) {
+        try {
+            Block block = port.getSignLocation().getBlock();
+            if (blockFace == BlockFace.UP) {
+                block.setType(Material.OAK_SIGN);
+                Sign sign = (Sign) block.getState();
+                sign = port.generatePortSign(sign);
+                sign.update();
+            } else {
+                block.setType(Material.OAK_WALL_SIGN);
+                Directional directional = (Directional) block.getBlockData();
+                directional.setFacing(blockFace);
+                block.setBlockData(directional);
+                Sign sign = (Sign) block.getState();
+                sign = port.generatePortSign(sign);
+                sign.update();
+            }
             registerPort(port);
+            creator.sendMessage(ColorParser.of("<green>Port " + port.getName() + " has been created").build());
         } catch (PortRegisterException e) {
-            AlathraPorts.getInstance().getLogger().warning(e.getMessage());
+            Logger.get().warn(e.getMessage());
             creator.sendMessage(ColorParser.of("<red>Port failed to register. Check console for more details").build());
         }
     }
 
-    public static void deletePort(Player deleter, Port port) {
+    public static void deletePortFromSign(Player deleter, Port port) {
         if(deregisterPort(port)) {
-            // TODO: clear port sign
+            Block signBlock = port.getSignLocation().getBlock();
+            signBlock.setType(Material.AIR);
+            deleter.sendMessage(ColorParser.of("<yellow>Port " + port.getName() + " has been deleted").build());
         } else {
-            deleter.sendMessage(ColorParser.of("<red>Port deletion failed because port could not be deregistered. Does it exist?").build());
+            deleter.sendMessage(ColorParser.of("<red>Port deletion failed because port could not be de-registered. Does it exist?").build());
         }
     }
 
@@ -90,7 +115,25 @@ public class Ports {
         return false;
     }
 
-    public Set<Port> getPorts() {
+    public static Port getPortByName(String name) {
+        for (Port port : ports) {
+            if (port.getName().equalsIgnoreCase(name)) {
+                return port;
+            }
+        }
+        return null;
+    }
+
+    public static Port getPortByID(UUID uuid) {
+        for (Port port : ports) {
+            if (port.getUuid().equals(uuid)) {
+                return port;
+            }
+        }
+        return null;
+    }
+
+    public static Set<Port> getPorts() {
         return ports;
     }
 

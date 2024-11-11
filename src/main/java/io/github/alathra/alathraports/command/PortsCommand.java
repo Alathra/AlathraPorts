@@ -6,12 +6,10 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.PortSign;
 import io.github.alathra.alathraports.ports.Ports;
 import io.github.alathra.alathraports.ports.enums.PortSize;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
@@ -32,7 +30,8 @@ class PortsCommand {
             .withFullDescription("Example command.")
             .withShortDescription("Example command.")
             .withSubcommands(
-                createCommand()
+                createCommand(),
+                deletesCommand()
             )
             .executesPlayer(this::helpCommand)
             .register();
@@ -61,22 +60,19 @@ class PortsCommand {
                     if (blockFace == null) {
                         throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement, no base block face").build());
                     }
-                    Location signLocation;
-                    Port port;
-                    PortSign portSign;
                     switch (blockFace) {
                         case UP, DOWN:
                             if(block.getRelative(BlockFace.UP).isEmpty()) {
-                                signLocation = block.getRelative(BlockFace.UP).getLocation();
-                                Ports.createPort(sender, new Port(portName, portSize, signLocation, signLocation), BlockFace.UP);
+                                Location signLocation = block.getRelative(BlockFace.UP).getLocation();
+                                Ports.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), BlockFace.UP);
                             } else {
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement above block").build());
                             }
                             break;
                         case NORTH, SOUTH, EAST, WEST:
                             if(block.getRelative(blockFace).isEmpty()) {
-                                signLocation = block.getRelative(blockFace).getLocation();
-                                Ports.createPort(sender, new Port(portName, portSize, signLocation, signLocation), blockFace);
+                                Location signLocation = block.getRelative(blockFace).getLocation();
+                                Ports.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), blockFace);
                             } else {
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement on the block face").build());
                             }
@@ -87,6 +83,18 @@ class PortsCommand {
                 } else {
                     throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement").build());
                 }
+            });
+    }
+
+    public CommandAPICommand deletesCommand() {
+        return new CommandAPICommand("delete")
+            .withPermission(ADMIN_PERM)
+            .withArguments(
+                CommandUtil.portArgument("portname")
+            )
+            .executesPlayer((Player sender, CommandArguments args) -> {
+                Port port = (Port) args.get("portname");
+                Ports.deletePortFromSign(sender, port);
             });
     }
 }

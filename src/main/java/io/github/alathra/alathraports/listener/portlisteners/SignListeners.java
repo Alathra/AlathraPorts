@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
-import io.github.alathra.alathraports.ports.PortSign;
+import io.github.alathra.alathraports.ports.Ports;
 import org.bukkit.Tag;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
@@ -20,10 +20,10 @@ public class SignListeners implements Listener {
             if (Tag.ALL_SIGNS.isTagged(Objects.requireNonNull(event.getClickedBlock()).getType())) {
                 Sign sign = (Sign) event.getClickedBlock();
                 // Check if sign is a port sign
-                if (sign.getSide(Side.FRONT).line(0).equals(PortSign.getTagline()) &&
-                    sign.getSide(Side.FRONT).line(3).equals(PortSign.getTagline()) &&
-                    sign.getSide(Side.BACK).line(0).equals(PortSign.getTagline()) &&
-                    sign.getSide(Side.BACK).line(3).equals(PortSign.getTagline())
+                if (sign.getSide(Side.FRONT).line(0).equals(Ports.getTagline()) &&
+                    sign.getSide(Side.FRONT).line(3).equals(Ports.getTagline()) &&
+                    sign.getSide(Side.BACK).line(0).equals(Ports.getTagline()) &&
+                    sign.getSide(Side.BACK).line(3).equals(Ports.getTagline())
                 ) {
                     // TODO: open port menu
                     // Prevent player from editing the sign
@@ -37,10 +37,10 @@ public class SignListeners implements Listener {
     public void onSignChange(SignChangeEvent event) {
         Sign sign = (Sign) event.getBlock();
         // Check if sign matches a port sign
-        if (sign.getSide(Side.FRONT).line(0).equals(PortSign.getTagline()) &&
-            sign.getSide(Side.FRONT).line(3).equals(PortSign.getTagline()) &&
-            sign.getSide(Side.BACK).line(0).equals(PortSign.getTagline()) &&
-            sign.getSide(Side.BACK).line(3).equals(PortSign.getTagline()))
+        if (sign.getSide(Side.FRONT).line(0).equals(Ports.getTagline()) &&
+            sign.getSide(Side.FRONT).line(3).equals(Ports.getTagline()) &&
+            sign.getSide(Side.BACK).line(0).equals(Ports.getTagline()) &&
+            sign.getSide(Side.BACK).line(3).equals(Ports.getTagline()))
         {
             // Prevent a port sign from being created by a player writing on a sign, must be done with admin command
             event.setCancelled(true);

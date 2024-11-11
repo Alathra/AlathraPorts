@@ -1,8 +1,11 @@
 package io.github.alathra.alathraports.ports;
 
+import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.ports.enums.PortSize;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
 
 import java.util.UUID;
 
@@ -52,21 +55,28 @@ public class Port {
     }
 
     public boolean isSimilar(Object object) {
-        if (object instanceof Port) {
-            Port port = (Port) object;
+        if (object instanceof Port port) {
             if (world == null) {
                 return false;
             }
-            if (
-                port.getName().equalsIgnoreCase( this.getName()) &&
+            return port.getName().equalsIgnoreCase(this.getName()) &&
                 port.signLocation.distance(this.signLocation) > Ports.MINIMUM_PORT_DISTANCE &&
                 port.teleportLocation.distance(this.signLocation) > Ports.MINIMUM_PORT_DISTANCE &&
-                port.getPortSize().equals(this.getPortSize())
-            ) {
-                return true;
-            }
+                port.getPortSize().equals(this.getPortSize());
         }
         return false;
+    }
+
+    public Sign generatePortSign(Sign sign) {
+        sign.getSide(Side.FRONT).line(0, Ports.getTagline());
+        sign.getSide(Side.FRONT).line(1, ColorParser.of("<gold><bold>" + this.name).build());
+        sign.getSide(Side.FRONT).line(2, ColorParser.of("<light_red>" + this.getPortSizeName()).build());
+        sign.getSide(Side.FRONT).line(3, Ports.getTagline());
+        sign.getSide(Side.BACK).line(0, Ports.getTagline());
+        sign.getSide(Side.BACK).line(1, ColorParser.of("<gold><bold>" + this.name).build());
+        sign.getSide(Side.BACK).line(2, ColorParser.of("<light_red>" + this.getPortSizeName()).build());
+        sign.getSide(Side.BACK).line(3, Ports.getTagline());
+        return sign;
     }
 
     // Convert port size enum to formatted string

@@ -22,7 +22,7 @@ public class AlathraPorts extends JavaPlugin {
     private static AlathraPorts instance;
     private ConfigHandler configHandler;
     private TranslationManager translationManager;
-    private DatabaseHandler databaseHandler;
+    //private DatabaseHandler databaseHandler;
     private CommandHandler commandHandler;
     private ListenerHandler listenerHandler;
     private UpdateChecker updateChecker;
@@ -47,7 +47,7 @@ public class AlathraPorts extends JavaPlugin {
         instance = this;
         configHandler = new ConfigHandler(instance);
         translationManager = new TranslationManager(instance);
-        databaseHandler = new DatabaseHandler(configHandler, getComponentLogger());
+        //databaseHandler = new DatabaseHandler(configHandler, getComponentLogger());
         commandHandler = new CommandHandler(instance);
         listenerHandler = new ListenerHandler(instance);
         updateChecker = new UpdateChecker();
@@ -58,7 +58,7 @@ public class AlathraPorts extends JavaPlugin {
 
         configHandler.onLoad();
         translationManager.onLoad();
-        databaseHandler.onLoad();
+        //databaseHandler.onLoad();
         commandHandler.onLoad();
         listenerHandler.onLoad();
         updateChecker.onLoad();
@@ -72,7 +72,7 @@ public class AlathraPorts extends JavaPlugin {
     public void onEnable() {
         configHandler.onEnable();
         translationManager.onEnable();
-        databaseHandler.onEnable();
+        //databaseHandler.onEnable();
         commandHandler.onEnable();
         listenerHandler.onEnable();
         updateChecker.onEnable();
@@ -81,9 +81,9 @@ public class AlathraPorts extends JavaPlugin {
         protocolLibHook.onEnable();
         papiHook.onEnable();
 
-        if (!databaseHandler.isRunning()) {
-            Logger.get().warn(ColorParser.of("<yellow>Database handler failed to start. Database support has been disabled.").build());
-        }
+        //if (!databaseHandler.isRunning()) {
+            //Logger.get().warn(ColorParser.of("<yellow>Database handler failed to start. Database support has been disabled.").build());
+        //}
 
         if (vaultHook.isVaultLoaded()) {
             Logger.get().info(ColorParser.of("<green>Vault has been found on this server. Vault support enabled.").build());
@@ -102,7 +102,7 @@ public class AlathraPorts extends JavaPlugin {
     public void onDisable() {
         configHandler.onDisable();
         translationManager.onDisable();
-        databaseHandler.onDisable();
+        //databaseHandler.onDisable();
         commandHandler.onDisable();
         listenerHandler.onDisable();
         updateChecker.onDisable();
@@ -117,10 +117,10 @@ public class AlathraPorts extends JavaPlugin {
      *
      * @return the data handler
      */
-    @NotNull
-    public DatabaseHandler getDataHandler() {
-        return databaseHandler;
-    }
+    //@NotNull
+    //public DatabaseHandler getDataHandler() {
+        //return databaseHandler;
+    //}
 
     /**
      * Gets config handler.
