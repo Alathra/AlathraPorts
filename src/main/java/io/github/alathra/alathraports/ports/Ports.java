@@ -32,21 +32,23 @@ public class Ports {
             if (blockFace == BlockFace.UP) {
                 block.setType(Material.OAK_SIGN);
                 float yaw = creator.getYaw();
-                Directional directional = (Directional) block.getBlockData();
+                BlockFace direction;
                 if (yaw < 0) {
                     yaw += 360;
                 }
                 yaw %= 360;
                 if (yaw >= 315 || yaw < 45) {
-                    directional.setFacing(BlockFace.SOUTH);
+                    direction = BlockFace.SOUTH;
                 } else if (yaw < 135) {
-                    directional.setFacing(BlockFace.WEST);
+                    direction = BlockFace.WEST;
                 } else if (yaw < 225) {
-                    directional.setFacing(BlockFace.NORTH);
+                    direction = BlockFace.NORTH;
                 } else {
-                    directional.setFacing(BlockFace.EAST);
+                    direction = BlockFace.EAST;
                 }
-                block.setBlockData(directional);
+                org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) block.getBlockData();
+                signData.setRotation(direction);
+                block.setBlockData(signData);
                 Sign sign = (Sign) block.getState();
                 sign = port.generatePortSign(sign);
                 sign.update();
