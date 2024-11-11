@@ -3,7 +3,9 @@ package io.github.alathra.alathraports.ports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
+import org.bukkit.Location;
 import org.bukkit.Tag;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
@@ -15,13 +17,14 @@ public class Ports {
 
     private static final Set<Port> ports = new HashSet<>();
 
-    public static void createPort(Player creator, Port port) {
+    public static void createPort(Player creator, Port port, BlockFace blockface) {
         try {
-            registerPort(port);
             // TODO: place port sign
+
+            registerPort(port);
         } catch (PortRegisterException e) {
             AlathraPorts.getInstance().getLogger().warning(e.getMessage());
-            creator.sendMessage(ColorParser.of("<red>Port creation failed. Check console for more details").build());
+            creator.sendMessage(ColorParser.of("<red>Port failed to register. Check console for more details").build());
         }
     }
 

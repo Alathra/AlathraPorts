@@ -21,6 +21,7 @@ public class PortSign {
         sign.getSide(Side.BACK).line(1, ColorParser.of("<gold><bold>" + port.getName()).build());
         sign.getSide(Side.BACK).line(2, ColorParser.of("<light_red>" + port.getPortSizeName()).build());
         sign.getSide(Side.BACK).line(3, tagline);
+        sign.update();
     }
 
     public Sign getBase() {
