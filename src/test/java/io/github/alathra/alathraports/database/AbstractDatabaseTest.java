@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static io.github.exampleuser.exampleplugin.database.schema.Tables.SOME_LIST;
+import static io.github.alathra.alathraports.database.schema.Tables.SOME_LIST;
 
 @Tag("database")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

@@ -1,7 +1,6 @@
 package io.github.alathra.alathraports.ports;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
 import net.kyori.adventure.text.Component;
@@ -19,7 +18,7 @@ import java.util.UUID;
 
 public class Ports {
 
-    public static final double MINIMUM_PORT_DISTANCE = 1.0;
+    public static final double MINIMUM_PORT_DISTANCE = 10;
     private static final Set<Port> ports = new HashSet<>();
 
     public static Component getTagline() {
@@ -28,9 +27,28 @@ public class Ports {
 
     public static void createPortFromSign(Player creator, Port port, BlockFace blockFace) {
         try {
+            registerPort(port);
             Block block = port.getSignLocation().getBlock();
             if (blockFace == BlockFace.UP) {
                 block.setType(Material.OAK_SIGN);
+                float yaw = creator.getYaw();
+                BlockFace direction;
+                if (yaw < 0) {
+                    yaw += 360;
+                }
+                yaw %= 360;
+                if (yaw >= 315 || yaw < 45) {
+                    direction = BlockFace.SOUTH;
+                } else if (yaw < 135) {
+                    direction = BlockFace.WEST;
+                } else if (yaw < 225) {
+                    direction = BlockFace.NORTH;
+                } else {
+                    direction = BlockFace.EAST;
+                }
+                org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) block.getBlockData();
+                signData.setRotation(direction);
+                block.setBlockData(signData);
                 Sign sign = (Sign) block.getState();
                 sign = port.generatePortSign(sign);
                 sign.update();
@@ -43,7 +61,6 @@ public class Ports {
                 sign = port.generatePortSign(sign);
                 sign.update();
             }
-            registerPort(port);
             creator.sendMessage(ColorParser.of("<green>Port " + port.getName() + " has been created").build());
         } catch (PortRegisterException e) {
             Logger.get().warn(e.getMessage());
@@ -63,6 +80,11 @@ public class Ports {
 
     public static void registerPort(Port newPort) throws PortRegisterException {
         for (Port port : ports) {
+
+            // check for similar or matching port
+            if (newPort.isSimilar(port)) {
+                throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" is too similar to or matches a registered port");
+            }
             // if the port's name matches one of a registered port
             if (newPort.getName().equalsIgnoreCase(port.getName())) {
                 throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" matches the name of a registered port");
@@ -73,10 +95,10 @@ public class Ports {
             }
             // if port is too close to a registered port
             if (newPort.getSignLocation().getWorld().equals(port.getSignLocation().getWorld())) {
-                if (newPort.getSignLocation().distance(port.getSignLocation()) < MINIMUM_PORT_DISTANCE) {
+                if (newPort.getSignLocation().distance(port.getSignLocation()) <= MINIMUM_PORT_DISTANCE) {
                     throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" has a sign location that is too close to a registered port");
                 }
-                if (newPort.getTeleportLocation().distance(port.getTeleportLocation()) < MINIMUM_PORT_DISTANCE) {
+                if (newPort.getTeleportLocation().distance(port.getTeleportLocation()) <= MINIMUM_PORT_DISTANCE) {
                     throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" has a teleport location that is too close to a registered port");
                 }
             }
@@ -89,15 +111,9 @@ public class Ports {
                 || !(newPort.getTeleportLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid()) ) {
                 throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" has an unsafe teleport location");
             }
-
-            // safety check
-            if (newPort.isSimilar(port)) {
-                throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" is too similar to a registered port");
-            }
-
-            // register port
-            ports.add(port);
         }
+        // register port
+        ports.add(newPort);
     }
 
     public static boolean deregisterPort(Port targetPort) {

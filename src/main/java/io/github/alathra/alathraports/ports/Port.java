@@ -60,8 +60,8 @@ public class Port {
                 return false;
             }
             return port.getName().equalsIgnoreCase(this.getName()) &&
-                port.signLocation.distance(this.signLocation) > Ports.MINIMUM_PORT_DISTANCE &&
-                port.teleportLocation.distance(this.signLocation) > Ports.MINIMUM_PORT_DISTANCE &&
+                port.signLocation.distance(this.signLocation) <= Ports.MINIMUM_PORT_DISTANCE &&
+                port.teleportLocation.distance(this.signLocation) <= Ports.MINIMUM_PORT_DISTANCE &&
                 port.getPortSize().equals(this.getPortSize());
         }
         return false;
@@ -69,13 +69,15 @@ public class Port {
 
     public Sign generatePortSign(Sign sign) {
         sign.getSide(Side.FRONT).line(0, Ports.getTagline());
-        sign.getSide(Side.FRONT).line(1, ColorParser.of("<gold><bold>" + this.name).build());
-        sign.getSide(Side.FRONT).line(2, ColorParser.of("<light_red>" + this.getPortSizeName()).build());
+        sign.getSide(Side.FRONT).line(1, ColorParser.of("<dark_green><bold>" + this.name).build());
+        sign.getSide(Side.FRONT).line(2, ColorParser.of("<red>" + this.getPortSizeName()).build());
         sign.getSide(Side.FRONT).line(3, Ports.getTagline());
         sign.getSide(Side.BACK).line(0, Ports.getTagline());
-        sign.getSide(Side.BACK).line(1, ColorParser.of("<gold><bold>" + this.name).build());
-        sign.getSide(Side.BACK).line(2, ColorParser.of("<light_red>" + this.getPortSizeName()).build());
+        sign.getSide(Side.BACK).line(1, ColorParser.of("<dark_green><bold>" + this.name).build());
+        sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.getPortSizeName()).build());
         sign.getSide(Side.BACK).line(3, Ports.getTagline());
+        sign.getSide(Side.FRONT).setGlowingText(true);
+        sign.getSide(Side.BACK).setGlowingText(true);
         return sign;
     }
 
