@@ -4,12 +4,15 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -28,43 +31,47 @@ public class Ports {
     public static void createPortFromSign(Player creator, Port port, BlockFace blockFace) {
         try {
             registerPort(port);
-            Block block = port.getSignLocation().getBlock();
-            if (blockFace == BlockFace.UP) {
-                block.setType(Material.OAK_SIGN);
-                float yaw = creator.getYaw();
-                BlockFace direction;
-                if (yaw < 0) {
-                    yaw += 360;
-                }
-                yaw %= 360;
-                if (yaw >= 315 || yaw < 45) {
-                    direction = BlockFace.SOUTH;
-                } else if (yaw < 135) {
-                    direction = BlockFace.WEST;
-                } else if (yaw < 225) {
-                    direction = BlockFace.NORTH;
-                } else {
-                    direction = BlockFace.EAST;
-                }
-                org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) block.getBlockData();
-                signData.setRotation(direction);
-                block.setBlockData(signData);
-                Sign sign = (Sign) block.getState();
-                sign = port.generatePortSign(sign);
-                sign.update();
-            } else {
-                block.setType(Material.OAK_WALL_SIGN);
-                Directional directional = (Directional) block.getBlockData();
-                directional.setFacing(blockFace);
-                block.setBlockData(directional);
-                Sign sign = (Sign) block.getState();
-                sign = port.generatePortSign(sign);
-                sign.update();
-            }
+            placePortSign(creator, port, blockFace);
             creator.sendMessage(ColorParser.of("<green>Port " + port.getName() + " has been created").build());
         } catch (PortRegisterException e) {
             Logger.get().warn(e.getMessage());
             creator.sendMessage(ColorParser.of("<red>Port failed to register. Check console for more details").build());
+        }
+    }
+
+    public static void placePortSign(Player creator, Port port, BlockFace blockFace) {
+        Block block = port.getSignLocation().getBlock();
+        if (blockFace == BlockFace.UP) {
+            block.setType(Material.OAK_SIGN);
+            float yaw = creator.getYaw();
+            BlockFace direction;
+            if (yaw < 0) {
+                yaw += 360;
+            }
+            yaw %= 360;
+            if (yaw >= 315 || yaw < 45) {
+                direction = BlockFace.SOUTH;
+            } else if (yaw < 135) {
+                direction = BlockFace.WEST;
+            } else if (yaw < 225) {
+                direction = BlockFace.NORTH;
+            } else {
+                direction = BlockFace.EAST;
+            }
+            org.bukkit.block.data.type.Sign signData = (org.bukkit.block.data.type.Sign) block.getBlockData();
+            signData.setRotation(direction);
+            block.setBlockData(signData);
+            Sign sign = (Sign) block.getState();
+            sign = port.generatePortSign(sign);
+            sign.update();
+        } else {
+            block.setType(Material.OAK_WALL_SIGN);
+            Directional directional = (Directional) block.getBlockData();
+            directional.setFacing(blockFace);
+            block.setBlockData(directional);
+            Sign sign = (Sign) block.getState();
+            sign = port.generatePortSign(sign);
+            sign.update();
         }
     }
 
@@ -125,6 +132,85 @@ public class Ports {
                 if (targetPort.isSimilar(port)) {
                     ports.remove(port);
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean reregisterPort(Port modifiedPort) throws PortRegisterException {
+        Port originalPort = getPortByID(modifiedPort.getUuid());
+        // Port could not be found in registry, failed to de-register
+        if (originalPort == null) {
+            return false;
+        }
+        // De-register
+        ports.remove(originalPort);
+        // Try to register modified port
+        try {
+            registerPort(modifiedPort);
+        } catch (PortRegisterException e) {
+            // Registration failed, revert registry to original port
+            ports.add(originalPort);
+            throw new PortRegisterException(e.getMessage());
+        }
+        return true;
+    }
+
+    public static boolean isPortSign(Block block) {
+        if (!(block.getState() instanceof Sign sign)) {
+            return false;
+        }
+        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
+            return false;
+        }
+        if (sign.getSide(Side.FRONT).line(0).equals(Ports.getTagline()) &&
+            sign.getSide(Side.FRONT).line(3).equals(Ports.getTagline()) &&
+            sign.getSide(Side.BACK).line(0).equals(Ports.getTagline()) &&
+            sign.getSide(Side.BACK).line(3).equals(Ports.getTagline())) {
+            for (Port port : Ports.getPorts()) {
+                Component frontComponent = sign.getSide(Side.FRONT).line(1);
+                Component backComponent = sign.getSide(Side.FRONT).line(1);
+                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
+                    return port.getName().contentEquals(frontTextComponent.content()) && port.getName().contentEquals(backTextComponent.content());
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isAttachedToPortSign(Block block) {
+
+        if (!block.isSolid() || !block.isCollidable()) {
+            return false;
+        }
+
+        Block[] adjacentBlocks = {
+            block.getRelative(BlockFace.UP),
+            block.getRelative(BlockFace.NORTH),
+            block.getRelative(BlockFace.SOUTH),
+            block.getRelative(BlockFace.EAST),
+            block.getRelative(BlockFace.WEST)
+        };
+
+        for (int i = 0; i < 5; i++) {
+            if (adjacentBlocks[i].getState() instanceof Sign) {
+                boolean isStandingSign = Tag.STANDING_SIGNS.isTagged(adjacentBlocks[i].getType());
+                boolean isWallSign = Tag.WALL_SIGNS.isTagged(adjacentBlocks[i].getType());
+
+                // If above block is a standing sign port sign
+                if (i == 0) {
+                    if (isStandingSign) {
+                        if (isPortSign(adjacentBlocks[i])) {
+                            return true;
+                        }
+                    }
+                }
+
+                // If sides of block contain a wall sign port sign
+                if (isWallSign && i != 0 && isPortSign(adjacentBlocks[i])) {
+                    BlockFace facing = ((Directional) adjacentBlocks[i].getBlockData()).getFacing();
+                    return adjacentBlocks[i].getRelative(facing.getOppositeFace()).getLocation().equals(block.getLocation());
                 }
             }
         }

@@ -48,7 +48,7 @@ public class Port {
             return port.getName().equalsIgnoreCase(this.getName()) &&
                 port.signLocation.equals(this.getSignLocation()) &&
                 port.getTeleportLocation().equals(this.getTeleportLocation()) &&
-                port.getPortSize().equals(this.getPortSize()) &&
+                port.getSize().equals(this.getSize()) &&
                 port.getUuid().equals(this.uuid);
         }
         return false;
@@ -62,7 +62,7 @@ public class Port {
             return port.getName().equalsIgnoreCase(this.getName()) &&
                 port.signLocation.distance(this.signLocation) <= Ports.MINIMUM_PORT_DISTANCE &&
                 port.teleportLocation.distance(this.signLocation) <= Ports.MINIMUM_PORT_DISTANCE &&
-                port.getPortSize().equals(this.getPortSize());
+                port.getSize().equals(this.getSize());
         }
         return false;
     }
@@ -77,6 +77,17 @@ public class Port {
         sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.getPortSizeName()).build());
         sign.getSide(Side.BACK).line(3, Ports.getTagline());
         return sign;
+    }
+
+    public boolean refreshSign() {
+        if (this.getSignLocation().getBlock().getState() instanceof Sign sign) {
+            if (Ports.isPortSign(this.getSignLocation().getBlock())) {
+                sign = generatePortSign(sign);
+                sign.update();
+                return true;
+            }
+        }
+        return false;
     }
 
     // Convert port size enum to formatted string
@@ -101,11 +112,11 @@ public class Port {
         this.name = name;
     }
 
-    public PortSize getPortSize() {
+    public PortSize getSize() {
         return portSize;
     }
 
-    public void setPortSize(PortSize portSize) {
+    public void setSize(PortSize portSize) {
         this.portSize = portSize;
     }
 
