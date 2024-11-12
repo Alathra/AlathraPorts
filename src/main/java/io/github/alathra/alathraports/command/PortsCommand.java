@@ -63,6 +63,9 @@ class PortsCommand {
                     if (blockFace == null) {
                         throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement, no base block face").build());
                     }
+                    if (!(block.isSolid()) || !(block.isCollidable())) {
+                        throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement, base block is not solid").build());
+                    }
                     switch (blockFace) {
                         case UP, DOWN:
                             if(block.getRelative(BlockFace.UP).isEmpty()) {

@@ -76,8 +76,6 @@ public class Port {
         sign.getSide(Side.BACK).line(1, ColorParser.of("<dark_green><bold>" + this.name).build());
         sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.getPortSizeName()).build());
         sign.getSide(Side.BACK).line(3, Ports.getTagline());
-        sign.getSide(Side.FRONT).setGlowingText(true);
-        sign.getSide(Side.BACK).setGlowingText(true);
         return sign;
     }
 
