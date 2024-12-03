@@ -27,7 +27,6 @@ public class ListenerHandler implements Reloadable {
     public void onEnable() {
         // Register listeners here
         plugin.getServer().getPluginManager().registerEvents(new SignListeners(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new UpdateCheckListener(), plugin);
         if (AlathraPorts.getVaultHook().isVaultLoaded()) {
             plugin.getServer().getPluginManager().registerEvents(new VaultListener(), plugin);
         }

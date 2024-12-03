@@ -7,9 +7,10 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
+import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.Ports;
-import io.github.alathra.alathraports.ports.enums.PortSize;
+import io.github.alathra.alathraports.ports.PortSize;
+import io.github.alathra.alathraports.ports.PortsManager;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.FluidCollisionMode;
@@ -71,7 +72,7 @@ class PortsCommand {
                         case UP, DOWN:
                             if(block.getRelative(BlockFace.UP).isEmpty()) {
                                 Location signLocation = block.getRelative(BlockFace.UP).getLocation();
-                                Ports.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), BlockFace.UP);
+                                PortsManager.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), BlockFace.UP);
                             } else {
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement above block").build());
                             }
@@ -79,7 +80,7 @@ class PortsCommand {
                         case NORTH, SOUTH, EAST, WEST:
                             if(block.getRelative(blockFace).isEmpty()) {
                                 Location signLocation = block.getRelative(blockFace).getLocation();
-                                Ports.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), blockFace);
+                                PortsManager.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), blockFace);
                             } else {
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement on the block face").build());
                             }
@@ -101,7 +102,8 @@ class PortsCommand {
             )
             .executesPlayer((Player sender, CommandArguments args) -> {
                 Port port = (Port) args.get("port");
-                Ports.deletePortFromSign(sender, port);
+                Settings.update();
+                PortsManager.deletePortFromSign(sender, port);
             });
     }
 
@@ -110,7 +112,7 @@ class PortsCommand {
             .withPermission(ADMIN_PERM)
             .executesPlayer((Player sender, CommandArguments args) -> {
                 String portList = "<yellow>Ports: ";
-                for (Port port : Ports.getPorts()) {
+                for (Port port : PortsManager.getPorts()) {
                     portList += port.getName() + ", ";
                 }
                 sender.sendMessage(ColorParser.of(portList).build());
@@ -137,7 +139,7 @@ class PortsCommand {
                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Port sign has been moved or is missing").build());
                         }
                         try {
-                            Ports.reregisterPort(port);
+                            PortsManager.reregisterPort(port);
                             sender.sendMessage(ColorParser.of("<green>Port name has been changed").build());
                         } catch (PortRegisterException e) {
                             // Revert sign change, registration failed
@@ -163,7 +165,7 @@ class PortsCommand {
                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Port sign has been moved or is missing").build());
                         }
                         try {
-                            Ports.reregisterPort(port);
+                            PortsManager.reregisterPort(port);
                             sender.sendMessage(ColorParser.of("<green>Port size has been changed").build());
                         } catch (PortRegisterException e) {
                             // Revert sign change, registration failed
@@ -196,7 +198,7 @@ class PortsCommand {
                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Port sign has been moved or is missing").build());
                         }
                         try {
-                            Ports.reregisterPort(port);
+                            PortsManager.reregisterPort(port);
                             if (newLocation.equals(sender.getLocation())) {
                                 sender.sendMessage(ColorParser.of("<green>Port teleport location has been changed to your current location").build());
                             } else {
@@ -239,7 +241,7 @@ class PortsCommand {
                     }
                     Location oldSignLocation = port.getSignLocation();
                     try {
-                        Ports.reregisterPort(port);
+                        PortsManager.reregisterPort(port);
                         switch (blockFace) {
                             case UP, DOWN:
                                 if (block.getRelative(BlockFace.UP).isEmpty()) {
@@ -262,7 +264,7 @@ class PortsCommand {
                             default:
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Abnormal block face found").build());
                         }
-                        Ports.placePortSign(sender, port, blockFace);
+                        PortsManager.placePortSign(sender, port, blockFace);
                         oldSignLocation.getBlock().setType(Material.AIR);
                     } catch (PortRegisterException e) {
                         Logger.get().warn(e.getMessage());

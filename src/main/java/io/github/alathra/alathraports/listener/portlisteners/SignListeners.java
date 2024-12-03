@@ -1,7 +1,7 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.ports.Ports;
+import io.github.alathra.alathraports.ports.PortsManager;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +17,7 @@ public class SignListeners implements Listener {
     @EventHandler
     public void onSignRightClick(PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            if (Ports.isPortSign(Objects.requireNonNull(event.getClickedBlock()))) {
+            if (PortsManager.isPortSign(Objects.requireNonNull(event.getClickedBlock()))) {
                 // TODO: open port menu
                 event.getPlayer().sendMessage(ColorParser.of("<green> Open port menu").build());
                 event.setCancelled(true);
@@ -27,7 +27,7 @@ public class SignListeners implements Listener {
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
-        if (Ports.isPortSign(event.getBlock())) {
+        if (PortsManager.isPortSign(event.getBlock())) {
             // Prevent a port sign from being created by a player writing on a sign, must be done with admin command
             event.setCancelled(true);
         }
@@ -36,25 +36,25 @@ public class SignListeners implements Listener {
     @EventHandler
     public void onSignBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (Ports.isPortSign(block) || Ports.isAttachedToPortSign(block)) {
+        if (PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onSignExplode(BlockExplodeEvent event) {
-        event.blockList().removeIf(block -> Ports.isPortSign(block) || Ports.isAttachedToPortSign(block));
+        event.blockList().removeIf(block -> PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block));
     }
 
     @EventHandler
     public void onSignExplodeByEntity(EntityExplodeEvent event) {
-        event.blockList().removeIf(block -> Ports.isPortSign(block) || Ports.isAttachedToPortSign(block));
+        event.blockList().removeIf(block -> PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block));
     }
 
     @EventHandler
     public void onSignMovedByPistonExtension(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
-            if (Ports.isPortSign(block) || Ports.isAttachedToPortSign(block)) {
+            if (PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block)) {
                 event.setCancelled(true);
             }
         }
@@ -63,7 +63,7 @@ public class SignListeners implements Listener {
     @EventHandler
     public void onSignMovedByPistonRetraction(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
-            if (Ports.isPortSign(block) || Ports.isAttachedToPortSign(block)) {
+            if (PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block)) {
                 event.setCancelled(true);
             }
         }
@@ -72,14 +72,14 @@ public class SignListeners implements Listener {
     // Example: Enderman picks up block. I know this is stupid but why not
     @EventHandler
     public void onSignMovedByEntity(EntityChangeBlockEvent event) {
-        if (Ports.isPortSign(event.getBlock()) || Ports.isAttachedToPortSign(event.getBlock())) {
+        if (PortsManager.isPortSign(event.getBlock()) || PortsManager.isAttachedToPortSign(event.getBlock())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onSignBurned(BlockBurnEvent event) {
-        if (Ports.isPortSign(event.getBlock()) || Ports.isAttachedToPortSign(event.getBlock())) {
+        if (PortsManager.isPortSign(event.getBlock()) || PortsManager.isAttachedToPortSign(event.getBlock())) {
             event.setCancelled(true);
         }
     }

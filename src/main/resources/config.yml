@@ -1,8 +1,46 @@
-# Update Checker Settings
-update-checker:
-  enable: true
-  console: true # Post message to console
-  op: true # Send update notification to opped players on join
+portSettings:
+  # Minimum distance a new port can be from an existing port
+  minimumDistance: 10
+  # Base cost for traveling with ports
+  baseCost: 5.00
 
-# Translation, specify the language file to use, for example `en-US` which will load `/translations/en-US.yml`
-translation: "en-US"
+  sizes:
+    tiny:
+      tier: 1
+      name: "Jetty"
+      range: 500.00
+      # Cost per 100 blocks
+      cost: 16.00
+      # Blocks per second
+      speed: 25.00
+      walkRadius: 20.00
+    small:
+      tier: 2
+      name: "Dockyard"
+      range: 1000.00
+      cost: 12.00
+      speed: 30.00
+      walkRadius: 30.00
+    medium:
+      tier: 3
+      name: "Marina"
+      range: 2000.00
+      cost: 8.00
+      speed: 50.00
+      walkRadius: 40.00
+    large:
+      tier: 4
+      name: "Harbor"
+      range: 3000.00
+      cost: 6.00
+      speed: 60.00
+      walkRadius: 50.00
+    superLarge:
+      tier: 5
+      name: "Megaport"
+      range: 5000.00
+      cost: 5.00
+      speed: 80.00
+      walkRadius: 60.00
+
+

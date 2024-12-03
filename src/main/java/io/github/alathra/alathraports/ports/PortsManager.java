@@ -1,11 +1,12 @@
 package io.github.alathra.alathraports.ports;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
+import io.github.alathra.alathraports.utility.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
@@ -14,14 +15,15 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
+import org.h2.engine.Setting;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class Ports {
+public class PortsManager {
 
-    public static final double MINIMUM_PORT_DISTANCE = 10;
     private static final Set<Port> ports = new HashSet<>();
 
     public static Component getTagline() {
@@ -102,10 +104,10 @@ public class Ports {
             }
             // if port is too close to a registered port
             if (newPort.getSignLocation().getWorld().equals(port.getSignLocation().getWorld())) {
-                if (newPort.getSignLocation().distance(port.getSignLocation()) <= MINIMUM_PORT_DISTANCE) {
+                if (newPort.getSignLocation().distance(port.getSignLocation()) <= Settings.MINIMUM_PORT_DISTANCE) {
                     throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" has a sign location that is too close to a registered port");
                 }
-                if (newPort.getTeleportLocation().distance(port.getTeleportLocation()) <= MINIMUM_PORT_DISTANCE) {
+                if (newPort.getTeleportLocation().distance(port.getTeleportLocation()) <= Settings.MINIMUM_PORT_DISTANCE) {
                     throw new PortRegisterException("Port Failed to Register: New port with name \"" + newPort.getName() + "\" has a teleport location that is too close to a registered port");
                 }
             }
@@ -164,11 +166,11 @@ public class Ports {
         if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
             return false;
         }
-        if (sign.getSide(Side.FRONT).line(0).equals(Ports.getTagline()) &&
-            sign.getSide(Side.FRONT).line(3).equals(Ports.getTagline()) &&
-            sign.getSide(Side.BACK).line(0).equals(Ports.getTagline()) &&
-            sign.getSide(Side.BACK).line(3).equals(Ports.getTagline())) {
-            for (Port port : Ports.getPorts()) {
+        if (sign.getSide(Side.FRONT).line(0).equals(PortsManager.getTagline()) &&
+            sign.getSide(Side.FRONT).line(3).equals(PortsManager.getTagline()) &&
+            sign.getSide(Side.BACK).line(0).equals(PortsManager.getTagline()) &&
+            sign.getSide(Side.BACK).line(3).equals(PortsManager.getTagline())) {
+            for (Port port : PortsManager.getPorts()) {
                 Component frontComponent = sign.getSide(Side.FRONT).line(1);
                 Component backComponent = sign.getSide(Side.FRONT).line(1);
                 if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
@@ -230,6 +232,25 @@ public class Ports {
         for (Port port : ports) {
             if (port.getUuid().equals(uuid)) {
                 return port;
+            }
+        }
+        return null;
+    }
+
+    public static PortSize getPortSizeByName(String name) {
+        name = StringUtil.convertStringToUnderscoreUpperCase(name);
+        for (Map.Entry<String, PortSize> entry : Settings.sizes.entrySet()) {
+            if (name.equals(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    public static PortSize getPortSizeByTier(int tier) {
+        for (PortSize size : Settings.sizes.values()) {
+            if (tier == size.getTier()) {
+                return size;
             }
         }
         return null;

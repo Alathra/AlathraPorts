@@ -1,10 +1,12 @@
 package io.github.alathra.alathraports.config;
 
 import com.github.milkdrinkers.crate.Config;
+import com.github.milkdrinkers.crate.internal.settings.ReloadSetting;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
 
 /**
  * A class that generates/loads {@literal &} provides access to a configuration file.
@@ -27,6 +29,8 @@ public class ConfigHandler implements Reloadable {
     @Override
     public void onLoad() {
         cfg = new Config("config", plugin.getDataFolder().getPath(), plugin.getResource("config.yml")); // Create a config file from the template in our resources folder
+        Settings.update();
+        cfg.setReloadSetting(ReloadSetting.MANUALLY);
         databaseCfg = new Config("database", plugin.getDataFolder().getPath(), plugin.getResource("database.yml"));
     }
 
@@ -36,6 +40,15 @@ public class ConfigHandler implements Reloadable {
 
     @Override
     public void onDisable() {
+    }
+
+    public void reloadConfig() {
+        cfg.forceReload();
+        Settings.update();
+    }
+
+    public void reloadDBConfig() {
+        databaseCfg.forceReload();
     }
 
     /**

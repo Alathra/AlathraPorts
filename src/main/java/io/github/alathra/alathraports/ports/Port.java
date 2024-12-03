@@ -1,12 +1,14 @@
 package io.github.alathra.alathraports.ports;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.ports.enums.PortSize;
+import io.github.alathra.alathraports.config.Settings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Port {
@@ -60,28 +62,28 @@ public class Port {
                 return false;
             }
             return port.getName().equalsIgnoreCase(this.getName()) &&
-                port.signLocation.distance(this.signLocation) <= Ports.MINIMUM_PORT_DISTANCE &&
-                port.teleportLocation.distance(this.signLocation) <= Ports.MINIMUM_PORT_DISTANCE &&
+                port.signLocation.distance(this.signLocation) <= Settings.MINIMUM_PORT_DISTANCE &&
+                port.teleportLocation.distance(this.signLocation) <= Settings.MINIMUM_PORT_DISTANCE &&
                 port.getSize().equals(this.getSize());
         }
         return false;
     }
 
     public Sign generatePortSign(Sign sign) {
-        sign.getSide(Side.FRONT).line(0, Ports.getTagline());
+        sign.getSide(Side.FRONT).line(0, PortsManager.getTagline());
         sign.getSide(Side.FRONT).line(1, ColorParser.of("<dark_green><bold>" + this.name).build());
-        sign.getSide(Side.FRONT).line(2, ColorParser.of("<red>" + this.getPortSizeName()).build());
-        sign.getSide(Side.FRONT).line(3, Ports.getTagline());
-        sign.getSide(Side.BACK).line(0, Ports.getTagline());
+        sign.getSide(Side.FRONT).line(2, ColorParser.of("<red>" + this.portSize.getName()).build());
+        sign.getSide(Side.FRONT).line(3, PortsManager.getTagline());
+        sign.getSide(Side.BACK).line(0, PortsManager.getTagline());
         sign.getSide(Side.BACK).line(1, ColorParser.of("<dark_green><bold>" + this.name).build());
-        sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.getPortSizeName()).build());
-        sign.getSide(Side.BACK).line(3, Ports.getTagline());
+        sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.portSize.getName()).build());
+        sign.getSide(Side.BACK).line(3, PortsManager.getTagline());
         return sign;
     }
 
     public boolean refreshSign() {
         if (this.getSignLocation().getBlock().getState() instanceof Sign sign) {
-            if (Ports.isPortSign(this.getSignLocation().getBlock())) {
+            if (PortsManager.isPortSign(this.getSignLocation().getBlock())) {
                 sign = generatePortSign(sign);
                 sign.update();
                 return true;
@@ -90,14 +92,41 @@ public class Port {
         return false;
     }
 
-    // Convert port size enum to formatted string
-    public String getPortSizeName() {
-        String[] words = portSize.name().toLowerCase().split("_");
-        StringBuilder result = new StringBuilder();
-        for (String word : words) {
-            result.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1)).append(" ");
+    public Double distanceTo(Port port) {
+        if (!this.signLocation.getWorld().equals(port.getSignLocation().getWorld())) {
+            return 0.0;
         }
-        return result.toString().trim();
+        return (this.getSignLocation().distance(port.getSignLocation()));
+    }
+
+    public List<Port> getNearby() {
+        ArrayList<Port> returnList = new ArrayList<>();
+        for (Port port : PortsManager.getPorts()) {
+            if (port.equals(this)) {
+                if (port.getTeleportLocation().getWorld() != this.signLocation.getWorld()) {
+                    continue;
+                }
+            }
+            double distance = this.distanceTo(port);
+            double port1Range = this.portSize.getRange();
+            double port2Range = port.portSize.getRange();
+            if (distance > port1Range && distance > port2Range) {
+                continue;
+            }
+            returnList.add(port);
+        }
+
+        if (returnList.isEmpty()) {
+            Port closestPort = null;
+            for (Port port : PortsManager.getPorts()) {
+                if (closestPort == null || this.distanceTo(closestPort) > this.distanceTo(port)) {
+                    closestPort = port;
+                }
+            }
+            returnList.add(closestPort);
+        }
+
+        return returnList;
     }
 
     public UUID getUuid() {
