@@ -1,7 +1,8 @@
-package io.github.alathra.alathraports.gui;
+package io.github.alathra.alathraports.gui.menu.base;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.gui.tasks.BaseTask;
+import io.github.alathra.alathraports.gui.button.BaseButton;
+import io.github.alathra.alathraports.gui.tasks.base.BaseTask;
 import io.github.alathra.alathraports.gui.tasks.PageTask;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -70,16 +71,6 @@ public class BaseMenu implements InventoryHolder {
 		this.loadPage(0);
 	}
 
-	/**
-	 * Created a non-paged builder
-	 *
-	 * @return Builder
-	 */
-	public static Builder createBuilder() {
-		return new Builder();
-	}
-
-
 	// PAGED MENU FUNCTIONS //
 
 	/**
@@ -133,7 +124,6 @@ public class BaseMenu implements InventoryHolder {
 	}
 
 	private void loadPage(int pageNum) {
-		//Logger.debug("LOADING PAGE " + pageNum);
 		List<Integer> slotList = Arrays.asList(
 			10, 11, 12, 13, 14, 15, 16,
 			19, 20, 21, 22, 23, 24, 25,

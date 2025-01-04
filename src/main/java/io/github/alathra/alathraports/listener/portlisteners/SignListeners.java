@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
-import io.github.alathra.alathraports.gui.PortMenu;
+import io.github.alathra.alathraports.gui.menu.PortMenu;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortsManager;
 import io.github.alathra.alathraports.utility.Logger;

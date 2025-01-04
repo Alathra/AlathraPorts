@@ -1,7 +1,7 @@
-package io.github.alathra.alathraports.gui;
+package io.github.alathra.alathraports.gui.button;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.gui.tasks.BaseTask;
+import io.github.alathra.alathraports.gui.tasks.base.BaseTask;
 import io.github.alathra.alathraports.gui.tasks.MessageTask;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

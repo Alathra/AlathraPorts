@@ -1,11 +1,12 @@
 package io.github.alathra.alathraports.gui.tasks;
 
+import io.github.alathra.alathraports.gui.tasks.base.BaseTask;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class CommandTask implements BaseTask {
 
-	private String commandString;
+	private final String commandString;
 	private Boolean closeMenu = false;
 
 	public CommandTask(String command) {

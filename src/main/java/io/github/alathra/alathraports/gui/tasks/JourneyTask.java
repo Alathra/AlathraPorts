@@ -1,5 +1,6 @@
 package io.github.alathra.alathraports.gui.tasks;
 
+import io.github.alathra.alathraports.gui.tasks.base.BaseTask;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.algo.TravelHandler;
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class JourneyTask implements BaseTask {
 
-	private List<Port> ports;
+	private final List<Port> ports;
 
 	public JourneyTask(Port origin, Port destination) {
 		ports = Arrays.asList(origin, destination);

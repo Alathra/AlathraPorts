@@ -1,4 +1,4 @@
-package io.github.alathra.alathraports.gui.tasks;
+package io.github.alathra.alathraports.gui.tasks.base;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

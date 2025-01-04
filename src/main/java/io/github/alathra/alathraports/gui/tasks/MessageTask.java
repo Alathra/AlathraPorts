@@ -1,11 +1,12 @@
 package io.github.alathra.alathraports.gui.tasks;
 
+import io.github.alathra.alathraports.gui.tasks.base.BaseTask;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class MessageTask implements BaseTask {
 
-	private String message;
+	private final String message;
 
 	public MessageTask(String msg) {
 		this.message = msg;

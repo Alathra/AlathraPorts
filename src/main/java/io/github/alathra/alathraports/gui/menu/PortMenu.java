@@ -1,7 +1,9 @@
-package io.github.alathra.alathraports.gui;
+package io.github.alathra.alathraports.gui.menu;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.gui.button.BaseButton;
+import io.github.alathra.alathraports.gui.menu.base.BaseMenu;
 import io.github.alathra.alathraports.gui.tasks.InventoryTask;
 import io.github.alathra.alathraports.gui.tasks.JourneyTask;
 import io.github.alathra.alathraports.ports.Port;

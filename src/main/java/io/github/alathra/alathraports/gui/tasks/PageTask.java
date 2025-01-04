@@ -1,12 +1,13 @@
 package io.github.alathra.alathraports.gui.tasks;
 
-import io.github.alathra.alathraports.gui.BaseMenu;
+import io.github.alathra.alathraports.gui.menu.base.BaseMenu;
+import io.github.alathra.alathraports.gui.tasks.base.BaseTask;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class PageTask implements BaseTask {
 
-	private int direction;
+	private final int direction;
 
 	public PageTask(int dir) {
 		this.direction = dir;
@@ -15,6 +16,8 @@ public class PageTask implements BaseTask {
 	@Override
 	public void run(InventoryClickEvent event) {
 		BaseMenu menu = (BaseMenu) event.getInventory().getHolder();
-		menu.changePage((Player) event.getWhoClicked(), direction);
+        if (menu != null) {
+            menu.changePage((Player) event.getWhoClicked(), direction);
+        }
 	}
 }
