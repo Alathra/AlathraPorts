@@ -14,6 +14,7 @@ portSettings:
       # Blocks per second
       speed: 25.00
       walkRadius: 20.00
+      icon: JUNGLE_BOAT
     small:
       tier: 2
       name: "Dockyard"
@@ -21,6 +22,7 @@ portSettings:
       cost: 12.00
       speed: 30.00
       walkRadius: 30.00
+      icon: BIRCH_BOAT
     medium:
       tier: 3
       name: "Marina"
@@ -28,6 +30,7 @@ portSettings:
       cost: 8.00
       speed: 50.00
       walkRadius: 40.00
+      icon: OAK_BOAT
     large:
       tier: 4
       name: "Harbor"
@@ -35,6 +38,7 @@ portSettings:
       cost: 6.00
       speed: 60.00
       walkRadius: 50.00
+      icon: DARK_OAK_BOAT
     superLarge:
       tier: 5
       name: "Megaport"
@@ -42,5 +46,6 @@ portSettings:
       cost: 5.00
       speed: 80.00
       walkRadius: 60.00
+      icon: MANGROVE_BOAT
 
 

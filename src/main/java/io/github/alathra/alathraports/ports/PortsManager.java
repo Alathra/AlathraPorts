@@ -15,12 +15,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
-import org.h2.engine.Setting;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class PortsManager {
 
@@ -174,7 +170,9 @@ public class PortsManager {
                 Component frontComponent = sign.getSide(Side.FRONT).line(1);
                 Component backComponent = sign.getSide(Side.FRONT).line(1);
                 if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
-                    return port.getName().contentEquals(frontTextComponent.content()) && port.getName().contentEquals(backTextComponent.content());
+                    if (port.getName().contentEquals(frontTextComponent.content()) && port.getName().contentEquals(backTextComponent.content())) {
+                        return true;
+                    }
                 }
             }
         }
@@ -219,6 +217,39 @@ public class PortsManager {
         return false;
     }
 
+    public static List<Port> orderPorts(Port currentPort, List<Port> toSort) {
+        TreeMap<Double, Port> sortedMap = new TreeMap<Double, Port>();
+
+        // Removes self
+        toSort.remove(currentPort);
+
+        // Adds all megaports to sortedMap & removes from toSort
+        for (Port port : toSort) {
+            if (port.getSize().getTier() == 5) {
+                Double distance = currentPort.distanceTo(port);
+                while (sortedMap.containsKey(distance)) distance += 0.01;
+                sortedMap.put(distance, port);
+            }
+        }
+
+        // Adds all megaports to final list & clears sortedMap
+        List<Port> returnList = new ArrayList<Port>(sortedMap.values());
+        sortedMap.clear();
+
+        // Re-uses sortedMap for rest of ports
+        for (Port port : toSort) {
+            if (port.getSize().getTier() != 5) {
+                Double distance = currentPort.distanceTo(port);
+                while (sortedMap.containsKey(distance)) distance += 0.01;
+                sortedMap.put(distance, port);
+            }
+        }
+        // Adds rest and returns.
+        returnList.addAll(sortedMap.values());
+
+        return returnList;
+    }
+
     public static Port getPortByName(String name) {
         for (Port port : ports) {
             if (port.getName().equalsIgnoreCase(name)) {
@@ -232,6 +263,30 @@ public class PortsManager {
         for (Port port : ports) {
             if (port.getUuid().equals(uuid)) {
                 return port;
+            }
+        }
+        return null;
+    }
+
+    public static Port getPortFromSign(Block block) {
+        if (!(block.getState() instanceof Sign sign)) {
+            return null;
+        }
+        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
+            return null;
+        }
+        if (sign.getSide(Side.FRONT).line(0).equals(PortsManager.getTagline()) &&
+            sign.getSide(Side.FRONT).line(3).equals(PortsManager.getTagline()) &&
+            sign.getSide(Side.BACK).line(0).equals(PortsManager.getTagline()) &&
+            sign.getSide(Side.BACK).line(3).equals(PortsManager.getTagline())) {
+            for (Port port : PortsManager.getPorts()) {
+                Component frontComponent = sign.getSide(Side.FRONT).line(1);
+                Component backComponent = sign.getSide(Side.FRONT).line(1);
+                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
+                    if (port.getName().contentEquals(frontTextComponent.content()) && port.getName().contentEquals(backTextComponent.content())) {
+                        return port;
+                    }
+                }
             }
         }
         return null;

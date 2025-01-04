@@ -1,14 +1,16 @@
 package io.github.alathra.alathraports.gui;
 
+import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.gui.tasks.BaseTask;
 import io.github.alathra.alathraports.gui.tasks.PageTask;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,9 +21,9 @@ import java.util.Map.Entry;
 public class BaseMenu implements InventoryHolder {
 
 	// Menu fields
-	private Inventory inventory;
-	private HashMap<Integer, BaseButton> menuButtons;
-	private String openMessage = null;
+	private final Inventory inventory;
+	private final HashMap<Integer, BaseButton> menuButtons;
+	private Component openMessage = null;
 
 	// Paged menu fields
 	private ArrayList<ArrayList<BaseButton>> pages = null; // If null, menu is not paged
@@ -97,7 +99,7 @@ public class BaseMenu implements InventoryHolder {
 	public void open(Player player) {
 		player.openInventory(inventory);
 		if (this.openMessage != null)
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&', openMessage));
+            player.sendMessage(openMessage);
 	}
 
 	// BUILDERS FOR MENUS //
@@ -106,7 +108,7 @@ public class BaseMenu implements InventoryHolder {
 	 * Gets the inventory of the menu
 	 */
 	@Override
-	public Inventory getInventory() {
+	public @NotNull Inventory getInventory() {
 		return this.inventory;
 	}
 
@@ -154,16 +156,16 @@ public class BaseMenu implements InventoryHolder {
 	 * Menu Builder
 	 */
 	public static class Builder {
-		private String menuTitle = "ip-title";
+		private Component menuTitle = ColorParser.of("ip-title").build();
 		private int menuSize = 54;
-		private HashMap<Integer, BaseButton> menuButtons = new HashMap<Integer, BaseButton>();
-		private String openMsg = null;
+		private final HashMap<Integer, BaseButton> menuButtons = new HashMap<Integer, BaseButton>();
+		private Component openMsg = null;
 
 		Builder() {
 		}
 
-		public Builder title(String title) {
-			this.menuTitle = ChatColor.translateAlternateColorCodes('&', title);
+		public Builder title(Component title) {
+			this.menuTitle = title;
 			return this;
 		}
 
@@ -215,7 +217,7 @@ public class BaseMenu implements InventoryHolder {
 			return this.fillColumn(0).fillColumn(8).fillRow(0).fillRow((this.menuSize / 9) - 1);
 		}
 
-		public Builder openMsg(String msg) {
+		public Builder openMsg(Component msg) {
 			this.openMsg = msg;
 			return this;
 		}
@@ -228,11 +230,11 @@ public class BaseMenu implements InventoryHolder {
 	 * @author NinjaMandalorian
 	 */
 	public static class PagedBuilder {
-		private String menuTitle = "ip-title";
-		private int menuSize = 54;
-		private HashMap<Integer, BaseButton> menuButtons = new HashMap<Integer, BaseButton>();
-		private ArrayList<ArrayList<BaseButton>> pageButtons = new ArrayList<ArrayList<BaseButton>>();
-		private String openMsg = null;
+		private Component menuTitle = ColorParser.of("ip-title").build();
+		private final int menuSize = 54;
+		private final HashMap<Integer, BaseButton> menuButtons = new HashMap<Integer, BaseButton>();
+		private final ArrayList<ArrayList<BaseButton>> pageButtons = new ArrayList<ArrayList<BaseButton>>();
+		private Component openMsg = null;
 
 		PagedBuilder() {
 			List<Integer> outlineSlots = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44,
@@ -242,8 +244,8 @@ public class BaseMenu implements InventoryHolder {
 			}
 		}
 
-		public PagedBuilder title(String title) {
-			this.menuTitle = ChatColor.translateAlternateColorCodes('&', title);
+		public PagedBuilder title(Component title) {
+			this.menuTitle = title;
 			return this;
 		}
 
@@ -275,12 +277,12 @@ public class BaseMenu implements InventoryHolder {
 		}
 
 		public PagedBuilder makePageButtons() {
-			menuButtons.put(48, BaseButton.create(Material.GREEN_DYE).name("&ePrevious Page").task(new PageTask(-1)));
-			menuButtons.put(50, BaseButton.create(Material.GREEN_DYE).name("&eNext Page").task(new PageTask(1)));
+			menuButtons.put(48, BaseButton.create(Material.GREEN_DYE).name(ColorParser.of("<yellow>Previous Page").build()).task(new PageTask(-1)));
+			menuButtons.put(50, BaseButton.create(Material.GREEN_DYE).name(ColorParser.of("<yellow>Next Page").build()).task(new PageTask(1)));
 			return this;
 		}
 
-		public PagedBuilder openMsg(String msg) {
+		public PagedBuilder openMsg(Component msg) {
 			this.openMsg = msg;
 			return this;
 		}

@@ -1,8 +1,11 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.alathra.alathraports.gui.PortMenu;
+import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortsManager;
+import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -10,16 +13,23 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.Objects;
-
 public class SignListeners implements Listener {
 
     @EventHandler
     public void onSignRightClick(PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            if (PortsManager.isPortSign(Objects.requireNonNull(event.getClickedBlock()))) {
-                // TODO: open port menu
-                event.getPlayer().sendMessage(ColorParser.of("<green> Open port menu").build());
+            Block block = event.getClickedBlock();
+            if (block == null) {
+                return;
+            }
+            if (PortsManager.isPortSign(block)) {
+                Player player = event.getPlayer();
+                Port port = PortsManager.getPortFromSign(block);
+                if (port == null) {
+                    Logger.get().warn("Port Not Found: Port sign detected but could not associate with port");
+                    return;
+                }
+                PortMenu.createPortMenu(player, port).open(player);
                 event.setCancelled(true);
             }
         }

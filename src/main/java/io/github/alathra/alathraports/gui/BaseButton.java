@@ -1,8 +1,9 @@
 package io.github.alathra.alathraports.gui;
 
+import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.gui.tasks.BaseTask;
 import io.github.alathra.alathraports.gui.tasks.MessageTask;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,7 +11,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,15 +26,10 @@ public class BaseButton {
 	private BaseTask task;
 	private HashMap<String, String> metadata;
 
-	private BaseButton() {
-	}
-
-	;
-
 	public static BaseButton create() {
 		BaseButton button = new BaseButton();
 		button.itemStack = new ItemStack(Material.GLASS);
-		button = button.name(ChatColor.GRAY + "Empty");
+        button.name(ColorParser.of("<gray>Empty").build());
 		button.task = new MessageTask("Task-Unassigned");
 		return button;
 	}
@@ -53,15 +48,14 @@ public class BaseButton {
 	public static BaseButton background() {
 		BaseButton button = new BaseButton();
 		button.itemStack = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-		button = button.name("");
+		button = button.name(ColorParser.of("").build());
 		return button;
 	}
 
 	/**
 	 * Gets the button's task
 	 *
-	 * @return
-	 */
+     */
 	public BaseTask getTask() {
 		return this.task;
 	}
@@ -71,8 +65,7 @@ public class BaseButton {
 	/**
 	 * Gets the metadata of the button
 	 *
-	 * @return
-	 */
+     */
 	public HashMap<String, String> getMetadata() {
 		return this.metadata;
 	}
@@ -80,7 +73,6 @@ public class BaseButton {
 	/**
 	 * Sets the metadata of the button
 	 *
-	 * @param map
 	 */
 	public void setMetadata(HashMap<String, String> map) {
 		this.metadata = map;
@@ -89,8 +81,7 @@ public class BaseButton {
 	/**
 	 * Gets the item stack of button
 	 *
-	 * @return
-	 */
+     */
 	public ItemStack getItemStack() {
 		return this.itemStack;
 	}
@@ -98,8 +89,7 @@ public class BaseButton {
 	/**
 	 * Makes the Button glow
 	 *
-	 * @return
-	 */
+     */
 	public BaseButton glow() {
 		this.itemStack.addUnsafeEnchantment(Enchantment.LUCK_OF_THE_SEA, 1);
 		ItemMeta meta = this.itemStack.getItemMeta();
@@ -111,8 +101,6 @@ public class BaseButton {
 	/**
 	 * Sets the itemstack of the button
 	 *
-	 * @param itemStack
-	 * @return
 	 */
 	public BaseButton itemStack(ItemStack itemStack) {
 		this.itemStack = itemStack;
@@ -122,8 +110,6 @@ public class BaseButton {
 	/**
 	 * Sets the task
 	 *
-	 * @param task
-	 * @return
 	 */
 	public BaseButton task(BaseTask task) {
 		this.task = task;
@@ -133,8 +119,6 @@ public class BaseButton {
 	/**
 	 * Sets the quantity of the button's stack
 	 *
-	 * @param num
-	 * @return
 	 */
 	public BaseButton quantity(int num) {
 		this.itemStack.setAmount(num);
@@ -144,13 +128,10 @@ public class BaseButton {
 	/**
 	 * Renames the button
 	 *
-	 * @param name
-	 * @return
 	 */
-	public BaseButton name(String name) {
-		name = ChatColor.translateAlternateColorCodes('&', name);
+	public BaseButton name(Component name) {
 		ItemMeta meta = this.itemStack.getItemMeta();
-		meta.setDisplayName(ChatColor.RESET + name);
+		meta.displayName(name);
 		this.itemStack.setItemMeta(meta);
 		return this;
 	}
@@ -158,32 +139,17 @@ public class BaseButton {
 	/**
 	 * Sets the button's lore
 	 *
-	 * @param lore
-	 * @return
 	 */
-	public BaseButton lore(List<String> lore) {
+	public BaseButton lore(List<Component> lore) {
 		ItemMeta meta = this.itemStack.getItemMeta();
-		meta.setLore(lore);
+		meta.lore(lore);
 		this.itemStack.setItemMeta(meta);
 		return this;
 	}
 
 	/**
-	 * Sets the button's lore.
-	 * <br> Split with '\n'
-	 *
-	 * @param lore
-	 * @return
-	 */
-	public BaseButton lore(String lore) {
-		return lore(Arrays.asList(lore.split("\n")));
-	}
-
-	/**
 	 * Runs the button task.
 	 *
-	 * @param e
-	 * @return
 	 */
 	public BaseButton run(InventoryClickEvent e) {
 		if (this.task != null) this.task.run(e);

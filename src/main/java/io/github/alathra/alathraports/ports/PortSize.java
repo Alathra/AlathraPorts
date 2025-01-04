@@ -1,6 +1,8 @@
 package io.github.alathra.alathraports.ports;
 
 
+import org.bukkit.Material;
+
 public class PortSize {
 
     private final int tier;
@@ -9,14 +11,16 @@ public class PortSize {
     private final double cost;
     private final double speed;
     private final double walkRadius;
+    private final Material icon;
 
-    protected PortSize(int tier, String name, double range, double cost, double speed, double walkRadius) {
+    protected PortSize(int tier, String name, double range, double cost, double speed, double walkRadius, Material icon) {
         this.tier = tier;
         this.name = name;
         this.cost = cost;
         this.range = range;
         this.speed = speed;
         this.walkRadius = walkRadius;
+        this.icon = icon;
     }
 
     public int getTier() {
@@ -41,5 +45,9 @@ public class PortSize {
 
     public double getWalkRadius() {
         return walkRadius;
+    }
+
+    public Material getIcon() {
+        return  icon;
     }
 }

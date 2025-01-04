@@ -7,6 +7,7 @@ import io.github.alathra.alathraports.ports.PortSizeBuilder;
 import io.github.alathra.alathraports.ports.exceptions.PortSizeSerialException;
 import io.github.alathra.alathraports.utility.Logger;
 import io.github.alathra.alathraports.utility.StringUtil;
+import org.bukkit.Material;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,8 +50,9 @@ public class Settings {
                     .setCost(getConfig().getDouble(baseKey + "cost"))
                     .setSpeed(getConfig().getDouble(baseKey + "speed"))
                     .setWalkRadius(getConfig().getDouble(baseKey + "walkRadius"))
+                    .setIcon(Material.valueOf(getConfig().getString(baseKey + "icon")))
                     .createPortSize());
-                } catch (PortSizeSerialException e) {
+                } catch (PortSizeSerialException | IllegalArgumentException e) {
                     Logger.get().warn(e.getMessage());
                 }
             }
