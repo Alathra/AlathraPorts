@@ -2,7 +2,6 @@ package io.github.alathra.alathraports.listener;
 
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
-import io.github.alathra.alathraports.listener.portlisteners.InventoryListeners;
 import io.github.alathra.alathraports.listener.portlisteners.SignListeners;
 
 /**
@@ -32,7 +31,6 @@ public class ListenerHandler implements Reloadable {
         }
 
         plugin.getServer().getPluginManager().registerEvents(new SignListeners(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new InventoryListeners(), plugin);
     }
 
     @Override

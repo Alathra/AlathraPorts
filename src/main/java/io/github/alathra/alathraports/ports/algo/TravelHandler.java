@@ -45,12 +45,11 @@ public class TravelHandler {
 	 * @param player      - Player doing journey
 	 * @param origin      - Start port
 	 * @param destination - Destination port
-	 * @param args        - Extra arguments
 	 */
-	public static void startJourney(Player player, Port origin, Port destination, String... args) {
+	public static void startJourney(Player player, Port origin, Port destination) {
         final Economy economy = AlathraPorts.getVaultHook().getEconomy();
 
-		List<Port> playerJourney = findPath(player, origin, destination);
+		List<Port> playerJourney = findJourney(origin, destination);
 		if (playerJourney == null) {
 			player.sendMessage(ColorParser.of("<red>There is no route to this port").build());
 			return;
@@ -147,27 +146,16 @@ public class TravelHandler {
 	/**
 	 * Finds path between two ports for a player.
 	 *
-	 * @param player      - Player to find path for.
 	 * @param origin      - Start port.
 	 * @param destination - End port.
 	 * @return List of ports to go through.
 	 */
-	public static List<Port> findPath(Player player, Port origin, Port destination) {
-		if (origin.getNearby().contains(destination))
+	public static List<Port> findJourney(Port origin, Port destination) {
+		if (origin.getReachable().contains(destination))
 			return Arrays.asList(origin, destination);
 		return AStarAlgorithm.findShortestPath(PortsManager.getPorts(), origin, destination);
 	}
 
-	/**
-	 * Gets the journey wait (in ticks) for a player.
-	 *
-	 * @param player - Player to check for
-	 * @return Wait in ticks
-	 */
-
-	private static long getJourneyWait(Player player) {
-		return getJourneyWait(journeys.get(player));
-	}
 
 	/**
 	 * Gets the journey wait (in ticks) for a port list.
@@ -199,17 +187,6 @@ public class TravelHandler {
 	}
 
 	/**
-	 * Gets journey cost of player
-	 *
-	 * @param player - Journey player
-	 * @return Double of cost
-	 */
-
-	public static double getJourneyCost(Player player) {
-		return getJourneyCost(journeys.get(player));
-	}
-
-	/**
 	 * Gets the wait for travel between two ports.
 	 *
 	 * @param origin      - Start port
@@ -233,29 +210,6 @@ public class TravelHandler {
 	private static double getTravelCost(Port origin, Port destination) {
         PortSize size = PortsManager.getPortSizeByTier(Math.min(origin.getSize().getTier(), destination.getSize().getTier()));
         return Settings.BASE_COST += Objects.requireNonNull(size).getCost() * origin.distanceTo(destination) / 100;
-	}
-
-	/**
-	 * Gets if player can travel to port
-	 *
-	 * @param port   - Port to travel to
-	 * @param player - Player travelling
-	 * @return Boolean of if available
-	 */
-	public static boolean canTravelTo(Port port, Player player) {
-		return true;
-	}
-
-	/**
-	 * Gets a player's current port
-	 *
-	 * @param player - Player to check
-	 * @return Port of player
-	 */
-	public static Port getCurrentPort(Player player) {
-		if (journeys.get(player) == null)
-			return null;
-		return journeys.get(player).getFirst();
 	}
 
 }

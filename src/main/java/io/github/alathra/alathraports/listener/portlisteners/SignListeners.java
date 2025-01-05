@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
-import io.github.alathra.alathraports.gui.menu.PortMenu;
+import io.github.alathra.alathraports.gui.GuiHandler;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortsManager;
 import io.github.alathra.alathraports.utility.Logger;
@@ -29,7 +29,7 @@ public class SignListeners implements Listener {
                     Logger.get().warn("Port Not Found: Port sign detected but could not associate with port");
                     return;
                 }
-                PortMenu.createPortMenu(player, port).open(player);
+                GuiHandler.generateTravelGui(player, port);
                 event.setCancelled(true);
             }
         }

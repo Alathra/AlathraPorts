@@ -99,8 +99,8 @@ public class Port {
         return (this.getSignLocation().distance(port.getSignLocation()));
     }
 
-    public List<Port> getNearby() {
-        ArrayList<Port> returnList = new ArrayList<>();
+    public List<Port> getReachable() {
+        ArrayList<Port> reachablePorts = new ArrayList<>();
         for (Port port : PortsManager.getPorts()) {
             if (port.equals(this)) {
                 if (port.getTeleportLocation().getWorld() != this.signLocation.getWorld()) {
@@ -113,20 +113,10 @@ public class Port {
             if (distance > port1Range && distance > port2Range) {
                 continue;
             }
-            returnList.add(port);
+            reachablePorts.add(port);
         }
 
-        if (returnList.isEmpty()) {
-            Port closestPort = null;
-            for (Port port : PortsManager.getPorts()) {
-                if (closestPort == null || this.distanceTo(closestPort) > this.distanceTo(port)) {
-                    closestPort = port;
-                }
-            }
-            returnList.add(closestPort);
-        }
-
-        return returnList;
+        return reachablePorts;
     }
 
     public UUID getUuid() {

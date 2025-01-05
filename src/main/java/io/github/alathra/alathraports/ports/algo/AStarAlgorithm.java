@@ -38,7 +38,7 @@ public class AStarAlgorithm {
 
 			visited.add(current);
 
-			for (Port neighbor : current.getNearby()) {
+			for (Port neighbor : current.getReachable()) {
 				if (neighbor == null) continue;
 
 				if (visited.contains(neighbor)) {
