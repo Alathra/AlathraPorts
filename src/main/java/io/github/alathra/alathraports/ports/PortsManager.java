@@ -4,7 +4,6 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.exceptions.PortRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
-import io.github.alathra.alathraports.utility.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
@@ -293,9 +292,8 @@ public class PortsManager {
     }
 
     public static PortSize getPortSizeByName(String name) {
-        name = StringUtil.convertStringToUnderscoreUpperCase(name);
         for (Map.Entry<String, PortSize> entry : Settings.sizes.entrySet()) {
-            if (name.equals(entry.getKey())) {
+            if (name.equalsIgnoreCase(entry.getKey())) {
                 return entry.getValue();
             }
         }

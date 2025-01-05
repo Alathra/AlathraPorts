@@ -8,7 +8,9 @@ import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.algo.TravelHandler;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -58,10 +60,9 @@ public class GuiUtil {
     public static void generatePortButtons(PaginatedGui gui, Player player, Port port) {
         for (Port reachablePort : port.getReachable() ) {
             List<Port> journey = TravelHandler.findJourney(port, reachablePort);
-            ItemStack portItem = new ItemStack(port.getSize().getIcon());
+            ItemStack portItem = new ItemStack(reachablePort.getSize().getIcon());
             ItemMeta portItemMeta = portItem.getItemMeta();
-            portItemMeta.displayName(ColorParser.of("<blue><bold>" + port.getName()).build().decoration(TextDecoration.ITALIC, false));
-            portItemMeta.displayName();
+            portItemMeta.displayName(ColorParser.of("<blue><bold>" + reachablePort.getName()).build().decoration(TextDecoration.ITALIC, false));
             portItemMeta.lore(List.of(
                ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
                 ColorParser.of("<gold>Cost: " + TravelHandler.getJourneyCost(journey)).build().decoration(TextDecoration.ITALIC, false),
@@ -76,6 +77,20 @@ public class GuiUtil {
                 gui.close(player);
             }));
         }
+    }
+
+    public static void generateOwnPortIcon(PaginatedGui gui, Port port) {
+        // Places an icon at the top showing information about the port you are starting from in the travel menu
+        ItemStack portItem = new ItemStack(port.getSize().getIcon());
+        ItemMeta portItemMeta = portItem.getItemMeta();
+        portItemMeta.displayName(ColorParser.of("<green><bold>" + port.getName()).build().decoration(TextDecoration.ITALIC, false));
+        portItemMeta.lore(List.of(
+            ColorParser.of("<gold>Size: <red>" + port.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
+        ));
+        portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+        portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        portItem.setItemMeta(portItemMeta);
+        gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
     }
 
 }

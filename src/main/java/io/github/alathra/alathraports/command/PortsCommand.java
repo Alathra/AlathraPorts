@@ -176,7 +176,6 @@ class PortsCommand {
                         }
                     }),
                 new CommandAPICommand("teleport")
-                    .withAliases("tp")
                     .withArguments(
                         CommandUtil.portArgument("port")
                     )
@@ -279,7 +278,6 @@ class PortsCommand {
     public CommandAPICommand teleportCommand() {
         return new CommandAPICommand("teleport")
             .withPermission(ADMIN_PERM)
-            .withAliases("tp")
             .withArguments(
                 CommandUtil.portArgument("port")
             )

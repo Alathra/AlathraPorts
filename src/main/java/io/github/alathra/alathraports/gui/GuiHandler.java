@@ -9,6 +9,7 @@ public class GuiHandler {
     public static void generateTravelGui(Player player, Port port) {
         PaginatedGui travelGui = GuiUtil.generatePaginatedBase();
         GuiUtil.generatePortButtons(travelGui, player, port);
+        GuiUtil.generateOwnPortIcon(travelGui, port);
         travelGui.open(player);
     }
 }

@@ -6,7 +6,6 @@ import io.github.alathra.alathraports.ports.PortSize;
 import io.github.alathra.alathraports.ports.PortSizeBuilder;
 import io.github.alathra.alathraports.ports.exceptions.PortSizeSerialException;
 import io.github.alathra.alathraports.utility.Logger;
-import io.github.alathra.alathraports.utility.StringUtil;
 import org.bukkit.Material;
 
 import java.util.HashMap;
@@ -39,7 +38,7 @@ public class Settings {
             final String baseKey = "portSettings.sizes." + entry.getKey().toString() + ".";
             if (entry.getValue() instanceof Map<?, ?>) {
                 try {
-                String formattedName = StringUtil.convertStringToUnderscoreUpperCase(getConfig().getString(baseKey + "name"));
+                String formattedName = getConfig().getString(baseKey + "name").replace(' ', '_');
                 if (formattedName.isEmpty()) {
                     throw new PortSizeSerialException("Port Size Failed to Serialize: Config contains error in port size section");
                 }
