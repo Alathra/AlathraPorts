@@ -7,9 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Port {
     private final UUID uuid;
@@ -99,24 +97,41 @@ public class Port {
         return (this.getSignLocation().distance(port.getSignLocation()));
     }
 
-    public List<Port> getReachable() {
-        ArrayList<Port> reachablePorts = new ArrayList<>();
+    public List<Port> getPortsInRange() {
+        ArrayList<Port> ports = new ArrayList<>();
         for (Port port : PortsManager.getPorts()) {
             if (port.equals(this)) {
-                if (port.getTeleportLocation().getWorld() != this.signLocation.getWorld()) {
-                    continue;
-                }
-            }
-            double distance = this.distanceTo(port);
-            double port1Range = this.portSize.getRange();
-            double port2Range = port.portSize.getRange();
-            if (distance > port1Range && distance > port2Range) {
                 continue;
             }
-            reachablePorts.add(port);
+            double distance = this.distanceTo(port);
+            if (distance > this.portSize.getRange() && distance > port.portSize.getRange()) {
+                continue;
+            }
+            ports.add(port);
         }
 
-        return reachablePorts;
+        return ports;
+    }
+
+    public List<Port> getReachablePorts() {
+        // Implements Breadth-First Traversal to generate the "graph" of reachable ports
+        HashSet<Port> visited = new HashSet<>();
+        visited.add(this);
+        LinkedList<Port> queue = new LinkedList<>();
+        queue.add(this);
+        Port node;
+        while (!queue.isEmpty()) {
+            node = queue.poll();
+            visited.add(node);
+            for (Port port : node.getPortsInRange()) {
+                if (!visited.contains(port)) {
+                    queue.add(port);
+                }
+            }
+        }
+        // Don't include own port
+        visited.remove(this);
+        return visited.stream().toList();
     }
 
     public UUID getUuid() {

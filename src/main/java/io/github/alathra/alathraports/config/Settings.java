@@ -48,7 +48,7 @@ public class Settings {
                     .setRange(getConfig().getDouble(baseKey + "range"))
                     .setCost(getConfig().getDouble(baseKey + "cost"))
                     .setSpeed(getConfig().getDouble(baseKey + "speed"))
-                    .setWalkRadius(getConfig().getDouble(baseKey + "walkRadius"))
+                    .setWalkRadius(getConfig().getDouble(baseKey + "journeyHaltRadius"))
                     .setIcon(Material.valueOf(getConfig().getString(baseKey + "icon")))
                     .createPortSize());
                 } catch (PortSizeSerialException | IllegalArgumentException e) {

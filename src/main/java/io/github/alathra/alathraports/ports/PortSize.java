@@ -10,16 +10,16 @@ public class PortSize {
     private final double range;
     private final double cost;
     private final double speed;
-    private final double walkRadius;
+    private final double journeyHaltRadius;
     private final Material icon;
 
-    protected PortSize(int tier, String name, double range, double cost, double speed, double walkRadius, Material icon) {
+    protected PortSize(int tier, String name, double range, double cost, double speed, double journeyHaltRadius, Material icon) {
         this.tier = tier;
         this.name = name;
         this.cost = cost;
         this.range = range;
         this.speed = speed;
-        this.walkRadius = walkRadius;
+        this.journeyHaltRadius = journeyHaltRadius;
         this.icon = icon;
     }
 
@@ -43,8 +43,8 @@ public class PortSize {
         return speed;
     }
 
-    public double getWalkRadius() {
-        return walkRadius;
+    public double getJourneyHaltRadius() {
+        return journeyHaltRadius;
     }
 
     public Material getIcon() {

@@ -9,7 +9,7 @@ public class PortSizeBuilder {
     private double range;
     private double cost;
     private double speed;
-    private double walkRadius;
+    private double journeyHaltRadius;
     private Material icon;
 
     public PortSizeBuilder setTier(int tier) {
@@ -37,8 +37,8 @@ public class PortSizeBuilder {
         return this;
     }
 
-    public PortSizeBuilder setWalkRadius(double walkRadius) {
-        this.walkRadius = walkRadius;
+    public PortSizeBuilder setWalkRadius(double journeyHaltRadius) {
+        this.journeyHaltRadius = journeyHaltRadius;
         return this;
     }
 
@@ -48,9 +48,9 @@ public class PortSizeBuilder {
     }
 
     public PortSize createPortSize() throws PortSizeSerialException {
-        if (tier == 0 || name.isEmpty() || range == 0.0 || cost == 0.0 || speed == 0.0 || walkRadius == 0.0 || icon == null) {
+        if (tier == 0 || name.isEmpty() || range == 0.0 || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
             throw new PortSizeSerialException("Port Size Failed to Serialize: Config contains error in port size section");
         }
-        return new PortSize(tier, name, range, cost, speed, walkRadius, icon);
+        return new PortSize(tier, name, range, cost, speed, journeyHaltRadius, icon);
     }
 }

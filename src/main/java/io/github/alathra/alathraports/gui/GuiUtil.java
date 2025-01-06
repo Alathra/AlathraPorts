@@ -5,7 +5,7 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.algo.TravelHandler;
+import io.github.alathra.alathraports.ports.travel.Journey;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -58,22 +58,21 @@ public class GuiUtil {
     }
 
     public static void generatePortButtons(PaginatedGui gui, Player player, Port port) {
-        for (Port reachablePort : port.getReachable() ) {
-            List<Port> journey = TravelHandler.findJourney(port, reachablePort);
+        for (Port reachablePort : port.getReachablePorts() ) {
+            Journey journey = new Journey(port, reachablePort, player);
             ItemStack portItem = new ItemStack(reachablePort.getSize().getIcon());
             ItemMeta portItemMeta = portItem.getItemMeta();
             portItemMeta.displayName(ColorParser.of("<blue><bold>" + reachablePort.getName()).build().decoration(TextDecoration.ITALIC, false));
             portItemMeta.lore(List.of(
                ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
-                ColorParser.of("<gold>Cost: " + TravelHandler.getJourneyCost(journey)).build().decoration(TextDecoration.ITALIC, false),
-                // TODO: CURRENTLY IN TICKS
-                ColorParser.of("<gold>Travel Time: " + TravelHandler.getJourneyWait(journey)).build().decoration(TextDecoration.ITALIC, false),
+                ColorParser.of("<gold>Cost: $" + journey.getTotalCost()).build().decoration(TextDecoration.ITALIC, false),
+                ColorParser.of("<gold>Travel Time: " + journey.getTotalTime() + " seconds").build().decoration(TextDecoration.ITALIC, false),
                 ColorParser.of("").build(),
                 ColorParser.of("<green>Click to Travel").build().decoration(TextDecoration.ITALIC, false)
             ));
             portItem.setItemMeta(portItemMeta);
             gui.addItem(ItemBuilder.from(portItem).asGuiItem(event -> {
-                TravelHandler.startJourney(player, port, reachablePort);
+                journey.start();
                 gui.close(player);
             }));
         }

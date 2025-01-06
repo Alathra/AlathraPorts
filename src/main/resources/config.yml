@@ -8,12 +8,15 @@ portSettings:
     tiny:
       tier: 1
       name: "Jetty"
+      # Distance (radius) this port can facilitate in travel in blocks
       range: 500.00
-      # Cost per 100 blocks
+      # Cost per 100 blocks traveled
       cost: 16.00
       # Blocks per second
       speed: 25.00
-      walkRadius: 20.00
+      # How far the player can be from the port location before any ongoing journeys will be halted
+      journeyHaltRadius: 20.00
+      # The icon that will display in the travel menu
       icon: JUNGLE_BOAT
     small:
       tier: 2
@@ -21,7 +24,7 @@ portSettings:
       range: 1000.00
       cost: 12.00
       speed: 30.00
-      walkRadius: 30.00
+      journeyHaltRadius: 30.00
       icon: BIRCH_BOAT
     medium:
       tier: 3
@@ -29,7 +32,7 @@ portSettings:
       range: 2000.00
       cost: 8.00
       speed: 50.00
-      walkRadius: 40.00
+      journeyHaltRadius: 40.00
       icon: OAK_BOAT
     large:
       tier: 4
@@ -37,7 +40,7 @@ portSettings:
       range: 3000.00
       cost: 6.00
       speed: 60.00
-      walkRadius: 50.00
+      journeyHaltRadius: 50.00
       icon: DARK_OAK_BOAT
     superLarge:
       tier: 5
@@ -45,7 +48,7 @@ portSettings:
       range: 5000.00
       cost: 5.00
       speed: 80.00
-      walkRadius: 60.00
+      journeyHaltRadius: 60.00
       icon: MANGROVE_BOAT
 
 
