@@ -1,6 +1,7 @@
 package io.github.alathra.alathraports.ports.travel;
 
 import io.github.alathra.alathraports.utility.Logger;
+import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +35,26 @@ public class TravelManager {
             return;
         }
         journeys.remove(journey);
+    }
+
+    public static boolean isPlayerInOngoingJourney(Player player) {
+        pruneJourneys();
+        for (Journey journey : getJourneys()) {
+            if (journey.getPlayer().equals(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Journey getJourneyFromPlayer(Player player) {
+        pruneJourneys();
+        for (Journey journey : getJourneys()) {
+            if (journey.getPlayer().equals(player)) {
+                return journey;
+            }
+        }
+        return null;
     }
 
 

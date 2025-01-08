@@ -52,6 +52,7 @@ public class Journey {
             isValid = false;
         }
 
+        // origin
         currentIndex = 0;
     }
 
@@ -62,25 +63,28 @@ public class Journey {
             TravelManager.deregisterJourney(this);
             return;
         }
-        TravelManager.registerJourney(this);
+        for (Journey journey : TravelManager.getJourneys()) {
+            if (!journey.equals(this) && journey.getPlayer().equals(this.player)) {
+                // Player is already in a different journey, prevent it from starting
+                Logger.get().warn("Travel Journey Failed: {} was trying to travel from {} to {}. Player was already in a journey",
+                    player.getName(), origin.getName(), destination.getName());
+                return;
+            }
+        }
         final Economy economy = AlathraPorts.getVaultHook().getEconomy();
         double cost = getTotalCost();
         if (economy.getBalance(player) < cost) {
             player.sendMessage(ColorParser.of("<red>You need <gold>" + economy.format(cost) + " <red>to travel to <green>" + destination.getName()).build());
-            TravelManager.deregisterJourney(this);
             return;
         }
-        for (Journey journey : TravelManager.getJourneys()) {
-            if (!journey.equals(this) && journey.getPlayer().equals(this.player)) {
-                // Player is already in a different journey, prevent it from starting
-                return;
-            }
-        }
-
-        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-        economy.withdrawPlayer(player, cost);
         TravelManager.registerJourney(this);
+        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         travel();
+    }
+
+    // When a journey has been completed
+    public void stop() {
+        TravelManager.deregisterJourney(this);
     }
 
     // Initiate travel sequence. Will travel to each node (port) until arrived at destination
@@ -92,41 +96,50 @@ public class Journey {
 
         int time = getTime(nodes.get(currentIndex), nodes.get(currentIndex+1));
         currentTravelTask = Bukkit.getServer().getScheduler().runTaskLater(AlathraPorts.getInstance(), () -> {
+            // Take money from player for each node traveled
             final Economy economy = AlathraPorts.getVaultHook().getEconomy();
+            final double cost = getCost(nodes.get(currentIndex), nodes.get(currentIndex+1));
+            economy.withdrawPlayer(player, cost);
             currentIndex++;
             player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             player.getWorld().playSound(player, Sound.ITEM_CHORUS_FRUIT_TELEPORT, 1, 1);
             // If at destination (last node)
             if (currentIndex == nodes.size()-1) {
-                player.sendMessage(ColorParser.of("You have arrived at your destination!").build());
+                player.sendMessage(ColorParser.of("<green>You have arrived at your destination, <light_purple>" + destination.getName()).build());
+                stop();
             } else {
-                player.sendMessage(ColorParser.of("Traveling to next location...").build());
+                player.sendMessage(ColorParser.of("<green>Arrived at <light_purple>" + nodes.get(currentIndex).getName() + ". <green>Traveling to next location... <light_purple>" + nodes.get(currentIndex+1).getName() ).build());
                 travel();
             }
+            player.sendMessage(ColorParser.of("<red>-" + economy.format(cost)).build());
         }, time * 20L);
-        player.sendMessage(ColorParser.of("<green>You will be teleported in <light_purple> " + time + " <green>seconds").build());
+        player.sendMessage(ColorParser.of("<green>You will be teleported in <light_purple>" + time + " <green>seconds").build());
     }
 
-    // Halt ongoing journey
+    // Interrupt an ongoing journey
     public void halt() {
         halted = true;
         if (currentTravelTask != null) {
             currentTravelTask.cancel();
         }
-        player.sendMessage(ColorParser.of("<red>Your journey has been halted").build());
+        player.sendMessage(ColorParser.of("<red>Your journey to <light_purple>" + destination.getName() + " <red>has been halted").build());
+        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }
 
-    // Halt ongoing journey
+    // Resume a journey that has been halted
     public void resume() {
         halted = false;
         player.sendMessage(ColorParser.of("<green>Your journey has resumed").build());
+        travel();
     }
 
     // Get cost to travel between two nodes
     // In dollars (or whatever the currency is)
     public double getCost(Port node1, Port node2) {
         PortSize size = PortsManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
-        return Settings.BASE_COST += (size != null ? size.getCost() : 0) * node1.distanceTo(node2) / 100;
+        // calculate cost and round to 2 decimal places
+        double cost = Settings.BASE_COST + (size != null ? size.getCost() : 1.0) * node1.distanceTo(node2) / 100;
+        return (double) Math.round((cost * 100)) / 100;
     }
 
     // Get total cost for entire journey
@@ -143,7 +156,7 @@ public class Journey {
     // In seconds
     public int getTime(Port node1, Port node2) {
         PortSize size = PortsManager.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
-        return (int) (Math.round(node1.distanceTo(node2) / (size != null ? size.getSpeed() : 0)) + 5);
+        return (int) (Math.round(node1.distanceTo(node2) / (size != null ? size.getSpeed() : 1.0)) + 5);
     }
 
     // Get total travel time for the entire journey
@@ -160,6 +173,10 @@ public class Journey {
         return nodes;
     }
 
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
     public Port getOrigin() {
         return origin;
     }
@@ -174,5 +191,9 @@ public class Journey {
 
     public boolean isValid() {
         return isValid;
+    }
+
+    public boolean isHalted() {
+        return isHalted();
     }
 }

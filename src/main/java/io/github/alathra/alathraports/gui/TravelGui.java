@@ -4,9 +4,13 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
+import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.travel.Journey;
+import io.github.alathra.alathraports.ports.travel.TravelManager;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.md_5.bungee.api.chat.hover.content.Item;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -16,13 +20,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class GuiUtil {
+public class TravelGui {
 
-    public static PaginatedGui generatePaginatedBase() {
+    public static PaginatedGui generatePaginatedBase(Port port) {
         PaginatedGui base;
         // Set build settings
         base = Gui.paginated()
-            .title(ColorParser.of("<blue>Port Menu").build())
+            .title(ColorParser.of("<blue>Port of " + port.getName()).build())
             .rows(6)
             .disableItemPlace()
             .disableItemSwap()
@@ -58,22 +62,43 @@ public class GuiUtil {
     }
 
     public static void generatePortButtons(PaginatedGui gui, Player player, Port port) {
+        final Economy economy = AlathraPorts.getVaultHook().getEconomy();
         for (Port reachablePort : port.getReachablePorts() ) {
             Journey journey = new Journey(port, reachablePort, player);
             ItemStack portItem = new ItemStack(reachablePort.getSize().getIcon());
             ItemMeta portItemMeta = portItem.getItemMeta();
             portItemMeta.displayName(ColorParser.of("<blue><bold>" + reachablePort.getName()).build().decoration(TextDecoration.ITALIC, false));
-            portItemMeta.lore(List.of(
-               ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
-                ColorParser.of("<gold>Cost: $" + journey.getTotalCost()).build().decoration(TextDecoration.ITALIC, false),
-                ColorParser.of("<gold>Travel Time: " + journey.getTotalTime() + " seconds").build().decoration(TextDecoration.ITALIC, false),
-                ColorParser.of("").build(),
-                ColorParser.of("<green>Click to Travel").build().decoration(TextDecoration.ITALIC, false)
-            ));
+            if (TravelManager.isPlayerInOngoingJourney(player)) {
+                portItemMeta.lore(List.of(
+                    ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
+                ));
+                Journey ongoing = TravelManager.getJourneyFromPlayer(player);
+                if (ongoing != null) {
+                    if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(reachablePort)) {
+                        portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                        portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        portItemMeta.lore(List.of(
+                            ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                            ColorParser.of("").build(),
+                            ColorParser.of("<green>YOU ARE HERE").build().decoration(TextDecoration.ITALIC, false)
+                        ));
+                    }
+                }
+            } else {
+                portItemMeta.lore(List.of(
+                    ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                    ColorParser.of("<gold>Cost: " + economy.format(journey.getTotalCost())).build().decoration(TextDecoration.ITALIC, false),
+                    ColorParser.of("<gold>Travel Time: " + journey.getTotalTime() + " seconds").build().decoration(TextDecoration.ITALIC, false),
+                    ColorParser.of("").build(),
+                    ColorParser.of("<green>Click to Travel").build().decoration(TextDecoration.ITALIC, false)
+                ));
+            }
             portItem.setItemMeta(portItemMeta);
             gui.addItem(ItemBuilder.from(portItem).asGuiItem(event -> {
-                journey.start();
-                gui.close(player);
+                if (!TravelManager.isPlayerInOngoingJourney(player)) {
+                    journey.start();
+                    gui.close(player);
+                }
             }));
         }
     }
@@ -90,6 +115,26 @@ public class GuiUtil {
         portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         portItem.setItemMeta(portItemMeta);
         gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
+    }
+
+    public static void generateStopJourneyButton(PaginatedGui gui, Player player) {
+        if (TravelManager.isPlayerInOngoingJourney(player)) {
+            Journey ongoing = TravelManager.getJourneyFromPlayer(player);
+            if (ongoing == null) {
+                return;
+            }
+            ItemStack stopButton = new ItemStack(Material.BARRIER);
+            ItemMeta stopButtonMeta = stopButton.getItemMeta();
+            stopButtonMeta.displayName(ColorParser.of("<red>Stop journey").build().decoration(TextDecoration.ITALIC, false));
+            stopButton.setItemMeta(stopButtonMeta);
+            gui.setItem(6, 5, ItemBuilder.from(stopButton).asGuiItem(event -> {
+                if (TravelManager.isPlayerInOngoingJourney(player)) {
+                    ongoing.halt();
+                    ongoing.stop();
+                    gui.close(player);
+                }
+            }));
+        }
     }
 
 }

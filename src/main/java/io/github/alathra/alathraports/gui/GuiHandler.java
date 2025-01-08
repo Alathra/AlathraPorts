@@ -7,9 +7,10 @@ import org.bukkit.entity.Player;
 public class GuiHandler {
 
     public static void generateTravelGui(Player player, Port port) {
-        PaginatedGui travelGui = GuiUtil.generatePaginatedBase();
-        GuiUtil.generatePortButtons(travelGui, player, port);
-        GuiUtil.generateOwnPortIcon(travelGui, port);
+        PaginatedGui travelGui = TravelGui.generatePaginatedBase(port);
+        TravelGui.generatePortButtons(travelGui, player, port);
+        TravelGui.generateOwnPortIcon(travelGui, port);
+        TravelGui.generateStopJourneyButton(travelGui, player);
         travelGui.open(player);
     }
 }

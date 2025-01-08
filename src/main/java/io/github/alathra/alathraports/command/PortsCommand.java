@@ -7,6 +7,8 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
+import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.config.ConfigHandler;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortSize;
@@ -35,7 +37,8 @@ class PortsCommand {
                 listCommand(),
                 editCommand(),
                 moveCommand(),
-                teleportCommand()
+                teleportCommand(),
+                reloadCommand()
             )
             .executesPlayer(this::helpCommand)
             .register();
@@ -287,6 +290,15 @@ class PortsCommand {
                     throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid port argument").build());
                 }
                 sender.teleport(port.getTeleportLocation());
+            });
+    }
+
+    public CommandAPICommand reloadCommand() {
+        return new CommandAPICommand("reload")
+            .withPermission(ADMIN_PERM)
+            .executesPlayer((Player sender, CommandArguments args) -> {
+                AlathraPorts.getInstance().getConfigHandler().getConfig().forceReload();
+                sender.sendMessage(ColorParser.of("<yellow>Config settings reloaded").build());
             });
     }
 
