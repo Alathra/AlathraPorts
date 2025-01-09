@@ -7,9 +7,11 @@ import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortSize;
 import io.github.alathra.alathraports.ports.PortsManager;
 import io.github.alathra.alathraports.utility.Logger;
+import io.papermc.paper.entity.Leashable;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -30,6 +32,10 @@ public class Journey {
     private int currentIndex;
     // The current bukkit task (if any) that is running, the scheduled task (delay) the next teleport in the journey
     private BukkitTask currentTravelTask;
+    // Non-null if the player is mounted when the journey starts (i.e. horse)
+    private Entity mounted;
+    // The number of animals the player is bringing with them on the journey (mounted + leashed)
+    private int numAnimals;
 
     private final Port origin;
     private final Port destination;
@@ -79,6 +85,9 @@ public class Journey {
         }
         TravelManager.registerJourney(this);
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+        if (player.getVehicle() != null) {
+            mounted = player.getVehicle();
+        }
         travel();
     }
 
@@ -97,12 +106,19 @@ public class Journey {
         int time = getTime(nodes.get(currentIndex), nodes.get(currentIndex+1));
         currentTravelTask = Bukkit.getServer().getScheduler().runTaskLater(AlathraPorts.getInstance(), () -> {
             // Take money from player for each node traveled
+            updateNumAnimals();
             final Economy economy = AlathraPorts.getVaultHook().getEconomy();
             final double cost = getCost(nodes.get(currentIndex), nodes.get(currentIndex+1));
             economy.withdrawPlayer(player, cost);
             currentIndex++;
             player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             player.getWorld().playSound(player, Sound.ITEM_CHORUS_FRUIT_TELEPORT, 1, 1);
+            if (mounted != null) {
+                mounted.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }
+            for (Entity entity : getLeasedAnimals()) {
+                entity.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }
             // If at destination (last node)
             if (currentIndex == nodes.size()-1) {
                 player.sendMessage(ColorParser.of("<green>You have arrived at your destination, <light_purple>" + destination.getName()).build());
@@ -139,6 +155,7 @@ public class Journey {
         PortSize size = PortsManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
         // calculate cost and round to 2 decimal places
         double cost = Settings.BASE_COST + (size != null ? size.getCost() : 1.0) * node1.distanceTo(node2) / 100;
+        cost += (Settings.BASE_ANIMAL_COST * numAnimals);
         return (double) Math.round((cost * 100)) / 100;
     }
 
@@ -169,6 +186,34 @@ public class Journey {
         return totalTime;
     }
 
+    // Get the number of animals the player currently has leaded
+    public List<Entity> getLeasedAnimals() {
+        List<Entity> leashedAnimals = new ArrayList<>();
+        // Get nearby entities in 20 block radius
+        for (Entity entity : player.getNearbyEntities(12,12,12)) {
+            if (entity instanceof Leashable leashable) {
+                if (leashable.isLeashed() && leashable.getLeashHolder().equals(player)) {
+                    leashedAnimals.add(leashable);
+                }
+            }
+        }
+        return leashedAnimals;
+    }
+
+    // Find the animals the player is traveling with (mounted + leashed)
+    public void updateNumAnimals() {
+        numAnimals = 0;
+        if (mounted != null) {
+            numAnimals++;
+        } else {
+            if (player.getVehicle() != null) {
+                mounted = player.getVehicle();
+                numAnimals++;
+            }
+        }
+        numAnimals += getLeasedAnimals().size();
+    }
+
     public List<Port> getNodes() {
         return nodes;
     }
@@ -195,5 +240,13 @@ public class Journey {
 
     public boolean isHalted() {
         return isHalted();
+    }
+
+    public int getNumAnimals() {
+        return numAnimals;
+    }
+
+    public void setNumAnimals(int numAnimals) {
+        this.numAnimals = numAnimals;
     }
 }

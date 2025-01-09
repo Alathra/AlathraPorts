@@ -19,6 +19,7 @@ public class Settings {
 
     public static int MINIMUM_PORT_DISTANCE;
     public static double BASE_COST;
+    public static double BASE_ANIMAL_COST;
     public static Map<String, PortSize> sizes = new HashMap<>();
 
     public static Config getConfig() {
@@ -28,6 +29,7 @@ public class Settings {
     public static void update() {
         MINIMUM_PORT_DISTANCE = getConfig().getOrDefault("portSettings.minimumDistance", 10);
         BASE_COST = getConfig().getOrDefault("portSettings.baseCost", 5.00);
+        BASE_ANIMAL_COST = getConfig().getOrDefault("portSettings.baseAnimalCost", 5.00);
         updateSizes();
     }
 

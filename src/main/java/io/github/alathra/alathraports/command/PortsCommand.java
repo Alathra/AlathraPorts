@@ -8,7 +8,6 @@ import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.config.ConfigHandler;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortSize;

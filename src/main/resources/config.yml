@@ -1,8 +1,10 @@
 portSettings:
   # Minimum distance a new port can be from an existing port
   minimumDistance: 10
-  # Base cost for traveling with ports
+  # Base cost for a journey
   baseCost: 5.00
+  # Base cost for traveling to a node with an animal
+  animalBaseCost: 5.00
 
   sizes:
     tiny:

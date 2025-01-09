@@ -63,8 +63,15 @@ public class TravelGui {
 
     public static void generatePortButtons(PaginatedGui gui, Player player, Port port) {
         final Economy economy = AlathraPorts.getVaultHook().getEconomy();
+        // code to prevent animal calculations being run more than once
+        int numAnimals = -1;
         for (Port reachablePort : port.getReachablePorts() ) {
             Journey journey = new Journey(port, reachablePort, player);
+            if (numAnimals == -1) {
+                journey.updateNumAnimals();
+                numAnimals = journey.getNumAnimals();
+            }
+            journey.setNumAnimals(numAnimals);
             ItemStack portItem = new ItemStack(reachablePort.getSize().getIcon());
             ItemMeta portItemMeta = portItem.getItemMeta();
             portItemMeta.displayName(ColorParser.of("<blue><bold>" + reachablePort.getName()).build().decoration(TextDecoration.ITALIC, false));
