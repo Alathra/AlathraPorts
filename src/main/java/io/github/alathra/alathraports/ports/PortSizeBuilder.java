@@ -6,7 +6,7 @@ import org.bukkit.Material;
 public class PortSizeBuilder {
     private int tier;
     private String name;
-    private double range;
+    private int range;
     private double cost;
     private double speed;
     private double journeyHaltRadius;
@@ -22,7 +22,7 @@ public class PortSizeBuilder {
         return this;
     }
 
-    public PortSizeBuilder setRange(double range) {
+    public PortSizeBuilder setRange(int range) {
         this.range = range;
         return this;
     }
@@ -48,7 +48,7 @@ public class PortSizeBuilder {
     }
 
     public PortSize createPortSize() throws PortSizeSerialException {
-        if (tier == 0 || name.isEmpty() || range == 0.0 || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
+        if (tier == 0 || name.isEmpty() || range == 0 || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
             throw new PortSizeSerialException("Port Size Failed to Serialize: Config contains error in port size section");
         }
         return new PortSize(tier, name, range, cost, speed, journeyHaltRadius, icon);

@@ -58,7 +58,7 @@ public class Settings {
                 sizes.put(formattedName, new PortSizeBuilder()
                     .setTier(getConfig().getInt(baseKey + "tier"))
                     .setName(getConfig().getString(baseKey + "name"))
-                    .setRange(getConfig().getDouble(baseKey + "range"))
+                    .setRange(getConfig().getInt(baseKey + "range"))
                     .setCost(getConfig().getDouble(baseKey + "cost"))
                     .setSpeed(getConfig().getDouble(baseKey + "speed"))
                     .setWalkRadius(getConfig().getDouble(baseKey + "journeyHaltRadius"))

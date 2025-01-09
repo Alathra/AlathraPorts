@@ -116,7 +116,7 @@ public class Port {
                 continue;
             }
             double distance = this.distanceTo(port);
-            if (distance > this.portSize.getRange() && distance > port.portSize.getRange()) {
+            if (distance > (double) this.portSize.getRange() && distance > (double) port.portSize.getRange()) {
                 continue;
             }
             ports.add(port);

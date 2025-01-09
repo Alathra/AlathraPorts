@@ -13,11 +13,14 @@ portSettings:
   removePortOnTownDelete: true
 
   sizes:
+    # An identifier used in to define this port size. Name has no bearing on code
     tiny:
+      # A weight used in calculations. Higher tiers should have longer ranges, faster speeds and lower costs
       tier: 1
+      # Name that will be referred to in the front-end when referencing this port size
       name: "Jetty"
       # Distance (radius) this port can facilitate in travel in blocks
-      range: 500.00
+      range: 500
       # Cost per 100 blocks traveled
       cost: 16.00
       # Blocks per second
@@ -29,7 +32,7 @@ portSettings:
     small:
       tier: 2
       name: "Dockyard"
-      range: 1000.00
+      range: 1000
       cost: 12.00
       speed: 30.00
       journeyHaltRadius: 30.00
@@ -37,7 +40,7 @@ portSettings:
     medium:
       tier: 3
       name: "Marina"
-      range: 2000.00
+      range: 2000
       cost: 8.00
       speed: 50.00
       journeyHaltRadius: 40.00
@@ -45,7 +48,7 @@ portSettings:
     large:
       tier: 4
       name: "Harbor"
-      range: 3000.00
+      range: 3000
       cost: 6.00
       speed: 60.00
       journeyHaltRadius: 50.00
@@ -53,7 +56,7 @@ portSettings:
     superLarge:
       tier: 5
       name: "Megaport"
-      range: 5000.00
+      range: 5000
       cost: 5.00
       speed: 80.00
       journeyHaltRadius: 60.00

@@ -7,13 +7,13 @@ public class PortSize {
 
     private final int tier;
     private final String name;
-    private final double range;
+    private final int range;
     private final double cost;
     private final double speed;
     private final double journeyHaltRadius;
     private final Material icon;
 
-    protected PortSize(int tier, String name, double range, double cost, double speed, double journeyHaltRadius, Material icon) {
+    protected PortSize(int tier, String name, int range, double cost, double speed, double journeyHaltRadius, Material icon) {
         this.tier = tier;
         this.name = name;
         this.cost = cost;
@@ -31,7 +31,7 @@ public class PortSize {
         return name;
     }
 
-    public double getRange() {
+    public int getRange() {
         return range;
     }
 
