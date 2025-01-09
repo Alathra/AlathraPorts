@@ -15,6 +15,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class PortsManager {
@@ -72,13 +73,17 @@ public class PortsManager {
         }
     }
 
-    public static void deletePortFromSign(Player deleter, Port port) {
+    public static void deletePortWithSign(@Nullable Player deleter, Port port) {
         if(deregisterPort(port)) {
             Block signBlock = port.getSignLocation().getBlock();
             signBlock.setType(Material.AIR);
-            deleter.sendMessage(ColorParser.of("<yellow>Port " + port.getName() + " has been deleted").build());
+            if (deleter != null) {
+                deleter.sendMessage(ColorParser.of("<yellow>Port " + port.getName() + " has been deleted").build());
+            }
         } else {
-            deleter.sendMessage(ColorParser.of("<red>Port deletion failed because port could not be de-registered. Does it exist?").build());
+            if (deleter != null) {
+                deleter.sendMessage(ColorParser.of("<red>Port deletion failed because port could not be de-registered. Does it exist?").build());
+            }
         }
     }
 

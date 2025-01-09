@@ -8,7 +8,6 @@ import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.Port;
 import io.github.alathra.alathraports.ports.PortSize;
 import io.github.alathra.alathraports.ports.PortsManager;
@@ -28,8 +27,8 @@ class PortsCommand {
 
     protected PortsCommand() {
         new CommandAPICommand("ports")
-            .withFullDescription("Example command.")
-            .withShortDescription("Example command.")
+            .withFullDescription("All port interactions")
+            .withShortDescription("All port interactions")
             .withSubcommands(
                 createCommand(),
                 deleteCommand(),
@@ -75,7 +74,11 @@ class PortsCommand {
                         case UP, DOWN:
                             if(block.getRelative(BlockFace.UP).isEmpty()) {
                                 Location signLocation = block.getRelative(BlockFace.UP).getLocation();
-                                PortsManager.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), BlockFace.UP);
+                                Port port = new Port(portName, portSize, signLocation, signLocation);
+                                if (AlathraPorts.getTownyHook().isTownyLoaded()) {
+                                    port.findTown();
+                                }
+                                PortsManager.createPortFromSign(sender, port, BlockFace.UP);
                             } else {
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement above block").build());
                             }
@@ -83,7 +86,11 @@ class PortsCommand {
                         case NORTH, SOUTH, EAST, WEST:
                             if(block.getRelative(blockFace).isEmpty()) {
                                 Location signLocation = block.getRelative(blockFace).getLocation();
-                                PortsManager.createPortFromSign(sender, new Port(portName, portSize, signLocation, signLocation), blockFace);
+                                Port port = new Port(portName, portSize, signLocation, signLocation);
+                                if (AlathraPorts.getTownyHook().isTownyLoaded()) {
+                                    port.findTown();
+                                }
+                                PortsManager.createPortFromSign(sender, port, blockFace);
                             } else {
                                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement on the block face").build());
                             }
@@ -105,8 +112,7 @@ class PortsCommand {
             )
             .executesPlayer((Player sender, CommandArguments args) -> {
                 Port port = (Port) args.get("port");
-                Settings.update();
-                PortsManager.deletePortFromSign(sender, port);
+                PortsManager.deletePortWithSign(sender, port);
             });
     }
 

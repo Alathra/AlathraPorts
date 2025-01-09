@@ -22,6 +22,7 @@ public class Settings {
     public static double BASE_ANIMAL_COST;
     public static Material BLOCKADE_ICON;
     public static boolean SHOW_BLOCKADED;
+    public static boolean REMOVE_PORT_ON_TOWN_DELETE;
     public static Map<String, PortSize> sizes = new HashMap<>();
 
     public static Config getConfig() {
@@ -39,6 +40,7 @@ public class Settings {
             Logger.get().warn("Config Error: blockadeIcon is not set to a valid material");
         }
         SHOW_BLOCKADED = getConfig().getOrDefault("portSettings.showBlockaded", true);
+        REMOVE_PORT_ON_TOWN_DELETE = getConfig().getOrDefault("portSettings.removePortOnTownDelete", true);
         updateSizes();
     }
 

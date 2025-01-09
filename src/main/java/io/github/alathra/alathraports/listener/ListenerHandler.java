@@ -3,6 +3,7 @@ package io.github.alathra.alathraports.listener;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.listener.portlisteners.SignListeners;
+import io.github.alathra.alathraports.listener.portlisteners.optional.TownyListeners;
 
 /**
  * A class to handle registration of event listeners.
@@ -28,6 +29,9 @@ public class ListenerHandler implements Reloadable {
         // Register listeners here
         if (AlathraPorts.getVaultHook().isVaultLoaded()) {
             plugin.getServer().getPluginManager().registerEvents(new VaultListener(), plugin);
+        }
+        if (AlathraPorts.getTownyHook().isTownyLoaded()) {
+            plugin.getServer().getPluginManager().registerEvents(new TownyListeners(), plugin);
         }
 
         plugin.getServer().getPluginManager().registerEvents(new SignListeners(), plugin);

@@ -9,6 +9,8 @@ portSettings:
   blockadeIcon: SKELETON_SKULL
   # Show all blockaded ports in the travel menu
   showBlockaded: true
+  # Automatically remove a port if its associated town is deleted
+  removePortOnTownDelete: true
 
   sizes:
     tiny:

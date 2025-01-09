@@ -1,11 +1,14 @@
 package io.github.alathra.alathraports.ports;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import com.palmergames.bukkit.towny.object.Town;
+import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -13,9 +16,14 @@ public class Port {
     private final UUID uuid;
     private String name;
     private PortSize portSize;
-    private Location signLocation; // The location of the sign block associated with the port
-    private Location teleportLocation; // The location where the player is teleported to (1 block above the ground)
+    // The location of the sign block associated with the port
+    private Location signLocation;
+    // The location where the player is teleported to (1 block above the ground)
+    private Location teleportLocation;
+    // If the port is set as blockaded (disables the port)
     private boolean isBlockaded;
+    // The town associated with the port (optional)
+    private Town town;
 
     private World world;
 
@@ -141,6 +149,19 @@ public class Port {
         return visited.stream().toList();
     }
 
+    // Find the town in which the port exists. If no town found then it will be set to null
+    public void findTown() {
+        town = AlathraPorts.getTownyHook().getTownyAPI().getTown(signLocation);
+    }
+
+    public void setTown(Town town) {
+        this.town = town;
+    }
+
+    public @Nullable Town getTown() {
+        return town;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -175,6 +196,10 @@ public class Port {
 
     public void setTeleportLocation(Location teleportLocation) {
         this.teleportLocation = teleportLocation;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public boolean isBlockaded() { return isBlockaded; }

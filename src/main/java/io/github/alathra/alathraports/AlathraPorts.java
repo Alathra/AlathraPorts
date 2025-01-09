@@ -4,6 +4,7 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
 import io.github.alathra.alathraports.hook.PAPIHook;
+import io.github.alathra.alathraports.hook.TownyHook;
 import io.github.alathra.alathraports.hook.VaultHook;
 import io.github.alathra.alathraports.listener.ListenerHandler;
 import io.github.alathra.alathraports.utility.Logger;
@@ -23,6 +24,7 @@ public class AlathraPorts extends JavaPlugin {
     // Hooks
     private static VaultHook vaultHook;
     private static PAPIHook papiHook;
+    private static TownyHook townyHook;
 
     /**
      * Gets plugin instance.
@@ -42,6 +44,7 @@ public class AlathraPorts extends JavaPlugin {
         listenerHandler = new ListenerHandler(instance);
         vaultHook = new VaultHook(instance);
         papiHook = new PAPIHook(instance);
+        townyHook = new TownyHook(instance);
 
         configHandler.onLoad();
         //databaseHandler.onLoad();
@@ -49,6 +52,7 @@ public class AlathraPorts extends JavaPlugin {
         listenerHandler.onLoad();
         vaultHook.onLoad();
         papiHook.onLoad();
+        townyHook.onLoad();
     }
 
     @Override
@@ -59,6 +63,7 @@ public class AlathraPorts extends JavaPlugin {
         listenerHandler.onEnable();
         vaultHook.onEnable();
         papiHook.onEnable();
+        townyHook.onEnable();
 
         //if (!databaseHandler.isRunning()) {
             //Logger.get().warn(ColorParser.of("<yellow>Database handler failed to start. Database support has been disabled.").build());
@@ -68,6 +73,12 @@ public class AlathraPorts extends JavaPlugin {
             Logger.get().info(ColorParser.of("<green>Vault has been found on this server. Vault support enabled.").build());
         } else {
             Logger.get().warn(ColorParser.of("<yellow>Vault is not installed on this server. Vault support has been disabled.").build());
+        }
+
+        if (townyHook.isTownyLoaded()) {
+            Logger.get().info(ColorParser.of("<green>Towny has been found on this server. Vault support enabled.").build());
+        } else {
+            Logger.get().warn(ColorParser.of("<yellow>Towny is not installed on this server. Towny support has been disabled.").build());
         }
 
     }
@@ -80,6 +91,7 @@ public class AlathraPorts extends JavaPlugin {
         listenerHandler.onDisable();
         vaultHook.onDisable();
         papiHook.onDisable();
+        townyHook.onDisable();
     }
 
     /**
@@ -110,6 +122,11 @@ public class AlathraPorts extends JavaPlugin {
     @NotNull
     public static VaultHook getVaultHook() {
         return vaultHook;
+    }
+
+    @NotNull
+    public static TownyHook getTownyHook() {
+        return townyHook;
     }
 
 }
