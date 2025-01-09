@@ -15,6 +15,7 @@ public class Port {
     private PortSize portSize;
     private Location signLocation; // The location of the sign block associated with the port
     private Location teleportLocation; // The location where the player is teleported to (1 block above the ground)
+    private boolean isBlockaded;
 
     private World world;
 
@@ -99,8 +100,11 @@ public class Port {
 
     public List<Port> getPortsInRange() {
         ArrayList<Port> ports = new ArrayList<>();
+        if (this.isBlockaded) {
+            return ports;
+        }
         for (Port port : PortsManager.getPorts()) {
-            if (port.equals(this)) {
+            if (port.equals(this) || port.isBlockaded) {
                 continue;
             }
             double distance = this.distanceTo(port);
@@ -115,6 +119,9 @@ public class Port {
 
     public List<Port> getReachablePorts() {
         // Implements Breadth-First Traversal to generate the "graph" of reachable ports
+        if (this.isBlockaded) {
+            return Collections.emptyList();
+        }
         HashSet<Port> visited = new HashSet<>();
         visited.add(this);
         LinkedList<Port> queue = new LinkedList<>();
@@ -169,4 +176,8 @@ public class Port {
     public void setTeleportLocation(Location teleportLocation) {
         this.teleportLocation = teleportLocation;
     }
+
+    public boolean isBlockaded() { return isBlockaded; }
+
+    public void setBlockaded(boolean isBlockaded) { this.isBlockaded = isBlockaded; }
 }

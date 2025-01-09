@@ -20,6 +20,8 @@ public class Settings {
     public static int MINIMUM_PORT_DISTANCE;
     public static double BASE_COST;
     public static double BASE_ANIMAL_COST;
+    public static Material BLOCKADE_ICON;
+    public static boolean SHOW_BLOCKADED;
     public static Map<String, PortSize> sizes = new HashMap<>();
 
     public static Config getConfig() {
@@ -30,6 +32,13 @@ public class Settings {
         MINIMUM_PORT_DISTANCE = getConfig().getOrDefault("portSettings.minimumDistance", 10);
         BASE_COST = getConfig().getOrDefault("portSettings.baseCost", 5.00);
         BASE_ANIMAL_COST = getConfig().getOrDefault("portSettings.baseAnimalCost", 5.00);
+        try {
+            BLOCKADE_ICON = Material.valueOf(getConfig().getOrDefault("portSettings.blockadeIcon", "SKELETON_SKULL"));
+        } catch (IllegalArgumentException e) {
+            BLOCKADE_ICON = Material.SKELETON_SKULL;
+            Logger.get().warn("Config Error: blockadeIcon is not set to a valid material");
+        }
+        SHOW_BLOCKADED = getConfig().getOrDefault("portSettings.showBlockaded", true);
         updateSizes();
     }
 

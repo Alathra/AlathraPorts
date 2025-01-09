@@ -5,6 +5,10 @@ portSettings:
   baseCost: 5.00
   # Base cost for traveling to a node with an animal
   animalBaseCost: 5.00
+  # Icon for when a port is blockaded (Material)
+  blockadeIcon: SKELETON_SKULL
+  # Show all blockaded ports in the travel menu
+  showBlockaded: true
 
   sizes:
     tiny:

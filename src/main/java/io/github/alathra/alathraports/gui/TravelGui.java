@@ -5,11 +5,12 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.ports.Port;
+import io.github.alathra.alathraports.ports.PortsManager;
 import io.github.alathra.alathraports.ports.travel.Journey;
 import io.github.alathra.alathraports.ports.travel.TravelManager;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.md_5.bungee.api.chat.hover.content.Item;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -62,6 +63,7 @@ public class TravelGui {
     }
 
     public static void generatePortButtons(PaginatedGui gui, Player player, Port port) {
+
         final Economy economy = AlathraPorts.getVaultHook().getEconomy();
         // code to prevent animal calculations being run more than once
         int numAnimals = -1;
@@ -110,7 +112,50 @@ public class TravelGui {
         }
     }
 
+    public static void showBlockadedPorts(PaginatedGui gui, Port port) {
+        // Display blockaded ports
+        if (Settings.SHOW_BLOCKADED) {
+            for (Port potentiallyBlockadedPort : PortsManager.getPorts()) {
+                if (potentiallyBlockadedPort.isBlockaded()) {
+                    if (potentiallyBlockadedPort.equals(port)) {
+                        continue;
+                    }
+                    ItemStack blockadedPortItem = new ItemStack(Settings.BLOCKADE_ICON);
+                    ItemMeta blockadedPortMeta = blockadedPortItem.getItemMeta();
+                    blockadedPortMeta.displayName(ColorParser.of("<dark_red><bold>" + potentiallyBlockadedPort.getName()).build().decoration(TextDecoration.ITALIC, false));
+                    blockadedPortMeta.lore(List.of(
+                        ColorParser.of("<gold>Size: <red>" + potentiallyBlockadedPort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                        ColorParser.of("").build(),
+                        ColorParser.of("<dark_red>This port is being blockaded and is unreachable everywhere").build()
+                    ));
+                    blockadedPortMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                    blockadedPortMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    blockadedPortItem.setItemMeta(blockadedPortMeta);
+                    gui.addItem(ItemBuilder.from(blockadedPortItem).asGuiItem());
+                }
+            }
+        }
+    }
+
     public static void generateOwnPortIcon(PaginatedGui gui, Port port) {
+
+        // If port is blockaded
+        if (port.isBlockaded()) {
+            ItemStack portItem = new ItemStack(Settings.BLOCKADE_ICON);
+            ItemMeta portItemMeta = portItem.getItemMeta();
+            portItemMeta.displayName(ColorParser.of("<dark_red><bold>" + port.getName()).build().decoration(TextDecoration.ITALIC, false));
+            portItemMeta.lore(List.of(
+                ColorParser.of("<gold>Size: <red>" + port.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                ColorParser.of("").build(),
+                ColorParser.of("<dark_red>This port is being blockaded. All other ports are unreachable").build()
+            ));
+            portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+            portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            portItem.setItemMeta(portItemMeta);
+            gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
+            return;
+        }
+
         // Places an icon at the top showing information about the port you are starting from in the travel menu
         ItemStack portItem = new ItemStack(port.getSize().getIcon());
         ItemMeta portItemMeta = portItem.getItemMeta();

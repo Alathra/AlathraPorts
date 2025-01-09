@@ -10,6 +10,7 @@ public class GuiHandler {
         PaginatedGui travelGui = TravelGui.generatePaginatedBase(port);
         TravelGui.generatePortButtons(travelGui, player, port);
         TravelGui.generateOwnPortIcon(travelGui, port);
+        TravelGui.showBlockadedPorts(travelGui, port);
         TravelGui.generateStopJourneyButton(travelGui, player);
         travelGui.open(player);
     }

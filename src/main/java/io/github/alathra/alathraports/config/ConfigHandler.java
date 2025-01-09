@@ -6,7 +6,6 @@ import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
 
 import javax.inject.Singleton;
-import java.util.HashMap;
 
 /**
  * A class that generates/loads {@literal &} provides access to a configuration file.

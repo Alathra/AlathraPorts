@@ -37,7 +37,8 @@ class PortsCommand {
                 editCommand(),
                 moveCommand(),
                 teleportCommand(),
-                reloadCommand()
+                reloadCommand(),
+                blockade()
             )
             .executesPlayer(this::helpCommand)
             .register();
@@ -296,8 +297,29 @@ class PortsCommand {
         return new CommandAPICommand("reload")
             .withPermission(ADMIN_PERM)
             .executesPlayer((Player sender, CommandArguments args) -> {
-                AlathraPorts.getInstance().getConfigHandler().getConfig().forceReload();
+                AlathraPorts.getInstance().getConfigHandler().reloadConfig();
                 sender.sendMessage(ColorParser.of("<yellow>Config settings reloaded").build());
+            });
+    }
+
+    public CommandAPICommand blockade() {
+        return new CommandAPICommand("blockade")
+            .withPermission(ADMIN_PERM)
+            .withArguments(
+                CommandUtil.portArgument("port")
+            )
+            .executesPlayer((Player sender, CommandArguments args) -> {
+                Port port = (Port) args.get("port");
+                if (port == null) {
+                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid port argument").build());
+                }
+                if (port.isBlockaded()) {
+                    port.setBlockaded(false);
+                    sender.sendMessage(ColorParser.of("<yellow>The port of <light_purple> " + port.getName() + " <yellow>is no longer blockaded. This is not a global announcement").build());
+                } else {
+                    port.setBlockaded(true);
+                    sender.sendMessage(ColorParser.of("<yellow>The port of <light_purple> " + port.getName() + " <yellow>is now blockaded. This is not a global announcement").build());
+                }
             });
     }
 
