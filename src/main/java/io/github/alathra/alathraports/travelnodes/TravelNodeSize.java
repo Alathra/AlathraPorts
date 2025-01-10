@@ -1,23 +1,20 @@
-package io.github.alathra.alathraports.ports;
-
+package io.github.alathra.alathraports.travelnodes;
 
 import org.bukkit.Material;
 
-public class PortSize {
+public abstract class TravelNodeSize {
 
-    private final int tier;
-    private final String name;
-    private final int range;
-    private final double cost;
-    private final double speed;
-    private final double journeyHaltRadius;
-    private final Material icon;
+    protected final int tier;
+    protected final String name;
+    protected final double cost;
+    protected final double speed;
+    protected final double journeyHaltRadius;
+    protected final Material icon;
 
-    protected PortSize(int tier, String name, int range, double cost, double speed, double journeyHaltRadius, Material icon) {
+    protected TravelNodeSize(int tier, String name, double cost, double speed, double journeyHaltRadius, Material icon) {
         this.tier = tier;
         this.name = name;
         this.cost = cost;
-        this.range = range;
         this.speed = speed;
         this.journeyHaltRadius = journeyHaltRadius;
         this.icon = icon;
@@ -29,10 +26,6 @@ public class PortSize {
 
     public String getName() {
         return name;
-    }
-
-    public int getRange() {
-        return range;
     }
 
     public double getCost() {
@@ -50,4 +43,5 @@ public class PortSize {
     public Material getIcon() {
         return  icon;
     }
+
 }

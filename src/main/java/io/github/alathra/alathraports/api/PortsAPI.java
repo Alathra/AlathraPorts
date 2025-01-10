@@ -1,7 +1,7 @@
 package io.github.alathra.alathraports.api;
 
-import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.PortsManager;
+import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,20 +11,20 @@ import java.util.UUID;
 public class PortsAPI {
 
     public static @Nullable Port getPortByName(String name) {
-        return PortsManager.getPortByName(name);
+        return TravelNodesManager.getPortByName(name);
     }
 
     public static @Nullable Port getPortByUUID(UUID uuid) {
-        return PortsManager.getPortByID(uuid);
+        return TravelNodesManager.getPortByID(uuid);
     }
 
     public static @Nullable Port getPortFromSign(Block block) {
-        return PortsManager.getPortFromSign(block);
+        return TravelNodesManager.getPortFromSign(block);
     }
 
     // All active (registered ports)
     public static Set<Port> getAllPorts() {
-        return PortsManager.getPorts();
+        return TravelNodesManager.getPorts();
     }
 
     public static void setBlockade(Port port, boolean blockade) {

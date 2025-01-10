@@ -1,6 +1,6 @@
-package io.github.alathra.alathraports.ports;
+package io.github.alathra.alathraports.travelnodes.ports;
 
-import io.github.alathra.alathraports.ports.exceptions.PortSizeSerialException;
+import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeSizeSerialException;
 import org.bukkit.Material;
 
 public class PortSizeBuilder {
@@ -47,10 +47,10 @@ public class PortSizeBuilder {
         return this;
     }
 
-    public PortSize createPortSize() throws PortSizeSerialException {
-        if (tier == 0 || name.isEmpty() || range == 0 || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
-            throw new PortSizeSerialException("Port Size Failed to Serialize: Config contains error in port size section");
+    public PortSize createPortSize() throws TravelNodeSizeSerialException {
+        if (tier == 0 || name.isEmpty() || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null || range == 0 ) {
+            throw new TravelNodeSizeSerialException("Port Size Failed to Serialize: Config contains error in port size section");
         }
-        return new PortSize(tier, name, range, cost, speed, journeyHaltRadius, icon);
+        return new PortSize(tier, name, cost, speed, journeyHaltRadius, icon, range);
     }
 }

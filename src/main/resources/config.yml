@@ -1,5 +1,5 @@
-portSettings:
-  # Minimum distance a new port can be from an existing port
+GlobalSettings:
+  # Minimum distance a new port/carriage station can be from an existing port/carriage station
   minimumDistance: 10
   # Base cost for a journey
   baseCost: 5.00
@@ -9,9 +9,10 @@ portSettings:
   blockadeIcon: SKELETON_SKULL
   # Show all blockaded ports in the travel menu
   showBlockaded: true
-  # Automatically remove a port if its associated town is deleted
-  removePortOnTownDelete: true
+  # Automatically remove a port/carriage station if its associated town is deleted
+  removeOnTownDelete: true
 
+PortSettings:
   sizes:
     # An identifier used in to define this port size. Name has no bearing on code
     tiny:
@@ -62,4 +63,33 @@ portSettings:
       journeyHaltRadius: 60.00
       icon: MANGROVE_BOAT
 
-
+CarriageStationSettings:
+  sizes:
+    # An identifier used in to define this carriage station size. Name has no bearing on code
+    small:
+      # A weight used in calculations. Higher tiers should have longer ranges, faster speeds and lower costs
+      tier: 1
+      # Name that will be referred to in the front-end when referencing this port size
+      name: "Small"
+      # Cost per 100 blocks traveled
+      cost: 16.00
+      # Blocks per second
+      speed: 25.00
+      # How far the player can be from the carriage station location before any ongoing journeys will be halted
+      journeyHaltRadius: 20.00
+      # The icon that will display in the travel menu
+      icon: SADDLE
+    medium:
+      tier: 2
+      name: "Medium"
+      cost: 12.00
+      speed: 30.00
+      journeyHaltRadius: 30.00
+      icon: SADDLE
+    large:
+      tier: 3
+      name: "Large"
+      cost: 8.00
+      speed: 50.00
+      journeyHaltRadius: 40.00
+      icon: SADDLE

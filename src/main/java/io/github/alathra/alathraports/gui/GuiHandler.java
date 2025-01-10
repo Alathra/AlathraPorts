@@ -1,7 +1,7 @@
 package io.github.alathra.alathraports.gui;
 
 import dev.triumphteam.gui.guis.PaginatedGui;
-import io.github.alathra.alathraports.ports.Port;
+import io.github.alathra.alathraports.travelnodes.ports.Port;
 import org.bukkit.entity.Player;
 
 public class GuiHandler {

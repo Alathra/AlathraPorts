@@ -1,8 +1,8 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
 import io.github.alathra.alathraports.gui.GuiHandler;
-import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.PortsManager;
+import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,22 +22,24 @@ public class SignListeners implements Listener {
             if (block == null) {
                 return;
             }
-            if (PortsManager.isPortSign(block)) {
+            if (TravelNodesManager.isPortSign(block)) {
                 Player player = event.getPlayer();
-                Port port = PortsManager.getPortFromSign(block);
+                Port port = TravelNodesManager.getPortFromSign(block);
                 if (port == null) {
                     Logger.get().warn("Port Not Found: Port sign detected but could not associate with port");
                     return;
                 }
                 GuiHandler.generateTravelGui(player, port);
                 event.setCancelled(true);
+            } else if (TravelNodesManager.isCarriageStationSign(block)) {
+                // TODO: BUILD CARRIAGE TRAVEL GUI
             }
         }
     }
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
-        if (PortsManager.isPortSign(event.getBlock())) {
+        if (TravelNodesManager.isPortSign(event.getBlock())) {
             // Prevent a port sign from being created by a player writing on a sign, must be done with admin command
             event.setCancelled(true);
         }
@@ -46,25 +48,25 @@ public class SignListeners implements Listener {
     @EventHandler
     public void onSignBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block)) {
+        if (TravelNodesManager.isPortSign(block) || TravelNodesManager.isCarriageStationSign(block) || TravelNodesManager.isAttachedToTravelNodeSign(block)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onSignExplode(BlockExplodeEvent event) {
-        event.blockList().removeIf(block -> PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block));
+        event.blockList().removeIf(block -> TravelNodesManager.isPortSign(block) || TravelNodesManager.isCarriageStationSign(block) || TravelNodesManager.isAttachedToTravelNodeSign(block));
     }
 
     @EventHandler
     public void onSignExplodeByEntity(EntityExplodeEvent event) {
-        event.blockList().removeIf(block -> PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block));
+        event.blockList().removeIf(block -> TravelNodesManager.isPortSign(block) || TravelNodesManager.isCarriageStationSign(block) || TravelNodesManager.isAttachedToTravelNodeSign(block));
     }
 
     @EventHandler
     public void onSignMovedByPistonExtension(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
-            if (PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block)) {
+            if (TravelNodesManager.isPortSign(block) || TravelNodesManager.isCarriageStationSign(block) || TravelNodesManager.isAttachedToTravelNodeSign(block)) {
                 event.setCancelled(true);
             }
         }
@@ -73,7 +75,7 @@ public class SignListeners implements Listener {
     @EventHandler
     public void onSignMovedByPistonRetraction(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
-            if (PortsManager.isPortSign(block) || PortsManager.isAttachedToPortSign(block)) {
+            if (TravelNodesManager.isPortSign(block) || TravelNodesManager.isCarriageStationSign(block) || TravelNodesManager.isAttachedToTravelNodeSign(block)) {
                 event.setCancelled(true);
             }
         }
@@ -82,14 +84,14 @@ public class SignListeners implements Listener {
     // Example: Enderman picks up block. I know this is stupid but why not
     @EventHandler
     public void onSignMovedByEntity(EntityChangeBlockEvent event) {
-        if (PortsManager.isPortSign(event.getBlock()) || PortsManager.isAttachedToPortSign(event.getBlock())) {
+        if (TravelNodesManager.isPortSign(event.getBlock()) || TravelNodesManager.isCarriageStationSign(event.getBlock()) || TravelNodesManager.isAttachedToTravelNodeSign(event.getBlock())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onSignBurned(BlockBurnEvent event) {
-        if (PortsManager.isPortSign(event.getBlock()) || PortsManager.isAttachedToPortSign(event.getBlock())) {
+        if (TravelNodesManager.isPortSign(event.getBlock()) || TravelNodesManager.isCarriageStationSign(event.getBlock()) || TravelNodesManager.isAttachedToTravelNodeSign(event.getBlock())) {
             event.setCancelled(true);
         }
     }

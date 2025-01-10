@@ -1,11 +1,11 @@
-package io.github.alathra.alathraports.ports.travel;
+package io.github.alathra.alathraports.travelnodes.journey;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.PortSize;
-import io.github.alathra.alathraports.ports.PortsManager;
+import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.travelnodes.ports.PortSize;
+import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import io.github.alathra.alathraports.utility.Logger;
 import io.papermc.paper.entity.Leashable;
 import net.milkbowl.vault.economy.Economy;
@@ -66,10 +66,10 @@ public class Journey {
         if (!this.isValid) {
             player.sendMessage(ColorParser.of("<red>Travel Journey Failed: Internal Error").build());
             Logger.get().warn("Travel Journey Failed: {} was trying to travel from {} to {}", player.getName(), origin.getName(), destination.getName());
-            TravelManager.deregisterJourney(this);
+            JourneyManager.deregisterJourney(this);
             return;
         }
-        for (Journey journey : TravelManager.getJourneys()) {
+        for (Journey journey : JourneyManager.getJourneys()) {
             if (!journey.equals(this) && journey.getPlayer().equals(this.player)) {
                 // Player is already in a different journey, prevent it from starting
                 Logger.get().warn("Travel Journey Failed: {} was trying to travel from {} to {}. Player was already in a journey",
@@ -83,7 +83,7 @@ public class Journey {
             player.sendMessage(ColorParser.of("<red>You need <gold>" + economy.format(cost) + " <red>to travel to <green>" + destination.getName()).build());
             return;
         }
-        TravelManager.registerJourney(this);
+        JourneyManager.registerJourney(this);
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         if (player.getVehicle() != null) {
             mounted = player.getVehicle();
@@ -93,12 +93,12 @@ public class Journey {
 
     // When a journey has been completed
     public void stop() {
-        TravelManager.deregisterJourney(this);
+        JourneyManager.deregisterJourney(this);
     }
 
     // Initiate travel sequence. Will travel to each node (port) until arrived at destination
     public void travel() {
-        if (!isValid  || !(TravelManager.getJourneys().contains(this)) || halted) {
+        if (!isValid  || !(JourneyManager.getJourneys().contains(this)) || halted) {
             halt();
             return;
         }
@@ -152,7 +152,7 @@ public class Journey {
     // Get cost to travel between two nodes
     // In dollars (or whatever the currency is)
     public double getCost(Port node1, Port node2) {
-        PortSize size = PortsManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
+        PortSize size = TravelNodesManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
         // calculate cost and round to 2 decimal places
         double cost = Settings.BASE_COST + (size != null ? size.getCost() : 1.0) * node1.distanceTo(node2) / 100;
         cost += (Settings.BASE_ANIMAL_COST * numAnimals);
@@ -172,7 +172,7 @@ public class Journey {
     // Get time to travel between two nodes
     // In seconds
     public int getTime(Port node1, Port node2) {
-        PortSize size = PortsManager.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
+        PortSize size = TravelNodesManager.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
         return (int) (Math.round(node1.distanceTo(node2) / (size != null ? size.getSpeed() : 1.0)) + 5);
     }
 

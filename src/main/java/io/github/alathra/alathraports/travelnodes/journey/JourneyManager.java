@@ -1,4 +1,4 @@
-package io.github.alathra.alathraports.ports.travel;
+package io.github.alathra.alathraports.travelnodes.journey;
 
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.entity.Player;
@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TravelManager {
+public class JourneyManager {
 
     // All active journeys (ones where a player is traveling or queued to travel)
     private static final Set<Journey> journeys = new HashSet<>();

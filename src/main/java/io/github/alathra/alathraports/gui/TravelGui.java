@@ -6,10 +6,10 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.ports.Port;
-import io.github.alathra.alathraports.ports.PortsManager;
-import io.github.alathra.alathraports.ports.travel.Journey;
-import io.github.alathra.alathraports.ports.travel.TravelManager;
+import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
+import io.github.alathra.alathraports.travelnodes.journey.Journey;
+import io.github.alathra.alathraports.travelnodes.journey.JourneyManager;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
@@ -77,11 +77,11 @@ public class TravelGui {
             ItemStack portItem = new ItemStack(reachablePort.getSize().getIcon());
             ItemMeta portItemMeta = portItem.getItemMeta();
             portItemMeta.displayName(ColorParser.of("<blue><bold>" + reachablePort.getName()).build().decoration(TextDecoration.ITALIC, false));
-            if (TravelManager.isPlayerInOngoingJourney(player)) {
+            if (JourneyManager.isPlayerInOngoingJourney(player)) {
                 portItemMeta.lore(List.of(
                     ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
                 ));
-                Journey ongoing = TravelManager.getJourneyFromPlayer(player);
+                Journey ongoing = JourneyManager.getJourneyFromPlayer(player);
                 if (ongoing != null) {
                     if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(reachablePort)) {
                         portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
@@ -104,7 +104,7 @@ public class TravelGui {
             }
             portItem.setItemMeta(portItemMeta);
             gui.addItem(ItemBuilder.from(portItem).asGuiItem(event -> {
-                if (!TravelManager.isPlayerInOngoingJourney(player)) {
+                if (!JourneyManager.isPlayerInOngoingJourney(player)) {
                     journey.start();
                     gui.close(player);
                 }
@@ -115,7 +115,7 @@ public class TravelGui {
     public static void showBlockadedPorts(PaginatedGui gui, Port port) {
         // Display blockaded ports
         if (Settings.SHOW_BLOCKADED) {
-            for (Port potentiallyBlockadedPort : PortsManager.getPorts()) {
+            for (Port potentiallyBlockadedPort : TravelNodesManager.getPorts()) {
                 if (potentiallyBlockadedPort.isBlockaded()) {
                     if (potentiallyBlockadedPort.equals(port)) {
                         continue;
@@ -170,8 +170,8 @@ public class TravelGui {
     }
 
     public static void generateStopJourneyButton(PaginatedGui gui, Player player) {
-        if (TravelManager.isPlayerInOngoingJourney(player)) {
-            Journey ongoing = TravelManager.getJourneyFromPlayer(player);
+        if (JourneyManager.isPlayerInOngoingJourney(player)) {
+            Journey ongoing = JourneyManager.getJourneyFromPlayer(player);
             if (ongoing == null) {
                 return;
             }
@@ -180,7 +180,7 @@ public class TravelGui {
             stopButtonMeta.displayName(ColorParser.of("<red>Stop journey").build().decoration(TextDecoration.ITALIC, false));
             stopButton.setItemMeta(stopButtonMeta);
             gui.setItem(6, 5, ItemBuilder.from(stopButton).asGuiItem(event -> {
-                if (TravelManager.isPlayerInOngoingJourney(player)) {
+                if (JourneyManager.isPlayerInOngoingJourney(player)) {
                     ongoing.halt();
                     ongoing.stop();
                     gui.close(player);
