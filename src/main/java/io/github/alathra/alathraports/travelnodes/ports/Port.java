@@ -35,18 +35,6 @@ public class Port extends TravelNode {
         return sign;
     }
 
-    @Override
-    public boolean refreshNodeSign() {
-        if (this.getSignLocation().getBlock().getState() instanceof Sign sign) {
-            if (TravelNodesManager.isPortSign(this.getSignLocation().getBlock())) {
-                sign = generateNodeSign(sign);
-                sign.update();
-                return true;
-            }
-        }
-        return false;
-    }
-
     public List<Port> getPortsInRange() {
         ArrayList<Port> ports = new ArrayList<>();
         if (this.isBlockaded) {

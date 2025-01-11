@@ -13,6 +13,7 @@ import io.github.alathra.alathraports.travelnodes.ports.PortSize;
 import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -144,9 +145,7 @@ class PortsCommand {
                         }
                         String oldName = port.getName();
                         port.setName(newName);
-                        if (!port.refreshNodeSign()) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Port sign has been moved or is missing").build());
-                        }
+                        port.refreshNodeSign();
                         try {
                             TravelNodesManager.reRegisterPort(port);
                             sender.sendMessage(ColorParser.of("<green>Port name has been changed").build());
@@ -170,9 +169,7 @@ class PortsCommand {
                         }
                         PortSize oldSize = (PortSize) port.getSize();
                         port.setSize(newSize);
-                        if (!port.refreshNodeSign()) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Port sign has been moved or is missing").build());
-                        }
+                        port.refreshNodeSign();
                         try {
                             TravelNodesManager.reRegisterPort(port);
                             sender.sendMessage(ColorParser.of("<green>Port size has been changed").build());
@@ -202,9 +199,7 @@ class PortsCommand {
                         }
                         Location oldLocation = port.getTeleportLocation();
                         port.setTeleportLocation(newLocation);
-                        if (!port.refreshNodeSign()) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Port sign has been moved or is missing").build());
-                        }
+                        port.refreshNodeSign();
                         try {
                             TravelNodesManager.reRegisterPort(port);
                             if (newLocation.equals(sender.getLocation())) {

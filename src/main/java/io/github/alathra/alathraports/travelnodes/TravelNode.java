@@ -5,6 +5,7 @@ import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +61,6 @@ public abstract class TravelNode {
 
     // Abstract methods
     public abstract Sign generateNodeSign(Sign sign);
-    public abstract boolean refreshNodeSign();
 
     @Override
     public boolean equals(Object object) {
@@ -85,6 +85,13 @@ public abstract class TravelNode {
                 travelNode.getSize().equals(this.getSize());
         }
         return false;
+    }
+
+    public void refreshNodeSign() {
+        BlockState blockState = signLocation.getBlock().getState(false);
+        blockState.update(true);
+        Sign sign = generateNodeSign((Sign) blockState);
+        sign.update(true);
     }
 
     public double distanceTo(TravelNode travelNode) {

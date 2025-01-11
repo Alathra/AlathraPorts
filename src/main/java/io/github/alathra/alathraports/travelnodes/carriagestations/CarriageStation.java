@@ -6,6 +6,7 @@ import io.github.alathra.alathraports.travelnodes.TravelNode;
 import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 
@@ -34,18 +35,6 @@ public class CarriageStation extends TravelNode {
         sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.size.getName()).build());
         sign.getSide(Side.BACK).line(3, CarriageStation.getTagline());
         return sign;
-    }
-
-    @Override
-    public boolean refreshNodeSign() {
-        if (this.getSignLocation().getBlock().getState() instanceof Sign sign) {
-            if (TravelNodesManager.isPortSign(this.getSignLocation().getBlock())) {
-                sign = generateNodeSign(sign);
-                sign.update();
-                return true;
-            }
-        }
-        return false;
     }
 
     public static Component getTagline() {
