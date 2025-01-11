@@ -1,12 +1,9 @@
 package io.github.alathra.alathraports.travelnodes.carriagestations;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.travelnodes.ports.PortSize;
 import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 
@@ -14,12 +11,12 @@ import java.util.*;
 
 public class CarriageStation extends TravelNode {
 
-    public CarriageStation(UUID uuid, String name, PortSize size, Location signLocation, Location teleportLocation) {
+    public CarriageStation(UUID uuid, String name, CarriageStationSize size, Location signLocation, Location teleportLocation) {
         super(uuid, name, size, signLocation, teleportLocation);
         super.type = TravelNodeType.CARRIAGE_STATION;
     }
 
-    public CarriageStation(String name, PortSize size, Location signLocation, Location teleportLocation) {
+    public CarriageStation(String name, CarriageStationSize size, Location signLocation, Location teleportLocation) {
         super(name, size, signLocation, teleportLocation);
         super.type = TravelNodeType.CARRIAGE_STATION;
     }
@@ -38,6 +35,6 @@ public class CarriageStation extends TravelNode {
     }
 
     public static Component getTagline() {
-        return ColorParser.of("<dark_green>\uD83D\uDC0E\uD83D\uDC0E\uD83D\uDC0E").build();
+        return ColorParser.of("<gold>\uD83D\uDC0E\uD83D\uDC0E\uD83D\uDC0E").build();
     }
 }

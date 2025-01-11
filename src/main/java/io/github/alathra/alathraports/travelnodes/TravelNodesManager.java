@@ -3,6 +3,7 @@ package io.github.alathra.alathraports.travelnodes;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.travelnodes.ports.Port;
 import io.github.alathra.alathraports.travelnodes.ports.PortSize;
@@ -409,6 +410,30 @@ public class TravelNodesManager {
         return null;
     }
 
+    public static CarriageStation getCarriageStationFromSign(Block block) {
+        if (!(block.getState() instanceof Sign sign)) {
+            return null;
+        }
+        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
+            return null;
+        }
+        if (sign.getSide(Side.FRONT).line(0).equals(CarriageStation.getTagline()) &&
+            sign.getSide(Side.FRONT).line(3).equals(CarriageStation.getTagline()) &&
+            sign.getSide(Side.BACK).line(0).equals(CarriageStation.getTagline()) &&
+            sign.getSide(Side.BACK).line(3).equals(CarriageStation.getTagline())) {
+            for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {
+                Component frontComponent = sign.getSide(Side.FRONT).line(1);
+                Component backComponent = sign.getSide(Side.FRONT).line(1);
+                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
+                    if (carriageStation.getName().contentEquals(frontTextComponent.content()) && carriageStation.getName().contentEquals(backTextComponent.content())) {
+                        return carriageStation;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public static PortSize getPortSizeByName(String name) {
         for (Map.Entry<String, PortSize> entry : Settings.portSizes.entrySet()) {
             if (name.equalsIgnoreCase(entry.getKey())) {
@@ -418,8 +443,26 @@ public class TravelNodesManager {
         return null;
     }
 
+    public static CarriageStationSize getCarriageStationSizeByName(String name) {
+        for (Map.Entry<String, CarriageStationSize> entry : Settings.carriageStationSizes.entrySet()) {
+            if (name.equalsIgnoreCase(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
     public static PortSize getPortSizeByTier(int tier) {
         for (PortSize size : Settings.portSizes.values()) {
+            if (tier == size.getTier()) {
+                return size;
+            }
+        }
+        return null;
+    }
+
+    public static CarriageStationSize getCarriageStationSizeByTier(int tier) {
+        for (CarriageStationSize size : Settings.carriageStationSizes.values()) {
             if (tier == size.getTier()) {
                 return size;
             }
