@@ -8,6 +8,7 @@ import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.travelnodes.TravelNode;
 import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.travelnodes.ports.Port;
@@ -39,7 +40,10 @@ class PortsCommand {
                 moveCommand(),
                 teleportCommand(),
                 reloadCommand(),
-                blockade()
+                blockade(),
+                connect(),
+                disconnect(),
+                listConnections()
             )
             .executesPlayer(this::helpCommand)
             .register();
@@ -573,7 +577,7 @@ class PortsCommand {
                     }),
                 new CommandAPICommand("carriage_station")
                     .withArguments(
-                        CommandUtil.portArgument("targetCarriage_station")
+                        CommandUtil.carriageStationArgument("targetCarriage_station")
                     )
                     .executesPlayer((Player sender, CommandArguments args) -> {
                         CarriageStation carriageStation = (CarriageStation) args.get("targetCarriage_station");
@@ -587,6 +591,85 @@ class PortsCommand {
                             carriageStation.setBlockaded(true);
                             sender.sendMessage(ColorParser.of("<yellow>The carriage station of <light_purple>" + carriageStation.getName() + " <yellow>is now blockaded. This is not a global announcement").build());
                         }
+                    })
+            );
+    }
+
+    public CommandAPICommand connect() {
+        return new CommandAPICommand("connect")
+            .withPermission(ADMIN_PERM)
+            .withSubcommands(
+                new CommandAPICommand("carriage_station")
+                    .withArguments(
+                        CommandUtil.carriageStationArgument("firstCarriage_station"),
+                        CommandUtil.carriageStationArgument("secondCarriage_station")
+                    )
+                    .executesPlayer((Player sender, CommandArguments args) -> {
+                        CarriageStation carriageStation1 = (CarriageStation) args.get("firstCarriage_station");
+                        CarriageStation carriageStation2 = (CarriageStation) args.get("secondCarriage_station");
+                        if (carriageStation1 == null || carriageStation2 == null) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument(s)").build());
+                        }
+                        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Identical carriage station arguments").build());
+                        }
+                        if (carriageStation1.getDirectConnections().contains(carriageStation2) && carriageStation2.getDirectConnections().contains(carriageStation1)) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>This connection already exists").build());
+                        }
+                        carriageStation1.addDirectConnection(carriageStation2);
+                        carriageStation2.addDirectConnection(carriageStation1);
+                        sender.sendMessage(ColorParser.of("<green>Carriage Station connection established").build());
+                    })
+            );
+    }
+
+    public CommandAPICommand disconnect() {
+        return new CommandAPICommand("disconnect")
+            .withPermission(ADMIN_PERM)
+            .withSubcommands(
+                new CommandAPICommand("carriage_station")
+                    .withArguments(
+                        CommandUtil.carriageStationArgument("firstCarriage_station"),
+                        CommandUtil.carriageStationArgument("secondCarriage_station")
+                    )
+                    .executesPlayer((Player sender, CommandArguments args) -> {
+                        CarriageStation carriageStation1 = (CarriageStation) args.get("firstCarriage_station");
+                        CarriageStation carriageStation2 = (CarriageStation) args.get("secondCarriage_station");
+                        if (carriageStation1 == null || carriageStation2 == null) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument(s)").build());
+                        }
+                        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Identical carriage station arguments").build());
+                        }
+                        if (!(carriageStation1.getDirectConnections().contains(carriageStation2)) && !(carriageStation2.getDirectConnections().contains(carriageStation1))) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>There is no connection here").build());
+                        }
+                        carriageStation1.removeDirectConnection(carriageStation2);
+                        carriageStation2.removeDirectConnection(carriageStation1);
+                        sender.sendMessage(ColorParser.of("<yellow>Carriage Station connection removed").build());
+
+                    })
+            );
+    }
+
+    public CommandAPICommand listConnections() {
+        return new CommandAPICommand("list_connections")
+            .withPermission(ADMIN_PERM)
+            .withSubcommands(
+                new CommandAPICommand("carriage_station")
+                    .withArguments(
+                        CommandUtil.carriageStationArgument("targetCarriage_station")
+                    )
+                    .executesPlayer((Player sender, CommandArguments args) -> {
+                        CarriageStation carriageStation = (CarriageStation) args.get("targetCarriage_station");
+                        if (carriageStation == null) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument(s)").build());
+                        }
+                        String directConnections = "<yellow>Direct Connections: ";
+                        for (TravelNode connection : carriageStation.getDirectConnections()) {
+                            directConnections += carriageStation.getName() + ", ";
+                        }
+                        sender.sendMessage(ColorParser.of(directConnections).build());
                     })
             );
     }

@@ -1,21 +1,21 @@
 package io.github.alathra.alathraports.travelnodes.journey;
 
-import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.travelnodes.TravelNode;
 
 import java.util.*;
 
 public class AStarAlgorithm {
 
-	public static ArrayList<Port> findShortestPath(Port origin, Port destination) {
-		Set<Port> visited = new HashSet<>();
-		Map<Port, Double> gScores = new HashMap<>();
-		Map<Port, Double> fScores = new HashMap<>();
-		Map<Port, Port> cameFrom = new HashMap<>();
+	public static ArrayList<TravelNode> findShortestPath(TravelNode origin, TravelNode destination) {
+		Set<TravelNode> visited = new HashSet<>();
+		Map<TravelNode, Double> gScores = new HashMap<>();
+		Map<TravelNode, Double> fScores = new HashMap<>();
+		Map<TravelNode, TravelNode> cameFrom = new HashMap<>();
 
-		PriorityQueue<Port> openSet = new PriorityQueue<>(1, new Comparator<Port>() {
+		PriorityQueue<TravelNode> openSet = new PriorityQueue<>(1, new Comparator<TravelNode>() {
 
 			@Override
-			public int compare(Port o1, Port o2) {
+			public int compare(TravelNode o1, TravelNode o2) {
 				return Double.compare(fScores.get(o1), fScores.get(o2));
 			}
 
@@ -26,7 +26,7 @@ public class AStarAlgorithm {
 		fScores.put(origin, heuristicCost(origin, destination));
 
 		while (!openSet.isEmpty()) {
-			Port current = openSet.poll();
+            TravelNode current = openSet.poll();
 
 			if (current.equals(destination)) {
 				return reconstructPath(cameFrom, destination);
@@ -34,27 +34,27 @@ public class AStarAlgorithm {
 
 			visited.add(current);
 
-			for (Port neighbor : current.getPortsInRange()) {
-				if (neighbor == null) continue;
+            for (TravelNode neighbor : current.getDirectConnections()) {
+                if (neighbor == null) continue;
 
-				if (visited.contains(neighbor)) {
-					continue;
-				}
+                if (visited.contains(neighbor)) {
+                    continue;
+                }
 
-				double tentativeGScore = gScores.get(current) + current.distanceTo(neighbor);
-				double tentativeFScore = tentativeGScore + heuristicCost(neighbor, destination);
+                double tentativeGScore = gScores.get(current) + current.distanceTo(neighbor);
+                double tentativeFScore = tentativeGScore + heuristicCost(neighbor, destination);
 
-				if (!openSet.contains(neighbor)) {
-					fScores.put(neighbor, tentativeFScore);
-					openSet.add(neighbor);
-				} else if (tentativeGScore >= gScores.get(neighbor)) {
-					continue;
-				}
+                if (!openSet.contains(neighbor)) {
+                    fScores.put(neighbor, tentativeFScore);
+                    openSet.add(neighbor);
+                } else if (tentativeGScore >= gScores.get(neighbor)) {
+                    continue;
+                }
 
-				cameFrom.put(neighbor, current);
-				gScores.put(neighbor, tentativeGScore);
-				fScores.put(neighbor, tentativeFScore);
-			}
+                cameFrom.put(neighbor, current);
+                gScores.put(neighbor, tentativeGScore);
+                fScores.put(neighbor, tentativeFScore);
+            }
 
 		}
 
@@ -69,8 +69,8 @@ public class AStarAlgorithm {
 	 * @param current  - Current port
 	 * @return List of ports from start to finish.
 	 */
-	private static ArrayList<Port> reconstructPath(Map<Port, Port> cameFrom, Port current) {
-		ArrayList<Port> path = new ArrayList<>();
+	private static ArrayList<TravelNode> reconstructPath(Map<TravelNode, TravelNode> cameFrom, TravelNode current) {
+		ArrayList<TravelNode> path = new ArrayList<>();
 		path.add(current);
 
 		while (cameFrom.containsKey(current)) {
@@ -88,7 +88,7 @@ public class AStarAlgorithm {
 	 * @param b - Port b (next/goal)
 	 * @return estimated distance
 	 */
-	private static double heuristicCost(Port a, Port b) {
+	private static double heuristicCost(TravelNode a, TravelNode b) {
 		double costMultiplier = Math.sqrt(1.0 / Math.min(a.getSize().getTier(), b.getSize().getTier()));
 		return a.distanceTo(b) * costMultiplier;
 	}

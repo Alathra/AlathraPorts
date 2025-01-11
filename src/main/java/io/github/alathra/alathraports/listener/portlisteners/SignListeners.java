@@ -1,6 +1,7 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
 import io.github.alathra.alathraports.gui.GuiHandler;
+import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.travelnodes.ports.Port;
 import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import io.github.alathra.alathraports.utility.Logger;
@@ -32,14 +33,21 @@ public class SignListeners implements Listener {
                 GuiHandler.generateTravelGui(player, port);
                 event.setCancelled(true);
             } else if (TravelNodesManager.isCarriageStationSign(block)) {
-                // TODO: BUILD CARRIAGE TRAVEL GUI
+                Player player = event.getPlayer();
+                CarriageStation carriageStation = TravelNodesManager.getCarriageStationFromSign(block);
+                if (carriageStation == null) {
+                    Logger.get().warn("Carriage Station Not Found: Carriage station sign detected but could not associate with port");
+                    return;
+                }
+                GuiHandler.generateTravelGui(player, carriageStation);
+                event.setCancelled(true);
             }
         }
     }
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
-        if (TravelNodesManager.isPortSign(event.getBlock())) {
+        if (TravelNodesManager.isPortSign(event.getBlock()) || TravelNodesManager.isCarriageStationSign(event.getBlock())) {
             // Prevent a port sign from being created by a player writing on a sign, must be done with admin command
             event.setCancelled(true);
         }

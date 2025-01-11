@@ -35,8 +35,9 @@ public class Port extends TravelNode {
         return sign;
     }
 
-    public List<Port> getPortsInRange() {
-        ArrayList<Port> ports = new ArrayList<>();
+    @Override
+    public List<TravelNode> getDirectConnections() {
+        ArrayList<TravelNode> ports = new ArrayList<>();
         if (this.isBlockaded) {
             return ports;
         }
@@ -52,30 +53,6 @@ public class Port extends TravelNode {
         }
 
         return ports;
-    }
-
-    public List<Port> getReachablePorts() {
-        // Implements Breadth-First Traversal to generate the "graph" of reachable ports
-        if (this.isBlockaded) {
-            return Collections.emptyList();
-        }
-        HashSet<Port> visited = new HashSet<>();
-        visited.add(this);
-        LinkedList<Port> queue = new LinkedList<>();
-        queue.add(this);
-        Port node;
-        while (!queue.isEmpty()) {
-            node = queue.poll();
-            visited.add(node);
-            for (Port port : node.getPortsInRange()) {
-                if (!visited.contains(port)) {
-                    queue.add(port);
-                }
-            }
-        }
-        // Don't include own port
-        visited.remove(this);
-        return visited.stream().toList();
     }
 
     public static Component getTagline() {

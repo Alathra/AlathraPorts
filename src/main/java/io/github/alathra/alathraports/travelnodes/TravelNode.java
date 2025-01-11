@@ -9,7 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
+import java.util.*;
 
 public abstract class TravelNode {
     // Unique id of the travel node
@@ -28,6 +28,7 @@ public abstract class TravelNode {
     protected Town town;
     // The world where this node is located
     protected World world;
+    // The type of travel node this is (Port or Carriage Station)
     protected TravelNodeType type;
 
     public enum TravelNodeType {
@@ -61,6 +62,7 @@ public abstract class TravelNode {
 
     // Abstract methods
     public abstract Sign generateNodeSign(Sign sign);
+    public abstract List<TravelNode> getDirectConnections();
 
     @Override
     public boolean equals(Object object) {
@@ -85,6 +87,30 @@ public abstract class TravelNode {
                 travelNode.getSize().equals(this.getSize());
         }
         return false;
+    }
+
+    public List<TravelNode> getPossibleConnections() {
+        // Implements Breadth-First Traversal to generate the "graph" of reachable travel nodes
+        if (this.isBlockaded) {
+            return Collections.emptyList();
+        }
+        HashSet<TravelNode> visited = new HashSet<>();
+        visited.add(this);
+        LinkedList<TravelNode> queue = new LinkedList<>();
+        queue.add(this);
+        TravelNode node;
+        while (!queue.isEmpty()) {
+            node = queue.poll();
+            visited.add(node);
+            for (TravelNode travelNode : node.getDirectConnections()) {
+                if (!visited.contains(travelNode)) {
+                    queue.add(travelNode);
+                }
+            }
+        }
+        // Don't include own node
+        visited.remove(this);
+        return visited.stream().toList();
     }
 
     public void refreshNodeSign() {

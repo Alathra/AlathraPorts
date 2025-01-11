@@ -6,6 +6,8 @@ import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
+import io.github.alathra.alathraports.travelnodes.TravelNode;
+import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.travelnodes.ports.Port;
 import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import io.github.alathra.alathraports.travelnodes.journey.Journey;
@@ -23,11 +25,11 @@ import java.util.List;
 
 public class TravelGui {
 
-    public static PaginatedGui generatePaginatedBase(Port port) {
+    public static PaginatedGui generatePaginatedBase(TravelNode travelNode) {
         PaginatedGui base;
         // Set build settings
         base = Gui.paginated()
-            .title(ColorParser.of("<blue>Port of " + port.getName()).build())
+            .title(ColorParser.of("<blue>" + travelNode.getName() + " - Travel Menu").build())
             .rows(6)
             .disableItemPlace()
             .disableItemSwap()
@@ -62,48 +64,48 @@ public class TravelGui {
         return base;
     }
 
-    public static void generatePortButtons(PaginatedGui gui, Player player, Port port) {
+    public static void generateNodeButtons(PaginatedGui gui, Player player, TravelNode travelNode) {
 
         final Economy economy = AlathraPorts.getVaultHook().getEconomy();
         // code to prevent animal calculations being run more than once
         int numAnimals = -1;
-        for (Port reachablePort : port.getReachablePorts() ) {
-            Journey journey = new Journey(port, reachablePort, player);
+        for (TravelNode reachableNode : travelNode.getPossibleConnections() ) {
+            Journey journey = new Journey(travelNode, reachableNode, player);
             if (numAnimals == -1) {
                 journey.updateNumAnimals();
                 numAnimals = journey.getNumAnimals();
             }
             journey.setNumAnimals(numAnimals);
-            ItemStack portItem = new ItemStack(reachablePort.getSize().getIcon());
-            ItemMeta portItemMeta = portItem.getItemMeta();
-            portItemMeta.displayName(ColorParser.of("<blue><bold>" + reachablePort.getName()).build().decoration(TextDecoration.ITALIC, false));
+            ItemStack nodeItem = new ItemStack(reachableNode.getSize().getIcon());
+            ItemMeta nodeItemMeta = nodeItem.getItemMeta();
+            nodeItemMeta.displayName(ColorParser.of("<blue><bold>" + reachableNode.getName()).build().decoration(TextDecoration.ITALIC, false));
             if (JourneyManager.isPlayerInOngoingJourney(player)) {
-                portItemMeta.lore(List.of(
-                    ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
+                nodeItemMeta.lore(List.of(
+                    ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
                 ));
                 Journey ongoing = JourneyManager.getJourneyFromPlayer(player);
                 if (ongoing != null) {
-                    if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(reachablePort)) {
-                        portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
-                        portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                        portItemMeta.lore(List.of(
-                            ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                    if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(reachableNode)) {
+                        nodeItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                        nodeItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        nodeItemMeta.lore(List.of(
+                            ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
                             ColorParser.of("").build(),
                             ColorParser.of("<green>YOU ARE HERE").build().decoration(TextDecoration.ITALIC, false)
                         ));
                     }
                 }
             } else {
-                portItemMeta.lore(List.of(
-                    ColorParser.of("<gold>Size: <red>" + reachablePort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                nodeItemMeta.lore(List.of(
+                    ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
                     ColorParser.of("<gold>Cost: " + economy.format(journey.getTotalCost())).build().decoration(TextDecoration.ITALIC, false),
                     ColorParser.of("<gold>Travel Time: " + journey.getTotalTime() + " seconds").build().decoration(TextDecoration.ITALIC, false),
                     ColorParser.of("").build(),
                     ColorParser.of("<green>Click to Travel").build().decoration(TextDecoration.ITALIC, false)
                 ));
             }
-            portItem.setItemMeta(portItemMeta);
-            gui.addItem(ItemBuilder.from(portItem).asGuiItem(event -> {
+            nodeItem.setItemMeta(nodeItemMeta);
+            gui.addItem(ItemBuilder.from(nodeItem).asGuiItem(event -> {
                 if (!JourneyManager.isPlayerInOngoingJourney(player)) {
                     journey.start();
                     gui.close(player);
@@ -112,61 +114,103 @@ public class TravelGui {
         }
     }
 
-    public static void showBlockadedPorts(PaginatedGui gui, Port port) {
+    public static void showBlockadedNodes(PaginatedGui gui, TravelNode travelNode) {
         // Display blockaded ports
         if (Settings.SHOW_BLOCKADED) {
-            for (Port potentiallyBlockadedPort : TravelNodesManager.getPorts()) {
-                if (potentiallyBlockadedPort.isBlockaded()) {
-                    if (potentiallyBlockadedPort.equals(port)) {
-                        continue;
+            switch(travelNode.getType()) {
+                case PORT:
+                    for (Port potentiallyBlockadedPort : TravelNodesManager.getPorts()) {
+                        if (potentiallyBlockadedPort.isBlockaded()) {
+                            if (potentiallyBlockadedPort.equals(travelNode)) {
+                                continue;
+                            }
+                            ItemStack blockadedPortItem = new ItemStack(Settings.BLOCKADE_ICON);
+                            ItemMeta blockadedPortMeta = blockadedPortItem.getItemMeta();
+                            blockadedPortMeta.displayName(ColorParser.of("<dark_red><bold>" + potentiallyBlockadedPort.getName()).build().decoration(TextDecoration.ITALIC, false));
+                            blockadedPortMeta.lore(List.of(
+                                ColorParser.of("<gold>Size: <red>" + potentiallyBlockadedPort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                                ColorParser.of("").build(),
+                                ColorParser.of("<dark_red>This port is being blockaded and is unreachable everywhere").build()
+                            ));
+                            blockadedPortMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                            blockadedPortMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                            blockadedPortItem.setItemMeta(blockadedPortMeta);
+                            gui.addItem(ItemBuilder.from(blockadedPortItem).asGuiItem());
+                        }
                     }
-                    ItemStack blockadedPortItem = new ItemStack(Settings.BLOCKADE_ICON);
-                    ItemMeta blockadedPortMeta = blockadedPortItem.getItemMeta();
-                    blockadedPortMeta.displayName(ColorParser.of("<dark_red><bold>" + potentiallyBlockadedPort.getName()).build().decoration(TextDecoration.ITALIC, false));
-                    blockadedPortMeta.lore(List.of(
-                        ColorParser.of("<gold>Size: <red>" + potentiallyBlockadedPort.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
-                        ColorParser.of("").build(),
-                        ColorParser.of("<dark_red>This port is being blockaded and is unreachable everywhere").build()
-                    ));
-                    blockadedPortMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
-                    blockadedPortMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    blockadedPortItem.setItemMeta(blockadedPortMeta);
-                    gui.addItem(ItemBuilder.from(blockadedPortItem).asGuiItem());
-                }
+                    break;
+                case CARRIAGE_STATION:
+                    for (CarriageStation potentiallyBlockadedCarriageStation : TravelNodesManager.getCarriageStations()) {
+                        if (potentiallyBlockadedCarriageStation.isBlockaded()) {
+                            if (potentiallyBlockadedCarriageStation.equals(travelNode)) {
+                                continue;
+                            }
+                            ItemStack blockadedCarriageStationItem = new ItemStack(Settings.BLOCKADE_ICON);
+                            ItemMeta blockadedCarriageStationMeta = blockadedCarriageStationItem.getItemMeta();
+                            blockadedCarriageStationMeta.displayName(ColorParser.of("<dark_red><bold>" + potentiallyBlockadedCarriageStation.getName()).build().decoration(TextDecoration.ITALIC, false));
+                            blockadedCarriageStationMeta.lore(List.of(
+                                ColorParser.of("<gold>Size: <red>" + potentiallyBlockadedCarriageStation.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                                ColorParser.of("").build(),
+                                ColorParser.of("<dark_red>This carriage station is being blockaded and is unreachable everywhere").build()
+                            ));
+                            blockadedCarriageStationMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                            blockadedCarriageStationMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                            blockadedCarriageStationItem.setItemMeta(blockadedCarriageStationMeta);
+                            gui.addItem(ItemBuilder.from(blockadedCarriageStationItem).asGuiItem());
+                        }
+                    }
+                    break;
             }
         }
     }
 
-    public static void generateOwnPortIcon(PaginatedGui gui, Port port) {
+    public static void generateOwnNodeIcon(PaginatedGui gui, TravelNode travelNode) {
 
-        // If port is blockaded
-        if (port.isBlockaded()) {
-            ItemStack portItem = new ItemStack(Settings.BLOCKADE_ICON);
-            ItemMeta portItemMeta = portItem.getItemMeta();
-            portItemMeta.displayName(ColorParser.of("<dark_red><bold>" + port.getName()).build().decoration(TextDecoration.ITALIC, false));
-            portItemMeta.lore(List.of(
-                ColorParser.of("<gold>Size: <red>" + port.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
-                ColorParser.of("").build(),
-                ColorParser.of("<dark_red>This port is being blockaded. All other ports are unreachable").build()
-            ));
-            portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
-            portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            portItem.setItemMeta(portItemMeta);
-            gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
-            return;
+        // If travel node is blockaded
+        if (travelNode.isBlockaded()) {
+            switch (travelNode.getType()) {
+                case PORT:
+                    ItemStack portItem = new ItemStack(Settings.BLOCKADE_ICON);
+                    ItemMeta portItemMeta = portItem.getItemMeta();
+                    portItemMeta.displayName(ColorParser.of("<dark_red><bold>" + travelNode.getName()).build().decoration(TextDecoration.ITALIC, false));
+                    portItemMeta.lore(List.of(
+                        ColorParser.of("<gold>Size: <red>" + travelNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                        ColorParser.of("").build(),
+                        ColorParser.of("<dark_red>This port is being blockaded. All other ports are unreachable").build()
+                    ));
+                    portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                    portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    portItem.setItemMeta(portItemMeta);
+                    gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
+                    return;
+                case CARRIAGE_STATION:
+                    ItemStack carriageStationItem = new ItemStack(Settings.BLOCKADE_ICON);
+                    ItemMeta carriageStationItemMeta = carriageStationItem.getItemMeta();
+                    carriageStationItemMeta.displayName(ColorParser.of("<dark_red><bold>" + travelNode.getName()).build().decoration(TextDecoration.ITALIC, false));
+                    carriageStationItemMeta.lore(List.of(
+                        ColorParser.of("<gold>Size: <red>" + travelNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                        ColorParser.of("").build(),
+                        ColorParser.of("<dark_red>This carriage station is being blockaded. All other carriage stations are unreachable").build()
+                    ));
+                    carriageStationItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                    carriageStationItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    carriageStationItem.setItemMeta(carriageStationItemMeta);
+                    gui.setItem(1, 5, ItemBuilder.from(carriageStationItem).asGuiItem());
+                    return;
+            }
         }
 
         // Places an icon at the top showing information about the port you are starting from in the travel menu
-        ItemStack portItem = new ItemStack(port.getSize().getIcon());
-        ItemMeta portItemMeta = portItem.getItemMeta();
-        portItemMeta.displayName(ColorParser.of("<green><bold>" + port.getName()).build().decoration(TextDecoration.ITALIC, false));
-        portItemMeta.lore(List.of(
-            ColorParser.of("<gold>Size: <red>" + port.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
+        ItemStack nodeItem = new ItemStack(travelNode.getSize().getIcon());
+        ItemMeta nodeItemMeta = nodeItem.getItemMeta();
+        nodeItemMeta.displayName(ColorParser.of("<green><bold>" + travelNode.getName()).build().decoration(TextDecoration.ITALIC, false));
+        nodeItemMeta.lore(List.of(
+            ColorParser.of("<gold>Size: <red>" + travelNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
         ));
-        portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
-        portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        portItem.setItemMeta(portItemMeta);
-        gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
+        nodeItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+        nodeItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        nodeItem.setItemMeta(nodeItemMeta);
+        gui.setItem(1, 5, ItemBuilder.from(nodeItem).asGuiItem());
     }
 
     public static void generateStopJourneyButton(PaginatedGui gui, Player player) {

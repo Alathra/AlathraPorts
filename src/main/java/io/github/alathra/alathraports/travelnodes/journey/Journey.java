@@ -3,7 +3,8 @@ package io.github.alathra.alathraports.travelnodes.journey;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.travelnodes.TravelNode;
+import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.travelnodes.ports.PortSize;
 import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import io.github.alathra.alathraports.utility.Logger;
@@ -23,7 +24,7 @@ import java.util.List;
 public class Journey {
 
     // All the ports required to travel through to reach the destination (inclusive)
-    private List<Port> nodes = new ArrayList<>();
+    private List<TravelNode> nodes = new ArrayList<>();
     // If journey parameters indicate impossible or error-prone journey
     private boolean isValid = true;
     // If the journey has been halted by an internal process, either do to an error or intentionally
@@ -37,16 +38,22 @@ public class Journey {
     // The number of animals the player is bringing with them on the journey (mounted + leashed)
     private int numAnimals;
 
-    private final Port origin;
-    private final Port destination;
+    // The start travel node
+    private final TravelNode origin;
+    // The end travel node
+    private final TravelNode destination;
+    // The player embarking on the journey
     private final Player player;
+    // The type of journey it is (ports or carriage station)
+    private final TravelNode.TravelNodeType type;
 
-    public Journey(Port origin, Port destination, Player player) {
+    public Journey(TravelNode origin, TravelNode destination, Player player) {
         this.origin = origin;
         this.destination = destination;
         this.player = player;
+        this.type = origin.getType();
 
-        if (origin.getPortsInRange().contains(destination)) {
+        if (origin.getDirectConnections().contains(destination)) {
             nodes = Arrays.asList(origin, destination);
         } else {
             // Find the shortest path for journey
@@ -151,7 +158,21 @@ public class Journey {
 
     // Get cost to travel between two nodes
     // In dollars (or whatever the currency is)
-    public double getCost(Port node1, Port node2) {
+    public double getCost(TravelNode node1, TravelNode node2) {
+        switch (type) {
+            case PORT:
+                PortSize portSize = TravelNodesManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
+                // calculate cost and round to 2 decimal places
+                double portCost = Settings.BASE_COST + (portSize != null ? portSize.getCost() : 1.0) * node1.distanceTo(node2) / 100;
+                portCost += (Settings.BASE_ANIMAL_COST * numAnimals);
+                return (double) Math.round((portCost * 100)) / 100;
+            case CARRIAGE_STATION:
+                CarriageStationSize carriageStationSize = TravelNodesManager.getCarriageStationSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
+                // calculate cost and round to 2 decimal places
+                double carriageStationCost = Settings.BASE_COST + (carriageStationSize != null ? carriageStationSize.getCost() : 1.0) * node1.distanceTo(node2) / 100;
+                carriageStationCost += (Settings.BASE_ANIMAL_COST * numAnimals);
+                return (double) Math.round((carriageStationCost * 100)) / 100;
+        }
         PortSize size = TravelNodesManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
         // calculate cost and round to 2 decimal places
         double cost = Settings.BASE_COST + (size != null ? size.getCost() : 1.0) * node1.distanceTo(node2) / 100;
@@ -171,9 +192,17 @@ public class Journey {
 
     // Get time to travel between two nodes
     // In seconds
-    public int getTime(Port node1, Port node2) {
-        PortSize size = TravelNodesManager.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
-        return (int) (Math.round(node1.distanceTo(node2) / (size != null ? size.getSpeed() : 1.0)) + 5);
+    public int getTime(TravelNode node1, TravelNode node2) {
+        return switch (type) {
+            case PORT -> {
+                PortSize portSize = TravelNodesManager.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
+                yield (int) (Math.round(node1.distanceTo(node2) / (portSize != null ? portSize.getSpeed() : 1.0)) + 5);
+            }
+            case CARRIAGE_STATION -> {
+                CarriageStationSize carriageStationSize = TravelNodesManager.getCarriageStationSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
+                yield (int) (Math.round(node1.distanceTo(node2) / (carriageStationSize != null ? carriageStationSize.getSpeed() : 1.0)) + 5);
+            }
+        };
     }
 
     // Get total travel time for the entire journey
@@ -214,7 +243,7 @@ public class Journey {
         numAnimals += getLeasedAnimals().size();
     }
 
-    public List<Port> getNodes() {
+    public List<TravelNode> getNodes() {
         return nodes;
     }
 
@@ -222,11 +251,11 @@ public class Journey {
         return currentIndex;
     }
 
-    public Port getOrigin() {
+    public TravelNode getOrigin() {
         return origin;
     }
 
-    public Port getDestination() {
+    public TravelNode getDestination() {
         return destination;
     }
 
@@ -244,6 +273,10 @@ public class Journey {
 
     public int getNumAnimals() {
         return numAnimals;
+    }
+
+    public TravelNode.TravelNodeType getType() {
+        return type;
     }
 
     public void setNumAnimals(int numAnimals) {

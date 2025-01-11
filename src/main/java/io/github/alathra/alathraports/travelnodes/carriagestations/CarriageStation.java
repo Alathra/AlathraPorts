@@ -11,6 +11,8 @@ import java.util.*;
 
 public class CarriageStation extends TravelNode {
 
+    private final Set<TravelNode> directConnections = new HashSet<>();
+
     public CarriageStation(UUID uuid, String name, CarriageStationSize size, Location signLocation, Location teleportLocation) {
         super(uuid, name, size, signLocation, teleportLocation);
         super.type = TravelNodeType.CARRIAGE_STATION;
@@ -32,6 +34,22 @@ public class CarriageStation extends TravelNode {
         sign.getSide(Side.BACK).line(2, ColorParser.of("<red>" + this.size.getName()).build());
         sign.getSide(Side.BACK).line(3, CarriageStation.getTagline());
         return sign;
+    }
+
+    @Override
+    public List<TravelNode> getDirectConnections() {
+        return new ArrayList<>(directConnections);
+    }
+
+    public void addDirectConnection(TravelNode node) {
+        if (node.equals(this)) {
+            return;
+        }
+        directConnections.add(node);
+    }
+
+    public void removeDirectConnection(TravelNode node) {
+        directConnections.remove(node);
     }
 
     public static Component getTagline() {
