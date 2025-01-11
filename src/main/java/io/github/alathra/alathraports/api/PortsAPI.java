@@ -1,5 +1,9 @@
 package io.github.alathra.alathraports.api;
 
+import com.palmergames.bukkit.towny.object.Town;
+import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.travelnodes.TravelNode;
+import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.travelnodes.ports.Port;
 import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
 import org.bukkit.block.Block;
@@ -22,17 +26,64 @@ public class PortsAPI {
         return TravelNodesManager.getPortFromSign(block);
     }
 
-    // All active (registered ports)
+    public static @Nullable Port getPortFromTown(Town town) {
+        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+            return null;
+        }
+        for (Port port : TravelNodesManager.getPorts()) {
+            if (port.getTown() == null) {
+                continue;
+            }
+            if (port.getTown().equals(town)) {
+                return port;
+            }
+        }
+        return null;
+    }
+
+    public static @Nullable CarriageStation getCarriageStationFromTown(Town town) {
+        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+            return null;
+        }
+        for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {
+            if (carriageStation.getTown() == null) {
+                continue;
+            }
+            if (carriageStation.getTown().equals(town)) {
+                return carriageStation;
+            }
+        }
+        return null;
+    }
+
+    public static @Nullable CarriageStation getCarriageStationByName(String name) {
+        return TravelNodesManager.getCarriageStationByName(name);
+    }
+
+    public static @Nullable CarriageStation getCarriageStationByUUID(String name) {
+        return TravelNodesManager.getCarriageStationByName(name);
+    }
+
+    public static @Nullable CarriageStation getCarriageStationFromSign(Block block) {
+        return TravelNodesManager.getCarriageStationFromSign(block);
+    }
+
+    // All active (registered) ports
     public static Set<Port> getAllPorts() {
         return TravelNodesManager.getPorts();
     }
 
-    public static void setBlockade(Port port, boolean blockade) {
-        port.setBlockaded(blockade);
+    // All active (registered) carriage station
+    public static Set<CarriageStation> getAllCarriageStations() {
+        return TravelNodesManager.getCarriageStations();
     }
 
-    public static boolean isBlockaded(Port port) {
-        return port.isBlockaded();
+    public static void setBlockade(TravelNode node, boolean blockade) {
+        node.setBlockaded(blockade);
+    }
+
+    public static boolean isBlockaded(TravelNode node) {
+        return node.isBlockaded();
     }
 
 }
