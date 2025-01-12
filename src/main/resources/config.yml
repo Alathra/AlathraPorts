@@ -26,6 +26,8 @@ PortSettings:
       cost: 16.00
       # Blocks per second
       speed: 25.00
+      # The maximum fee that the town can charge on a journey to this port
+      maxTownFee: 0.05
       # How far the player can be from the port location before any ongoing journeys will be halted
       journeyHaltRadius: 20.00
       # The icon that will display in the travel menu
@@ -36,6 +38,7 @@ PortSettings:
       range: 1000
       cost: 12.00
       speed: 30.00
+      maxTownFee: 0.10
       journeyHaltRadius: 30.00
       icon: BIRCH_BOAT
     medium:
@@ -44,6 +47,7 @@ PortSettings:
       range: 2000
       cost: 8.00
       speed: 50.00
+      maxTownFee: 0.15
       journeyHaltRadius: 40.00
       icon: OAK_BOAT
     large:
@@ -52,6 +56,7 @@ PortSettings:
       range: 3000
       cost: 6.00
       speed: 60.00
+      maxTownFee: 0.20
       journeyHaltRadius: 50.00
       icon: DARK_OAK_BOAT
     superLarge:
@@ -60,6 +65,7 @@ PortSettings:
       range: 5000
       cost: 5.00
       speed: 80.00
+      maxTownFee: 0.25
       journeyHaltRadius: 60.00
       icon: MANGROVE_BOAT
 
@@ -75,6 +81,8 @@ CarriageStationSettings:
       cost: 16.00
       # Blocks per second
       speed: 25.00
+      # The maximum fee that the town can charge on a journey to this port
+      maxTownFee: 0.05
       # How far the player can be from the carriage station location before any ongoing journeys will be halted
       journeyHaltRadius: 20.00
       # The icon that will display in the travel menu
@@ -84,6 +92,7 @@ CarriageStationSettings:
       name: "Medium"
       cost: 12.00
       speed: 30.00
+      maxTownFee: 0.10
       journeyHaltRadius: 30.00
       icon: SADDLE
     large:
@@ -91,5 +100,6 @@ CarriageStationSettings:
       name: "Large"
       cost: 8.00
       speed: 50.00
+      maxTownFee: 0.20
       journeyHaltRadius: 40.00
       icon: SADDLE

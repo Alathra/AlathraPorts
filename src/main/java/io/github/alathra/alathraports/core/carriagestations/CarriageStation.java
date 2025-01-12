@@ -1,7 +1,7 @@
-package io.github.alathra.alathraports.travelnodes.carriagestations;
+package io.github.alathra.alathraports.core.carriagestations;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
+import io.github.alathra.alathraports.core.TravelNode;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;

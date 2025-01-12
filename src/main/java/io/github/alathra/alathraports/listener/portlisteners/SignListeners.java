@@ -1,9 +1,9 @@
 package io.github.alathra.alathraports.listener.portlisteners;
 
 import io.github.alathra.alathraports.gui.GuiHandler;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

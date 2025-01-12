@@ -1,4 +1,4 @@
-package io.github.alathra.alathraports.travelnodes;
+package io.github.alathra.alathraports.core;
 
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.AlathraPorts;
@@ -26,6 +26,8 @@ public abstract class TravelNode {
     protected boolean isBlockaded;
     // The town associated with the travel node (optional)
     protected Town town;
+    // The fee currently being set by the town mayor
+    protected double townFee;
     // The world where this node is located
     protected World world;
     // The type of travel node this is (Port or Carriage Station)
@@ -42,6 +44,7 @@ public abstract class TravelNode {
         this.size = size;
         this.signLocation = signLocation;
         this.teleportLocation = teleportLocation;
+        this.townFee = 0.0;
 
         if (signLocation.getWorld().equals(teleportLocation.getWorld())) {
             this.world = signLocation.getWorld();
@@ -54,6 +57,7 @@ public abstract class TravelNode {
         this.size = size;
         this.signLocation = signLocation;
         this.teleportLocation = teleportLocation;
+        this.townFee = 0.0;
 
         if (signLocation.getWorld().equals(teleportLocation.getWorld())) {
             this.world = signLocation.getWorld();
@@ -138,6 +142,21 @@ public abstract class TravelNode {
 
     public @Nullable Town getTown() {
         return town;
+    }
+
+    public double getTownFee() {
+        return townFee;
+    }
+
+    public boolean setTownFee(double fee) {
+        if (size.maxTownFee < fee) {
+            return false;
+        }
+        if (fee < 0) {
+            return false;
+        }
+        this.townFee = fee;
+        return true;
     }
 
     public UUID getUuid() {

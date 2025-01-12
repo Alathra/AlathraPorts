@@ -1,17 +1,21 @@
 package io.github.alathra.alathraports.gui;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.command.PortsCommand;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
-import io.github.alathra.alathraports.travelnodes.journey.Journey;
-import io.github.alathra.alathraports.travelnodes.journey.JourneyManager;
+import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.core.journey.Journey;
+import io.github.alathra.alathraports.core.journey.JourneyManager;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
@@ -232,5 +236,45 @@ public class TravelGui {
             }));
         }
     }
+
+    public static void generateTaxButton(PaginatedGui gui, Player player, TravelNode travelNode) {
+        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+            return;
+        }
+        TownyAPI townyAPI = AlathraPorts.getTownyHook().getTownyAPI();
+        if (!player.hasPermission(PortsCommand.ADMIN_PERM)) {
+            Resident resident = townyAPI.getResident(player);
+            if (resident == null) {
+                return;
+            }
+            if (travelNode.getTown() == null) {
+                return;
+            }
+            Town town = resident.getTownOrNull();
+            if (town == null) {
+                return;
+            }
+            if (travelNode.getTown() != town) {
+                return;
+            }
+            if (!town.getMayor().equals(resident)) {
+                return;
+            }
+        }
+        if (travelNode.getTown() == null) {
+            return;
+        }
+
+        // Player is mayor of the town associated with the port OR a ports admin
+        ItemStack taxButton = new ItemStack(Material.EMERALD);
+        ItemMeta taxButtonMeta = taxButton.getItemMeta();
+        taxButtonMeta.displayName(ColorParser.of("<green>Set Tax Rate").build().decoration(TextDecoration.ITALIC, false));
+        taxButton.setItemMeta(taxButtonMeta);
+        gui.setItem(1, 6, ItemBuilder.from(taxButton).asGuiItem(event -> {
+            GuiHandler.generateTaxGUI(player, travelNode);
+        }));
+
+    }
+
 
 }

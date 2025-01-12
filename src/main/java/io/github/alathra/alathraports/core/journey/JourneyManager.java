@@ -1,4 +1,4 @@
-package io.github.alathra.alathraports.travelnodes.journey;
+package io.github.alathra.alathraports.core.journey;
 
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.entity.Player;

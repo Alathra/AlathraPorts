@@ -1,8 +1,8 @@
 package io.github.alathra.alathraports.gui;
 
+import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
+import io.github.alathra.alathraports.core.TravelNode;
 import org.bukkit.entity.Player;
 
 public class GuiHandler {
@@ -13,6 +13,16 @@ public class GuiHandler {
         TravelGui.generateOwnNodeIcon(travelGui, node);
         TravelGui.showBlockadedNodes(travelGui, node);
         TravelGui.generateStopJourneyButton(travelGui, player);
+        TravelGui.generateTaxButton(travelGui, player, node);
         travelGui.open(player);
+    }
+
+    public static void generateTaxGUI(Player player, TravelNode node) {
+        Gui taxGui = TaxGui.generateBase(node);
+        TaxGui.generateCurrentTaxButton(taxGui, node);
+        TaxGui.generateBackButton(taxGui, player, node);
+        TaxGui.generateRaiseButton(taxGui, player, node);
+        TaxGui.generateLowerButton(taxGui, player, node);
+        taxGui.open(player);
     }
 }

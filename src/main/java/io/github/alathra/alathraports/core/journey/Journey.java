@@ -1,12 +1,13 @@
-package io.github.alathra.alathraports.travelnodes.journey;
+package io.github.alathra.alathraports.core.journey;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
-import io.github.alathra.alathraports.travelnodes.ports.PortSize;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
+import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
+import io.github.alathra.alathraports.core.ports.PortSize;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.hook.TownyUtil;
 import io.github.alathra.alathraports.utility.Logger;
 import io.papermc.paper.entity.Leashable;
 import net.milkbowl.vault.economy.Economy;
@@ -117,6 +118,15 @@ public class Journey {
             final Economy economy = AlathraPorts.getVaultHook().getEconomy();
             final double cost = getCost(nodes.get(currentIndex), nodes.get(currentIndex+1));
             economy.withdrawPlayer(player, cost);
+            // Attempt to add tax to town bank, if applicable
+            if (AlathraPorts.getTownyHook().isTownyLoaded()) {
+               TravelNode intermediateDestination = nodes.get(currentIndex+1);
+               if (intermediateDestination.getTown() == null) {
+                   return;
+               }
+               double tax = getCost(nodes.get(currentIndex), intermediateDestination) * intermediateDestination.getTownFee();
+               TownyUtil.addToTownBank(intermediateDestination, tax);
+            }
             currentIndex++;
             player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             player.getWorld().playSound(player, Sound.ITEM_CHORUS_FRUIT_TELEPORT, 1, 1);
@@ -162,22 +172,22 @@ public class Journey {
         switch (type) {
             case PORT:
                 PortSize portSize = TravelNodesManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
-                // calculate cost and round to 2 decimal places
+                // Calculate base cost based on port parameters
                 double portCost = Settings.BASE_COST + (portSize != null ? portSize.getCost() : 1.0) * node1.distanceTo(node2) / 100;
+                // Add animal fees (if any)
                 portCost += (Settings.BASE_ANIMAL_COST * numAnimals);
+                // Add town fees (if any)
+                portCost += (portCost * node2.getTownFee());
+                // round cost to 2 decimal places
                 return (double) Math.round((portCost * 100)) / 100;
             case CARRIAGE_STATION:
                 CarriageStationSize carriageStationSize = TravelNodesManager.getCarriageStationSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
-                // calculate cost and round to 2 decimal places
                 double carriageStationCost = Settings.BASE_COST + (carriageStationSize != null ? carriageStationSize.getCost() : 1.0) * node1.distanceTo(node2) / 100;
                 carriageStationCost += (Settings.BASE_ANIMAL_COST * numAnimals);
+                carriageStationCost += (carriageStationCost * node2.getTownFee());
                 return (double) Math.round((carriageStationCost * 100)) / 100;
         }
-        PortSize size = TravelNodesManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
-        // calculate cost and round to 2 decimal places
-        double cost = Settings.BASE_COST + (size != null ? size.getCost() : 1.0) * node1.distanceTo(node2) / 100;
-        cost += (Settings.BASE_ANIMAL_COST * numAnimals);
-        return (double) Math.round((cost * 100)) / 100;
+        return 0.0;
     }
 
     // Get total cost for entire journey

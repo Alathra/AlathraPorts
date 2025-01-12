@@ -1,12 +1,12 @@
-package io.github.alathra.alathraports.travelnodes;
+package io.github.alathra.alathraports.core;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
-import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeRegisterException;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
-import io.github.alathra.alathraports.travelnodes.ports.PortSize;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.utility.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;

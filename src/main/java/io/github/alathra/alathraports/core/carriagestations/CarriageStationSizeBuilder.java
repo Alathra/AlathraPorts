@@ -1,6 +1,6 @@
-package io.github.alathra.alathraports.travelnodes.carriagestations;
+package io.github.alathra.alathraports.core.carriagestations;
 
-import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeSizeSerialException;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeSizeSerialException;
 import org.bukkit.Material;
 
 public class CarriageStationSizeBuilder {
@@ -8,6 +8,7 @@ public class CarriageStationSizeBuilder {
     private String name;
     private double cost;
     private double speed;
+    private double maxTownFee;
     private double journeyHaltRadius;
     private Material icon;
 
@@ -31,7 +32,12 @@ public class CarriageStationSizeBuilder {
         return this;
     }
 
-    public CarriageStationSizeBuilder setWalkRadius(double journeyHaltRadius) {
+    public CarriageStationSizeBuilder setMaxTownFee(double maxTownFee) {
+        this.maxTownFee = maxTownFee;
+        return this;
+    }
+
+    public CarriageStationSizeBuilder setJourneyHaltRadius(double journeyHaltRadius) {
         this.journeyHaltRadius = journeyHaltRadius;
         return this;
     }
@@ -45,6 +51,6 @@ public class CarriageStationSizeBuilder {
         if (tier == 0 || name.isEmpty() || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
             throw new TravelNodeSizeSerialException("Carriage Station Size Failed to Serialize: Config contains error in carriage station size section");
         }
-        return new CarriageStationSize(tier, name, cost, speed, journeyHaltRadius, icon);
+        return new CarriageStationSize(tier, name, cost, speed, maxTownFee, journeyHaltRadius, icon);
     }
 }

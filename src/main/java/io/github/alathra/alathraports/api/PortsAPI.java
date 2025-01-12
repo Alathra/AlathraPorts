@@ -2,10 +2,10 @@ package io.github.alathra.alathraports.api;
 
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
+import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.TravelNodesManager;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.Nullable;
 

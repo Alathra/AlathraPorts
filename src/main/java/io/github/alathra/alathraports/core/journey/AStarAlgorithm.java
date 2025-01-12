@@ -1,6 +1,6 @@
-package io.github.alathra.alathraports.travelnodes.journey;
+package io.github.alathra.alathraports.core.journey;
 
-import io.github.alathra.alathraports.travelnodes.TravelNode;
+import io.github.alathra.alathraports.core.TravelNode;
 
 import java.util.*;
 

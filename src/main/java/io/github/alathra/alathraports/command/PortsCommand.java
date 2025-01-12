@@ -8,13 +8,13 @@ import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
-import io.github.alathra.alathraports.travelnodes.ports.PortSize;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
-import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeRegisterException;
+import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.ports.PortSize;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -25,8 +25,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
-class PortsCommand {
-    private static final String ADMIN_PERM = "alathraports.admin";
+public class PortsCommand {
+    public static final String ADMIN_PERM = "alathraports.admin";
 
     protected PortsCommand() {
         new CommandAPICommand("ports")

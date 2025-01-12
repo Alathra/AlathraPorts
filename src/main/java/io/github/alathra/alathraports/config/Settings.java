@@ -2,16 +2,20 @@ package io.github.alathra.alathraports.config;
 
 import com.github.milkdrinkers.crate.Config;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSizeBuilder;
-import io.github.alathra.alathraports.travelnodes.ports.PortSize;
-import io.github.alathra.alathraports.travelnodes.ports.PortSizeBuilder;
-import io.github.alathra.alathraports.travelnodes.exceptions.TravelNodeSizeSerialException;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStationSizeBuilder;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.ports.PortSize;
+import io.github.alathra.alathraports.core.ports.PortSizeBuilder;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeSizeSerialException;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.Material;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class Settings {
 
@@ -64,7 +68,8 @@ public class Settings {
                     .setRange(getConfig().getInt(baseKey + "range"))
                     .setCost(getConfig().getDouble(baseKey + "cost"))
                     .setSpeed(getConfig().getDouble(baseKey + "speed"))
-                    .setWalkRadius(getConfig().getDouble(baseKey + "journeyHaltRadius"))
+                    .setMaxTownFee(getConfig().getDouble(baseKey + "maxTownFee"))
+                    .setJourneyHaltRadius(getConfig().getDouble(baseKey + "journeyHaltRadius"))
                     .setIcon(Material.valueOf(getConfig().getString(baseKey + "icon")))
                     .createPortSize());
                 } catch (TravelNodeSizeSerialException | IllegalArgumentException e) {
@@ -88,7 +93,8 @@ public class Settings {
                         .setName(getConfig().getString(baseKey + "name"))
                         .setCost(getConfig().getDouble(baseKey + "cost"))
                         .setSpeed(getConfig().getDouble(baseKey + "speed"))
-                        .setWalkRadius(getConfig().getDouble(baseKey + "journeyHaltRadius"))
+                        .setMaxTownFee(getConfig().getDouble(baseKey + "maxTownFee"))
+                        .setJourneyHaltRadius(getConfig().getDouble(baseKey + "journeyHaltRadius"))
                         .setIcon(Material.valueOf(getConfig().getString(baseKey + "icon")))
                         .createPortSize());
                 } catch (TravelNodeSizeSerialException | IllegalArgumentException e) {
@@ -97,5 +103,34 @@ public class Settings {
             }
         }
 
+        updateSizesInRegistries();
+    }
+
+    private static void updateSizesInRegistries() {
+        for (Port port : TravelNodesManager.getPorts()) {
+            boolean found = false;
+            for (PortSize portSize : portSizes.values()) {
+                if (port.getSize().getTier() == portSize.getTier()) {
+                    port.setSize(portSize);
+                    found = true;
+                }
+                if (!found) {
+                    port.setSize(((ArrayList<PortSize>) portSizes.values()).getFirst());
+                }
+            }
+        }
+
+        for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {
+            boolean found = false;
+            for (CarriageStationSize carriageStationSize : carriageStationSizes.values()) {
+                if (carriageStation.getSize().getTier() == carriageStationSize.getTier()) {
+                    carriageStation.setSize(carriageStationSize);
+                    found = true;
+                }
+                if (!found) {
+                    carriageStation.setSize(((ArrayList<CarriageStationSize>) carriageStationSizes.values()).getFirst());
+                }
+            }
+        }
     }
 }

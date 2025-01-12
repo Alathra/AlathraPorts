@@ -6,12 +6,12 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.travelnodes.TravelNode;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.travelnodes.carriagestations.CarriageStationSize;
-import io.github.alathra.alathraports.travelnodes.ports.Port;
-import io.github.alathra.alathraports.travelnodes.ports.PortSize;
-import io.github.alathra.alathraports.travelnodes.TravelNodesManager;
+import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.core.ports.PortSize;
+import io.github.alathra.alathraports.core.TravelNodesManager;
 
 import java.util.Arrays;
 
