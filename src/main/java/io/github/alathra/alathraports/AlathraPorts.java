@@ -3,10 +3,7 @@ package io.github.alathra.alathraports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
-import io.github.alathra.alathraports.hook.CombatLogXHook;
-import io.github.alathra.alathraports.hook.PAPIHook;
-import io.github.alathra.alathraports.hook.TownyHook;
-import io.github.alathra.alathraports.hook.VaultHook;
+import io.github.alathra.alathraports.hook.*;
 import io.github.alathra.alathraports.listener.ListenerHandler;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +24,7 @@ public class AlathraPorts extends JavaPlugin {
     private static PAPIHook papiHook;
     private static TownyHook townyHook;
     private static CombatLogXHook combatLogXHook;
+    private static DynmapHook dynmapHook;
 
     /**
      * Gets plugin instance.
@@ -48,6 +46,7 @@ public class AlathraPorts extends JavaPlugin {
         papiHook = new PAPIHook(instance);
         townyHook = new TownyHook(instance);
         combatLogXHook = new CombatLogXHook(instance);
+        dynmapHook = new DynmapHook(instance);
 
         configHandler.onLoad();
         //databaseHandler.onLoad();
@@ -57,6 +56,7 @@ public class AlathraPorts extends JavaPlugin {
         papiHook.onLoad();
         townyHook.onLoad();
         combatLogXHook.onLoad();
+        dynmapHook.onLoad();
     }
 
     @Override
@@ -69,6 +69,7 @@ public class AlathraPorts extends JavaPlugin {
         papiHook.onEnable();
         townyHook.onEnable();
         combatLogXHook.onEnable();
+        dynmapHook.onEnable();
 
         //if (!databaseHandler.isRunning()) {
             //Logger.get().warn(ColorParser.of("<yellow>Database handler failed to start. Database support has been disabled.").build());
@@ -86,6 +87,18 @@ public class AlathraPorts extends JavaPlugin {
             Logger.get().warn(ColorParser.of("<yellow>Towny is not installed on this server. Towny support has been disabled.").build());
         }
 
+        if (combatLogXHook.isCombatLogXLoaded()) {
+            Logger.get().info(ColorParser.of("<green>CombatLogX has been found on this server. CombatLogX support enabled.").build());
+        } else {
+            Logger.get().warn(ColorParser.of("<yellow>CombatLogX is not installed on this server. CombatLogX support has been disabled.").build());
+        }
+
+        if (dynmapHook.isDynmapLoaded()) {
+            Logger.get().info(ColorParser.of("<green>Dynmap has been found on this server. Dynmap support enabled.").build());
+        } else {
+            Logger.get().warn(ColorParser.of("<yellow>Dynmap is not installed on this server. Dynmap support has been disabled.").build());
+        }
+
     }
 
     @Override
@@ -98,6 +111,7 @@ public class AlathraPorts extends JavaPlugin {
         papiHook.onDisable();
         townyHook.onDisable();
         combatLogXHook.onDisable();
+        dynmapHook.onDisable();
     }
 
     /**

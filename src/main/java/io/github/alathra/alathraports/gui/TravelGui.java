@@ -1,5 +1,7 @@
 package io.github.alathra.alathraports.gui;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -16,16 +18,20 @@ import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.journey.Journey;
 import io.github.alathra.alathraports.core.journey.JourneyManager;
+import io.github.alathra.alathraports.utility.StringUtil;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
+import java.util.UUID;
 
 public class TravelGui {
 
@@ -49,16 +55,26 @@ public class TravelGui {
         base.getFiller().fillBorder(ItemBuilder.from(grayBorder).asGuiItem());
 
         // Create page nav buttons
-        ItemStack nextPage = new ItemStack(Material.ARROW);
-        ItemMeta nextPageMeta = nextPage.getItemMeta();
+        ItemStack nextPage = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta nextPageMeta = (SkullMeta) nextPage.getItemMeta();
+        final UUID uuid1 = UUID.randomUUID();
+        final PlayerProfile playerProfile1 = Bukkit.createProfile(uuid1, uuid1.toString().substring(0, 16));
+        final String rightArrowTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliZjMyOTJlMTI2YTEwNWI1NGViYTcxM2FhMWIxNTJkNTQxYTFkODkzODgyOWM1NjM2NGQxNzhlZDIyYmYifX19";
+        playerProfile1.setProperty(new ProfileProperty("textures", rightArrowTexture));
+        nextPageMeta.setPlayerProfile(playerProfile1);
         nextPageMeta.displayName(ColorParser.of("<yellow>Next Page").build().decoration(TextDecoration.ITALIC, false));
         nextPage.setItemMeta(nextPageMeta);
         base.setItem(6, 6, ItemBuilder.from(nextPage).asGuiItem(event -> {
             base.next();
         }));
 
-        ItemStack prevPage = new ItemStack(Material.ARROW);
-        ItemMeta prevPageMeta = prevPage.getItemMeta();
+        ItemStack prevPage = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta prevPageMeta = (SkullMeta) prevPage.getItemMeta();
+        final UUID uuid2 = UUID.randomUUID();
+        final PlayerProfile playerProfile2 = Bukkit.createProfile(uuid2, uuid2.toString().substring(0, 16));
+        final String leftArrowTexture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ2OWUwNmU1ZGFkZmQ4NGU1ZjNkMWMyMTA2M2YyNTUzYjJmYTk0NWVlMWQ0ZDcxNTJmZGM1NDI1YmMxMmE5In19fQ==";
+        playerProfile2.setProperty(new ProfileProperty("textures", leftArrowTexture));
+        prevPageMeta.setPlayerProfile(playerProfile2);
         prevPageMeta.displayName(ColorParser.of("<yellow>Previous Page").build().decoration(TextDecoration.ITALIC, false));
         prevPage.setItemMeta(prevPageMeta);
         base.setItem(6, 4, ItemBuilder.from(prevPage).asGuiItem(event -> {
@@ -237,7 +253,23 @@ public class TravelGui {
         }
     }
 
-    public static void generateTaxButton(PaginatedGui gui, Player player, TravelNode travelNode) {
+    public static void generateTaxRateIcon(PaginatedGui gui, TravelNode travelNode) {
+        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+            return;
+        }
+        if (travelNode.getTown() == null) {
+            return;
+        }
+
+        ItemStack currentTaxItem = new ItemStack(Material.EMERALD);
+        ItemMeta currentTaxMeta = currentTaxItem.getItemMeta();
+        String townFeePercent = StringUtil.doubleToPercent(travelNode.getTownFee());;
+        currentTaxMeta.displayName(ColorParser.of("<green>Current Tax Rate: " + townFeePercent).build().decoration(TextDecoration.ITALIC, false));
+        currentTaxItem.setItemMeta(currentTaxMeta);
+        gui.setItem(1, 4, ItemBuilder.from(currentTaxItem).asGuiItem());
+    }
+
+    public static void generateSetTaxButton(PaginatedGui gui, Player player, TravelNode travelNode) {
         if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
             return;
         }
@@ -266,7 +298,7 @@ public class TravelGui {
         }
 
         // Player is mayor of the town associated with the port OR a ports admin
-        ItemStack taxButton = new ItemStack(Material.EMERALD);
+        ItemStack taxButton = new ItemStack(Material.PAPER);
         ItemMeta taxButtonMeta = taxButton.getItemMeta();
         taxButtonMeta.displayName(ColorParser.of("<green>Set Tax Rate").build().decoration(TextDecoration.ITALIC, false));
         taxButton.setItemMeta(taxButtonMeta);

@@ -6,6 +6,7 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.utility.StringUtil;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TaxGui {
@@ -35,8 +37,11 @@ public class TaxGui {
     public static void generateCurrentTaxButton(Gui gui, TravelNode node) {
         ItemStack currentTaxItem = new ItemStack(Material.EMERALD);
         ItemMeta currentTaxMeta = currentTaxItem.getItemMeta();
-        String townFeePercent = (int) (node.getTownFee() * 100) + "%";
-        currentTaxMeta.displayName(ColorParser.of("<green>Current Rate: " + townFeePercent).build().decoration(TextDecoration.ITALIC, false));
+        String townFeePercent = StringUtil.doubleToPercent(node.getTownFee());
+        currentTaxMeta.displayName(ColorParser.of("<green>Current Tax Rate: " + townFeePercent).build().decoration(TextDecoration.ITALIC, false));
+        currentTaxMeta.lore(List.of(
+            ColorParser.of("<yellow>Maximum Rate: " + StringUtil.doubleToPercent(node.getSize().getMaxTownFee())).build().decoration(TextDecoration.ITALIC, false)
+        ));
         currentTaxItem.setItemMeta(currentTaxMeta);
         gui.setItem(1, 1, ItemBuilder.from(currentTaxItem).asGuiItem());
     }

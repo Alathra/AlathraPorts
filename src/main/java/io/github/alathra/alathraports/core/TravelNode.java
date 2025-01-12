@@ -136,6 +136,12 @@ public abstract class TravelNode {
         town = AlathraPorts.getTownyHook().getTownyAPI().getTown(signLocation);
     }
 
+    public void setDefaultTax() {
+        if (town != null) {
+            townFee = size.maxTownFee;
+        }
+    }
+
     public void setTown(Town town) {
         this.town = town;
     }
@@ -153,6 +159,7 @@ public abstract class TravelNode {
             return false;
         }
         if (fee < 0) {
+            townFee = 0.0;
             return false;
         }
         this.townFee = fee;

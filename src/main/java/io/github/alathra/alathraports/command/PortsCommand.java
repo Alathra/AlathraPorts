@@ -84,6 +84,7 @@ public class PortsCommand {
                                         Port port = new Port(nodeName, portSize, signLocation, signLocation);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             port.findTown();
+                                            port.setDefaultTax();
                                         }
                                         TravelNodesManager.createTravelNodeFromSign(sender, port, BlockFace.UP);
                                     } else {
@@ -96,6 +97,7 @@ public class PortsCommand {
                                         Port port = new Port(nodeName, portSize, signLocation, signLocation);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             port.findTown();
+                                            port.setDefaultTax();
                                         }
                                         TravelNodesManager.createTravelNodeFromSign(sender, port, blockFace);
                                     } else {
@@ -137,6 +139,7 @@ public class PortsCommand {
                                         CarriageStation carriageStation = new CarriageStation(nodeName, carriageStationSize, signLocation, signLocation);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             carriageStation.findTown();
+                                            carriageStation.setDefaultTax();
                                         }
                                         TravelNodesManager.createTravelNodeFromSign(sender, carriageStation, BlockFace.UP);
                                     } else {
@@ -149,6 +152,7 @@ public class PortsCommand {
                                         CarriageStation carriageStation = new CarriageStation(nodeName, carriageStationSize, signLocation, signLocation);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             carriageStation.findTown();
+                                            carriageStation.setDefaultTax();
                                         }
                                         TravelNodesManager.createTravelNodeFromSign(sender, carriageStation, blockFace);
                                     } else {
@@ -262,6 +266,7 @@ public class PortsCommand {
                                 port.refreshNodeSign();
                                 try {
                                     TravelNodesManager.reRegisterPort(port);
+                                    port.setDefaultTax();
                                     sender.sendMessage(ColorParser.of("<green>Port size has been changed").build());
                                 } catch (TravelNodeRegisterException e) {
                                     // Revert sign change, registration failed
@@ -347,6 +352,7 @@ public class PortsCommand {
                                 carriageStation.refreshNodeSign();
                                 try {
                                     TravelNodesManager.reRegisterCarriageStation(carriageStation);
+                                    carriageStation.setDefaultTax();
                                     sender.sendMessage(ColorParser.of("<green>Carriage station size has been changed").build());
                                 } catch (TravelNodeRegisterException e) {
                                     // Revert sign change, registration failed

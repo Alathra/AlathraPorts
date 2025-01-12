@@ -13,7 +13,8 @@ public class GuiHandler {
         TravelGui.generateOwnNodeIcon(travelGui, node);
         TravelGui.showBlockadedNodes(travelGui, node);
         TravelGui.generateStopJourneyButton(travelGui, player);
-        TravelGui.generateTaxButton(travelGui, player, node);
+        TravelGui.generateTaxRateIcon(travelGui, node);
+        TravelGui.generateSetTaxButton(travelGui, player, node);
         travelGui.open(player);
     }
 

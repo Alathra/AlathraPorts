@@ -34,22 +34,20 @@ repositories {
 
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
     maven("https://repo.dmulloy2.net/repository/public/") // ProtocolLib
-
     maven("https://repo.glaremasters.me/repository/towny/") { // Towny
         content { includeGroup("com.palmergames.bukkit.towny") }
     }
-
     maven("https://jitpack.io/") {
         content {
             includeGroup("com.github.MilkBowl") // VaultAPI
         }
     }
-
     // Dependencies that have brokey repos...
     flatDir {
         dirs("libs")
-        // CombatLogX
+        // CombatLogX & BlueSlimeCore
     }
+    maven("https://repo.mikeprimm.com/") // Dynmap-API
 }
 
 dependencies {
@@ -83,7 +81,9 @@ dependencies {
     compileOnly("com.palmergames.bukkit.towny:towny:0.101.1.0") {
         exclude("com.palmergames.adventure")
     }
+    compileOnly(files("libs/BlueSlimeCore-2.9.6.431.jar"))
     compileOnly(files("libs/CombatLogX-11.5.0.1242.jar"))
+    compileOnly("us.dynmap:dynmap-api:2.5")
 
     // Database Dependencies (Core)
     implementation("com.zaxxer:HikariCP:6.1.0")
