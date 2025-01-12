@@ -44,6 +44,12 @@ repositories {
             includeGroup("com.github.MilkBowl") // VaultAPI
         }
     }
+
+    // Dependencies that have brokey repos...
+    flatDir {
+        dirs("libs")
+        // CombatLogX
+    }
 }
 
 dependencies {
@@ -70,13 +76,14 @@ dependencies {
     // Plugin Dependencies
     implementation("org.bstats:bstats-bukkit:3.1.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("com.palmergames.bukkit.towny:towny:0.101.1.0") {
-        exclude("com.palmergames.adventure")
-    }
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
     compileOnly("me.clip:placeholderapi:2.11.6") {
         exclude("me.clip.placeholderapi.libs", "kyori")
     }
+    compileOnly("com.palmergames.bukkit.towny:towny:0.101.1.0") {
+        exclude("com.palmergames.adventure")
+    }
+    compileOnly(files("libs/CombatLogX-11.5.0.1242.jar"))
 
     // Database Dependencies (Core)
     implementation("com.zaxxer:HikariCP:6.1.0")

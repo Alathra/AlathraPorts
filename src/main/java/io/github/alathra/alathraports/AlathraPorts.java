@@ -3,6 +3,7 @@ package io.github.alathra.alathraports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
+import io.github.alathra.alathraports.hook.CombatLogXHook;
 import io.github.alathra.alathraports.hook.PAPIHook;
 import io.github.alathra.alathraports.hook.TownyHook;
 import io.github.alathra.alathraports.hook.VaultHook;
@@ -25,6 +26,7 @@ public class AlathraPorts extends JavaPlugin {
     private static VaultHook vaultHook;
     private static PAPIHook papiHook;
     private static TownyHook townyHook;
+    private static CombatLogXHook combatLogXHook;
 
     /**
      * Gets plugin instance.
@@ -45,6 +47,7 @@ public class AlathraPorts extends JavaPlugin {
         vaultHook = new VaultHook(instance);
         papiHook = new PAPIHook(instance);
         townyHook = new TownyHook(instance);
+        combatLogXHook = new CombatLogXHook(instance);
 
         configHandler.onLoad();
         //databaseHandler.onLoad();
@@ -53,6 +56,7 @@ public class AlathraPorts extends JavaPlugin {
         vaultHook.onLoad();
         papiHook.onLoad();
         townyHook.onLoad();
+        combatLogXHook.onLoad();
     }
 
     @Override
@@ -64,6 +68,7 @@ public class AlathraPorts extends JavaPlugin {
         vaultHook.onEnable();
         papiHook.onEnable();
         townyHook.onEnable();
+        combatLogXHook.onEnable();
 
         //if (!databaseHandler.isRunning()) {
             //Logger.get().warn(ColorParser.of("<yellow>Database handler failed to start. Database support has been disabled.").build());
@@ -92,6 +97,7 @@ public class AlathraPorts extends JavaPlugin {
         vaultHook.onDisable();
         papiHook.onDisable();
         townyHook.onDisable();
+        combatLogXHook.onDisable();
     }
 
     /**
@@ -127,6 +133,11 @@ public class AlathraPorts extends JavaPlugin {
     @NotNull
     public static TownyHook getTownyHook() {
         return townyHook;
+    }
+
+    @NotNull
+    public static CombatLogXHook getCombatLogXHook() {
+        return combatLogXHook;
     }
 
 }

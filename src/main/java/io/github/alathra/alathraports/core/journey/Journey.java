@@ -7,7 +7,7 @@ import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.core.TravelNodesManager;
-import io.github.alathra.alathraports.hook.TownyUtil;
+import io.github.alathra.alathraports.hook.TownyHook;
 import io.github.alathra.alathraports.utility.Logger;
 import io.papermc.paper.entity.Leashable;
 import net.milkbowl.vault.economy.Economy;
@@ -125,7 +125,7 @@ public class Journey {
                    return;
                }
                double tax = getCost(nodes.get(currentIndex), intermediateDestination) * intermediateDestination.getTownFee();
-               TownyUtil.addToTownBank(intermediateDestination, tax);
+               TownyHook.addToTownBank(intermediateDestination, tax);
             }
             currentIndex++;
             player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);

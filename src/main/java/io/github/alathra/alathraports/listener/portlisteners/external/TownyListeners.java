@@ -1,4 +1,4 @@
-package io.github.alathra.alathraports.listener.portlisteners.optional;
+package io.github.alathra.alathraports.listener.portlisteners.external;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.PreDeleteTownEvent;
