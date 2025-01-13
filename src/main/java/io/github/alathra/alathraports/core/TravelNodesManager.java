@@ -212,18 +212,25 @@ public class TravelNodesManager {
     }
 
     public static boolean deregisterCarriageStation(CarriageStation targetCarriageStation) {
+        boolean found = false;
         if (carriageStations.contains(targetCarriageStation)) {
             carriageStations.remove(targetCarriageStation);
-            return true;
+            found = true;
         } else {
             for (CarriageStation carriageStation : carriageStations) {
                 if (targetCarriageStation.isSimilar(carriageStation)) {
                     carriageStations.remove(carriageStation);
-                    return true;
+                    found = true;
+                    break;
                 }
             }
         }
-        return false;
+        if (found) {
+            for (CarriageStation carriageStation : carriageStations) {
+                carriageStation.removeIfDirectlyConnected(targetCarriageStation);
+            }
+        }
+        return found;
     }
 
     public static boolean reRegisterPort(Port modifiedPort) throws TravelNodeRegisterException {

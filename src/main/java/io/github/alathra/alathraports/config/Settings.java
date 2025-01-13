@@ -31,6 +31,9 @@ public class Settings {
     public static boolean REMOVE_PORT_ON_TOWN_DELETE;
     public static Map<String, PortSize> portSizes = new HashMap<>();
     public static Map<String, CarriageStationSize> carriageStationSizes = new HashMap<>();
+    public static int TRAVEL_NODES_DYNMAP_LAYER;
+    public static int PORT_RANGES_DYNMAP_LAYER;
+    public static int CARRIAGE_CONNECTIONS_DYNMAP_LAYER;
 
     public static Config getConfig() {
         return AlathraPorts.getInstance().getConfigHandler().getConfig();
@@ -49,6 +52,9 @@ public class Settings {
         SHOW_BLOCKADED = getConfig().getOrDefault("GlobalSettings.showBlockaded", true);
         REMOVE_PORT_ON_TOWN_DELETE = getConfig().getOrDefault("GlobalSettings.removeOnTownDelete", true);
         updateSizes();
+        TRAVEL_NODES_DYNMAP_LAYER = getConfig().getOrDefault("DynmapSettings.TravelNodeLayerPriority",3);
+        PORT_RANGES_DYNMAP_LAYER = getConfig().getOrDefault("DynmapSettings.PortRangeLayerPriority",4);
+        CARRIAGE_CONNECTIONS_DYNMAP_LAYER = getConfig().getOrDefault("CarriageConnectionsLayerPriority", 5);
     }
 
     private static void updateSizes() {
@@ -128,7 +134,7 @@ public class Settings {
                     found = true;
                 }
                 if (!found) {
-                    carriageStation.setSize(((ArrayList<CarriageStationSize>) carriageStationSizes.values()).getFirst());
+                    carriageStation.setSize(new ArrayList<>(carriageStationSizes.values()).getFirst());
                 }
             }
         }

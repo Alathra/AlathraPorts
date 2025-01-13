@@ -86,9 +86,10 @@ public abstract class TravelNode {
                 return false;
             }
             return travelNode.getName().equalsIgnoreCase(this.getName()) &&
-                travelNode.signLocation.distance(this.signLocation) <= Settings.MINIMUM_PORT_DISTANCE &&
-                travelNode.teleportLocation.distance(this.signLocation) <= Settings.MINIMUM_PORT_DISTANCE &&
-                travelNode.getSize().equals(this.getSize());
+                travelNode.signLocation.distance(this.signLocation) < Settings.MINIMUM_PORT_DISTANCE &&
+                travelNode.teleportLocation.distance(this.signLocation) < Settings.MINIMUM_PORT_DISTANCE &&
+                travelNode.getType().equals(this.type) &&
+                travelNode.getSize().equals(this.size);
         }
         return false;
     }

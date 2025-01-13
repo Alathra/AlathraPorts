@@ -154,4 +154,9 @@ public class AlathraPorts extends JavaPlugin {
         return combatLogXHook;
     }
 
+    @NotNull
+    public static DynmapHook getDynmapHook() {
+        return dynmapHook;
+    }
+
 }

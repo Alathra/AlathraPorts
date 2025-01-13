@@ -48,8 +48,13 @@ public class CarriageStation extends TravelNode {
         directConnections.add(node);
     }
 
-    public void removeDirectConnection(TravelNode node) {
-        directConnections.remove(node);
+    public void removeIfDirectlyConnected(CarriageStation carriageStation) {
+        for (TravelNode node : directConnections) {
+            if (node.isSimilar(carriageStation)) {
+                directConnections.remove(node);
+                return;
+            }
+        }
     }
 
     public static Component getTagline() {

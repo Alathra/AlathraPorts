@@ -103,3 +103,11 @@ CarriageStationSettings:
       maxTownFee: 0.20
       journeyHaltRadius: 40.00
       icon: SADDLE
+
+DynmapSettings:
+  # Layer priority for the marker set. Prevents conflicting layers
+  # Player/Default Markers is 1
+  # Dynmap-Towny is 2
+  TravelNodeLayerPriority: 3
+  PortRangeLayerPriority: 4
+  CarriageConnectionsLayerPriority: 5
