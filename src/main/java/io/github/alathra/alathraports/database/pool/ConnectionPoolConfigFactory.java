@@ -1,7 +1,7 @@
 package io.github.alathra.alathraports.database.pool;
 
 import com.zaxxer.hikari.HikariConfig;
-import io.github.alathra.alathraports.database.DatabaseType;
+import io.github.alathra.alathraports.database.handler.DatabaseType;
 import io.github.alathra.alathraports.database.config.DatabaseConfig;
 import io.github.alathra.alathraports.database.config.DatabaseConfigBuilder;
 import io.github.alathra.alathraports.database.exception.DatabaseInitializationException;
@@ -9,7 +9,7 @@ import io.github.alathra.alathraports.database.exception.DatabaseInitializationE
 import java.nio.file.Path;
 import java.util.Optional;
 
-import static io.github.alathra.alathraports.database.DatabaseType.*;
+import static io.github.alathra.alathraports.database.handler.DatabaseType.SQLITE;
 
 public abstract class ConnectionPoolConfigFactory {
     public static HikariConfig get() throws DatabaseInitializationException {

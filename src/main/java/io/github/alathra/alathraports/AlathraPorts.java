@@ -3,9 +3,12 @@ package io.github.alathra.alathraports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
+import io.github.alathra.alathraports.database.handler.DatabaseHandlerBuilder;
 import io.github.alathra.alathraports.hook.*;
 import io.github.alathra.alathraports.listener.ListenerHandler;
+import io.github.alathra.alathraports.utility.DB;
 import io.github.alathra.alathraports.utility.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 public class AlathraPorts extends JavaPlugin {
     private static AlathraPorts instance;
     private ConfigHandler configHandler;
-    //private DatabaseHandler databaseHandler;
     private CommandHandler commandHandler;
     private ListenerHandler listenerHandler;
 
@@ -39,7 +41,12 @@ public class AlathraPorts extends JavaPlugin {
     public void onLoad() {
         instance = this;
         configHandler = new ConfigHandler(instance);
-        //databaseHandler = new DatabaseHandler(configHandler, getComponentLogger());
+        DB.init(
+            new DatabaseHandlerBuilder()
+                .withConfigHandler(configHandler)
+                .withLogger(getComponentLogger())
+                .build()
+        );
         commandHandler = new CommandHandler(instance);
         listenerHandler = new ListenerHandler(instance);
         vaultHook = new VaultHook(instance);
@@ -49,7 +56,7 @@ public class AlathraPorts extends JavaPlugin {
         dynmapHook = new DynmapHook(instance);
 
         configHandler.onLoad();
-        //databaseHandler.onLoad();
+        DB.getHandler().onLoad();
         commandHandler.onLoad();
         listenerHandler.onLoad();
         vaultHook.onLoad();
@@ -62,7 +69,7 @@ public class AlathraPorts extends JavaPlugin {
     @Override
     public void onEnable() {
         configHandler.onEnable();
-        //databaseHandler.onEnable();
+        DB.getHandler().onEnable();
         commandHandler.onEnable();
         listenerHandler.onEnable();
         vaultHook.onEnable();
@@ -71,9 +78,10 @@ public class AlathraPorts extends JavaPlugin {
         combatLogXHook.onEnable();
         dynmapHook.onEnable();
 
-        //if (!databaseHandler.isRunning()) {
-            //Logger.get().warn(ColorParser.of("<yellow>Database handler failed to start. Database support has been disabled.").build());
-        //}
+        if (!DB.isReady()) {
+            Logger.get().warn(ColorParser.of("<yellow>DatabaseHolder handler failed to start. Database support has been disabled.").build());
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 
         if (vaultHook.isVaultLoaded()) {
             Logger.get().info(ColorParser.of("<green>Vault has been found on this server. Vault support enabled.").build());
@@ -104,7 +112,7 @@ public class AlathraPorts extends JavaPlugin {
     @Override
     public void onDisable() {
         configHandler.onDisable();
-        //databaseHandler.onDisable();
+        DB.getHandler().onDisable();
         commandHandler.onDisable();
         listenerHandler.onDisable();
         vaultHook.onDisable();
@@ -113,16 +121,6 @@ public class AlathraPorts extends JavaPlugin {
         combatLogXHook.onDisable();
         dynmapHook.onDisable();
     }
-
-    /**
-     * Gets data handler.
-     *
-     * @return the data handler
-     */
-    //@NotNull
-    //public DatabaseHandler getDataHandler() {
-        //return databaseHandler;
-    //}
 
     /**
      * Gets config handler.

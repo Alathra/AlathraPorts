@@ -47,7 +47,7 @@ public class ConfigHandler implements Reloadable {
     }
 
     public void reloadDBConfig() {
-        databaseCfg.forceReload();
+        databaseCfg.forceReload(); // TODO Unnecessary, changes are loaded from disk the next time this config object is accessed anyways
     }
 
     /**
