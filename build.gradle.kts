@@ -4,12 +4,11 @@ import java.time.Instant
 plugins {
     `java-library`
 
-    id("io.github.goooler.shadow") version "8.1.8" // Shades and relocates dependencies, See https://imperceptiblethoughts.com/shadow/introduction/
-    id("xyz.jpenilla.run-paper") version "2.3.1" // Adds runServer and runMojangMappedServer tasks for testing
-    id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
-//    id("io.papermc.paperweight.userdev") version "1.7.1" // Used to develop internal plugins using Mojang mappings, See https://github.com/PaperMC/paperweight
-    id("org.flywaydb.flyway") version "10.21.0" // Database migrations
-    id("org.jooq.jooq-codegen-gradle") version "3.19.15"
+    alias(libs.plugins.shadow) // Shades and relocates dependencies, see https://gradleup.com/shadow/
+    alias(libs.plugins.run.paper) // Built in test server using runServer and runMojangMappedServer tasks
+    alias(libs.plugins.plugin.yml) // Automatic plugin.yml generation
+    alias(libs.plugins.flyway) // Database migrations
+    alias(libs.plugins.jooq) // Database ORM
 
     eclipse
     idea
@@ -42,92 +41,67 @@ repositories {
             includeGroup("com.github.MilkBowl") // VaultAPI
         }
     }
-    // Dependencies that have brokey repos...
-    flatDir {
-        dirs("libs")
-        // CombatLogX & BlueSlimeCore
-    }
     maven("https://repo.mikeprimm.com/") // Dynmap-API
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:24.1.0")
-    annotationProcessor("org.jetbrains:annotations:24.1.0")
-
-    //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") // Use instead of the `paper-api` entry if developing plugins using Mojang mappings
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    implementation("space.arim.morepaperlib:morepaperlib:0.4.4")
+    // Core dependencies
+    compileOnly(libs.annotations)
+    annotationProcessor(libs.annotations)
+    compileOnly(libs.paper.api)
+    implementation(libs.morepaperlib)
 
     // API
-    implementation("com.github.milkdrinkers:crate-api:2.1.0")
-    implementation("com.github.milkdrinkers:crate-yaml:2.1.0")
-    implementation("com.github.milkdrinkers:colorparser:2.0.3") {
+    implementation(libs.crate.api)
+    implementation(libs.crate.yaml)
+    implementation(libs.colorparser) {
         exclude("net.kyori")
     }
-    implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")
-//    compileOnly("dev.jorel:commandapi-annotations:9.5.1")
-//    annotationProcessor("dev.jorel:commandapi-annotations:9.5.1")
-    implementation("dev.triumphteam:triumph-gui:3.1.10") {
+    implementation(libs.commandapi.shade)
+    implementation(libs.triumph.gui) {
         exclude("net.kyori")
     }
 
     // Plugin Dependencies
-    implementation("org.bstats:bstats-bukkit:3.1.0")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
-    compileOnly("me.clip:placeholderapi:2.11.6") {
+    implementation(libs.bstats)
+    compileOnly(libs.vault)
+    compileOnly(libs.placeholderapi) {
         exclude("me.clip.placeholderapi.libs", "kyori")
     }
-    compileOnly("com.palmergames.bukkit.towny:towny:0.101.1.0") {
+    compileOnly(libs.towny) {
         exclude("com.palmergames.adventure")
     }
+    compileOnly(libs.dynmap)
     compileOnly(files("libs/BlueSlimeCore-2.9.6.431.jar"))
     compileOnly(files("libs/CombatLogX-11.5.0.1242.jar"))
-    compileOnly("us.dynmap:dynmap-api:2.5")
 
-    // Database Dependencies (Core)
-    implementation("com.zaxxer:HikariCP:6.1.0")
-    library("org.flywaydb:flyway-core:10.21.0")
-    library("org.flywaydb:flyway-mysql:10.21.0")
-    library("org.jooq:jooq:3.19.15")
-    jooqCodegen("com.h2database:h2:2.3.232")
+    // Database dependencies - Core
+    implementation(libs.hikaricp)
+    library(libs.bundles.flyway)
+    library(libs.jooq)
+    jooqCodegen(libs.h2)
 
-    // Database Dependencies (JDBC Drivers)
-    library("com.h2database:h2:2.3.232")
-    library("org.xerial:sqlite-jdbc:3.46.1.0")
-    library("com.mysql:mysql-connector-j:9.0.0")
-    library("org.mariadb.jdbc:mariadb-java-client:3.4.1")
+    // Database dependencies - JDBC drivers
+    library(libs.bundles.jdbcdrivers)
 
-    // Testing (Core)
-    testImplementation("org.jetbrains:annotations:24.1.0")
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("org.slf4j:slf4j-simple:2.1.0-alpha1")
-    testImplementation(platform("org.testcontainers:testcontainers-bom:1.20.1"))
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:mysql")
-    testImplementation("org.testcontainers:mariadb")
+    // Testing - Core
+    testImplementation(libs.annotations)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.bundles.junit)
+    testRuntimeOnly(libs.slf4j)
+    testImplementation(platform(libs.testcontainers.bom))
+    testImplementation(libs.bundles.testcontainers)
 
-    // Testing (Database Dependencies)
-    testImplementation("com.zaxxer:HikariCP:6.1.0")
-    testImplementation("org.flywaydb:flyway-core:10.21.0")
-    testImplementation("org.flywaydb:flyway-mysql:10.21.0")
-    testImplementation("org.jooq:jooq:3.19.15")
+    // Testing - Database dependencies
+    testImplementation(libs.hikaricp)
+    testImplementation(libs.bundles.flyway)
+    testImplementation(libs.jooq)
 
-    // Testing (JDBC Drivers)
-    testImplementation("com.h2database:h2:2.3.232")
-    testImplementation("org.xerial:sqlite-jdbc:3.46.1.0")
-    testImplementation("com.mysql:mysql-connector-j:9.0.0")
-    testImplementation("org.mariadb.jdbc:mariadb-java-client:3.4.1")
+    // Testing - JDBC drivers
+    testImplementation(libs.bundles.jdbcdrivers)
 }
 
 tasks {
-    // NOTE: Use when developing plugins using Mojang mappings
-//    assemble {
-//        dependsOn(reobfJar)
-//    }
-
     build {
         dependsOn(shadowJar)
     }
@@ -206,7 +180,6 @@ tasks {
 //            hangar("squaremap", "1.2.0")
 //            url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
             github("MilkBowl", "Vault", "1.7.3", "Vault.jar")
-            url("https://ci.dmulloy2.net/job/ProtocolLib/lastSuccessfulBuild/artifact/build/libs/ProtocolLib.jar")
             github("PlaceholderAPI", "PlaceholderAPI", "2.11.4", "PlaceholderAPI-2.11.4.jar")
         }
     }
@@ -226,8 +199,8 @@ bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
     prefix = project.name
     version = "${project.version}"
     description = "${project.description}"
-    authors = listOf("GITHUB_USERNAME")
-    contributors = listOf()
+    authors = listOf("ShermansWorld")
+    contributors = listOf("darksaid98")
     apiVersion = "1.21"
 
     // Misc properties
@@ -249,7 +222,7 @@ flyway {
     cleanDisabled = false
     locations = arrayOf(
         "filesystem:src/main/resources/db/migration",
-        "classpath:db/migration"
+        "classpath:${mainPackage.replace(".", "/")}/database/migration/migrations"
     )
 }
 
