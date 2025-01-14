@@ -9,7 +9,7 @@ import org.bukkit.block.sign.Side;
 
 import java.util.*;
 
-public class CarriageStation extends TravelNode {
+public class CarriageStation extends TravelNode implements Cloneable {
 
     private final Set<TravelNode> directConnections = new HashSet<>();
 
@@ -59,5 +59,10 @@ public class CarriageStation extends TravelNode {
 
     public static Component getTagline() {
         return ColorParser.of("<gold>\uD83D\uDC0E\uD83D\uDC0E\uD83D\uDC0E").build();
+    }
+
+    @Override
+    public CarriageStation clone() {
+        return (CarriageStation) super.clone();
     }
 }

@@ -7,8 +7,6 @@ import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-
 /**
  * Contains all test cases.
  */
@@ -52,39 +50,39 @@ abstract class AbstractDatabaseTest {
         DB.getHandler().migrate();
     }
 
-    @Test
-    @DisplayName("Upsert")
-    void testUpsert() {
-        Queries.upsert();
-        Queries.upsert(); // Updates instead of inserts
-    }
-
-    @Test
-    @DisplayName("Upsert Returning")
-    void testUpsertReturning() {
-        BigInteger value = Queries.upsertReturning();
-        Assertions.assertNotNull(value);
-        Assertions.assertEquals(BigInteger.valueOf(1), value);
-        BigInteger value2 = Queries.upsertReturning();
-        Assertions.assertNotNull(value2);
-        Assertions.assertEquals(BigInteger.valueOf(2), value2);
-    }
-
-    @Test
-    @DisplayName("Batch")
-    void testQueryBatch() {
-        Queries.saveAll();
-    }
-
-    @Test
-    @DisplayName("Transaction")
-    void testQueryTransaction() {
-        Queries.saveAllTransaction();
-    }
-
-    @Test
-    @DisplayName("Select")
-    void testQuerySelect() {
-        Queries.loadAll();
-    }
+//    @Test
+//    @DisplayName("Upsert")
+//    void testUpsert() {
+//        Queries.upsert();
+//        Queries.upsert(); // Updates instead of inserts
+//    }
+//
+//    @Test
+//    @DisplayName("Upsert Returning")
+//    void testUpsertReturning() {
+//        BigInteger value = Queries.upsertReturning();
+//        Assertions.assertNotNull(value);
+//        Assertions.assertEquals(BigInteger.valueOf(1), value);
+//        BigInteger value2 = Queries.upsertReturning();
+//        Assertions.assertNotNull(value2);
+//        Assertions.assertEquals(BigInteger.valueOf(2), value2);
+//    }
+//
+//    @Test
+//    @DisplayName("Batch")
+//    void testQueryBatch() {
+//        Queries.saveAll();
+//    }
+//
+//    @Test
+//    @DisplayName("Transaction")
+//    void testQueryTransaction() {
+//        Queries.saveAllTransaction();
+//    }
+//
+//    @Test
+//    @DisplayName("Select")
+//    void testQuerySelect() {
+//        Queries.loadAll();
+//    }
 }

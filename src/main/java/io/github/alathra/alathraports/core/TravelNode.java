@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public abstract class TravelNode {
+public abstract class TravelNode implements Cloneable {
     // Unique id of the travel node
     protected final UUID uuid;
     // The raw name of the travel node (no colors, underscore for space)
@@ -217,5 +217,14 @@ public abstract class TravelNode {
 
     public TravelNodeType getType() {
         return type;
+    }
+
+    @Override
+    public TravelNode clone() {
+        try {
+            return (TravelNode) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

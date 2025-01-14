@@ -2,7 +2,6 @@ package io.github.alathra.alathraports.database.migration;
 
 import io.github.alathra.alathraports.database.config.DatabaseConfig;
 import io.github.alathra.alathraports.database.exception.DatabaseMigrationException;
-import io.github.alathra.alathraports.database.migration.migrations.V4__example_test;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.ClassProvider;
 import org.flywaydb.core.api.FlywayException;
@@ -18,7 +17,6 @@ import java.util.Map;
 public class MigrationHandler {
     // List of Java migrations
     private final List<Class<? extends JavaMigration>> migrations = List.of(
-        V4__example_test.class
     );
 
     private final DataSource dataSource;

@@ -10,7 +10,7 @@ import org.bukkit.block.sign.Side;
 
 import java.util.*;
 
-public class Port extends TravelNode {
+public class Port extends TravelNode implements Cloneable {
 
     public Port(UUID uuid, String name, PortSize size, Location signLocation, Location teleportLocation) {
         super(uuid, name, size, signLocation, teleportLocation);
@@ -57,5 +57,10 @@ public class Port extends TravelNode {
 
     public static Component getTagline() {
         return ColorParser.of("<blue>⚓⚓⚓").build();
+    }
+
+    @Override
+    public Port clone() {
+        return (Port) super.clone();
     }
 }
