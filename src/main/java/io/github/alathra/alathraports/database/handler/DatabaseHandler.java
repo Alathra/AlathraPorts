@@ -3,6 +3,11 @@ package io.github.alathra.alathraports.database.handler;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.config.ConfigHandler;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.database.Queries;
 import io.github.alathra.alathraports.database.config.DatabaseConfig;
 import io.github.alathra.alathraports.database.exception.DatabaseInitializationException;
 import io.github.alathra.alathraports.database.exception.DatabaseMigrationException;
@@ -17,6 +22,7 @@ import org.slf4j.Logger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Class that handles HikariCP connection pool, jOOQ and Flyway migrations.

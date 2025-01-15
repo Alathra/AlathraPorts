@@ -2,6 +2,7 @@ package io.github.alathra.alathraports.database;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
+import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.ports.Port;
@@ -34,6 +35,7 @@ public abstract class Queries {
     public static abstract class Ports {
         /**
          * Used to delete a port
+         *
          * @param port port
          * @return completable future
          */
@@ -58,9 +60,10 @@ public abstract class Queries {
 
         /**
          * Used to fetch all ports
+         *
          * @return list of ports
          */
-        public static CompletableFuture<Set<Port>> loadAll() {
+        public static CompletableFuture<Set<Port>> loadAllPorts() {
             return CompletableFuture.supplyAsync(() -> {
                 final Set<Port> ports = new HashSet<>();
 
@@ -118,10 +121,13 @@ public abstract class Queries {
 
                         final var town = TownyAPI.getInstance().getTown(townIdentifier);
 
-                        // TODO Parse remaining variable used in port object
-
-                        // TODO Construct port object and add to result set
-//                        ports.add(new Port());
+                        Port port = new Port(identifier, name, Settings.findPortSize(size), signLoc, teleportLoc);
+                        if (town != null) {
+                            port.setTown(town);
+                        }
+                        port.setBlockaded(BooleanUtil.fromByte(blockaded));
+                        port.setTownFee(townFee);
+                        ports.add(port);
                     }
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);
@@ -133,88 +139,83 @@ public abstract class Queries {
 
         /**
          * Internally used in {@link #saveAllPorts(Set)} to generate the queries
+         *
          * @param context context
-         * @param ports ports
+         * @param port   port
          * @return queries
          */
-        private static Query[] savePortsQueries(DSLContext context, final Set<Port> ports) {
-            final List<Query> queries = new ArrayList<>();
+        private static void savePortsQueries(DSLContext context, final Port port) {
+            final @Nullable UUID town = port.getTown() == null ? null : port.getTown().getUUID();
+                context
+                    .insertInto(
+                        PORTS,
+                        PORTS.IDENTIFIER,
+                        PORTS._NAME,
+                        PORTS.TRAVEL_NODE_SIZE,
+                        PORTS.SIGN_WORLD_IDENTIFIER,
+                        PORTS.SIGN_WORLD_X,
+                        PORTS.SIGN_WORLD_Y,
+                        PORTS.SIGN_WORLD_Z,
+                        PORTS.SIGN_WORLD_PITCH,
+                        PORTS.SIGN_WORLD_YAW,
+                        PORTS.TELEPORT_WORLD_IDENTIFIER,
+                        PORTS.TELEPORT_WORLD_X,
+                        PORTS.TELEPORT_WORLD_Y,
+                        PORTS.TELEPORT_WORLD_Z,
+                        PORTS.TELEPORT_WORLD_PITCH,
+                        PORTS.TELEPORT_WORLD_YAW,
+                        PORTS.BLOCKADED,
+                        PORTS.TOWN_IDENTIFIER,
+                        PORTS.TOWN_FEE,
+                        PORTS.TRAVEL_NODE_TYPE
+                    )
+                    .values(
+                        UUIDUtil.toBytes(port.getUuid()),
+                        port.getName(),
+                        port.getSize().getTier(),
+                        UUIDUtil.toBytes(port.getSignLocation().getWorld().getUID()),
+                        port.getSignLocation().getX(),
+                        port.getSignLocation().getY(),
+                        port.getSignLocation().getZ(),
+                        port.getSignLocation().getPitch(),
+                        port.getSignLocation().getYaw(),
+                        UUIDUtil.toBytes(port.getTeleportLocation().getWorld().getUID()),
+                        port.getTeleportLocation().getX(),
+                        port.getTeleportLocation().getY(),
+                        port.getTeleportLocation().getZ(),
+                        port.getTeleportLocation().getPitch(),
+                        port.getTeleportLocation().getYaw(),
+                        BooleanUtil.toByte(port.isBlockaded()),
+                        UUIDUtil.toBytes(town),
+                        port.getTownFee(),
+                        port.getType().name()
+                    )
+                    .onDuplicateKeyUpdate()
+                    .set(PORTS._NAME, port.getName())
+                    .set(PORTS.TRAVEL_NODE_SIZE, port.getSize().getTier())
+                    .set(PORTS.SIGN_WORLD_IDENTIFIER, UUIDUtil.toBytes(port.getSignLocation().getWorld().getUID()))
+                    .set(PORTS.SIGN_WORLD_X, port.getSignLocation().getX())
+                    .set(PORTS.SIGN_WORLD_Y, port.getSignLocation().getY())
+                    .set(PORTS.SIGN_WORLD_Z, port.getSignLocation().getZ())
+                    .set(PORTS.SIGN_WORLD_PITCH, port.getSignLocation().getPitch())
+                    .set(PORTS.SIGN_WORLD_YAW, port.getSignLocation().getYaw())
+                    .set(PORTS.TELEPORT_WORLD_IDENTIFIER, UUIDUtil.toBytes(port.getTeleportLocation().getWorld().getUID()))
+                    .set(PORTS.TELEPORT_WORLD_X, port.getTeleportLocation().getX())
+                    .set(PORTS.TELEPORT_WORLD_Y, port.getTeleportLocation().getY())
+                    .set(PORTS.TELEPORT_WORLD_Z, port.getTeleportLocation().getZ())
+                    .set(PORTS.TELEPORT_WORLD_PITCH, port.getTeleportLocation().getPitch())
+                    .set(PORTS.TELEPORT_WORLD_YAW, port.getTeleportLocation().getYaw())
+                    .set(PORTS.BLOCKADED, BooleanUtil.toByte(port.isBlockaded()))
+                    .set(PORTS.TOWN_IDENTIFIER, UUIDUtil.toBytes(port.getTown().getUUID()))
+                    .set(PORTS.TOWN_FEE, port.getTownFee())
+                    .set(PORTS.TRAVEL_NODE_TYPE, port.getType().name())
+                    .execute();
 
-            for (final Port port : ports) {
-                final @Nullable UUID town = port.getTown() == null ? null : port.getTown().getUUID();
-
-                queries.add(
-                    context
-                        .insertInto(
-                            PORTS,
-                            PORTS.IDENTIFIER,
-                            PORTS._NAME,
-                            PORTS.TRAVEL_NODE_SIZE,
-                            PORTS.SIGN_WORLD_IDENTIFIER,
-                            PORTS.SIGN_WORLD_X,
-                            PORTS.SIGN_WORLD_Y,
-                            PORTS.SIGN_WORLD_Z,
-                            PORTS.SIGN_WORLD_PITCH,
-                            PORTS.SIGN_WORLD_YAW,
-                            PORTS.TELEPORT_WORLD_IDENTIFIER,
-                            PORTS.TELEPORT_WORLD_X,
-                            PORTS.TELEPORT_WORLD_Y,
-                            PORTS.TELEPORT_WORLD_Z,
-                            PORTS.TELEPORT_WORLD_PITCH,
-                            PORTS.TELEPORT_WORLD_YAW,
-                            PORTS.BLOCKADED,
-                            PORTS.TOWN_IDENTIFIER,
-                            PORTS.TOWN_FEE,
-                            PORTS.TRAVEL_NODE_TYPE
-                        )
-                        .values(
-                            UUIDUtil.toBytes(port.getUuid()),
-                            port.getName(),
-                            port.getSize().getTier(),
-                            UUIDUtil.toBytes(port.getSignLocation().getWorld().getUID()),
-                            port.getSignLocation().getX(),
-                            port.getSignLocation().getY(),
-                            port.getSignLocation().getZ(),
-                            port.getSignLocation().getPitch(),
-                            port.getSignLocation().getYaw(),
-                            UUIDUtil.toBytes(port.getTeleportLocation().getWorld().getUID()),
-                            port.getTeleportLocation().getX(),
-                            port.getTeleportLocation().getY(),
-                            port.getTeleportLocation().getZ(),
-                            port.getTeleportLocation().getPitch(),
-                            port.getTeleportLocation().getYaw(),
-                            BooleanUtil.toByte(port.isBlockaded()),
-                            UUIDUtil.toBytes(town),
-                            port.getTownFee(),
-                            port.getType().name()
-                        )
-                        .onDuplicateKeyUpdate()
-                        .set(PORTS._NAME, port.getName())
-                        .set(PORTS.TRAVEL_NODE_SIZE, port.getSize().getTier())
-                        .set(PORTS.SIGN_WORLD_IDENTIFIER, UUIDUtil.toBytes(port.getSignLocation().getWorld().getUID()))
-                        .set(PORTS.SIGN_WORLD_X, port.getSignLocation().getX())
-                        .set(PORTS.SIGN_WORLD_Y, port.getSignLocation().getY())
-                        .set(PORTS.SIGN_WORLD_Z, port.getSignLocation().getZ())
-                        .set(PORTS.SIGN_WORLD_PITCH, port.getSignLocation().getPitch())
-                        .set(PORTS.SIGN_WORLD_YAW, port.getSignLocation().getYaw())
-                        .set(PORTS.TELEPORT_WORLD_IDENTIFIER, UUIDUtil.toBytes(port.getTeleportLocation().getWorld().getUID()))
-                        .set(PORTS.TELEPORT_WORLD_X, port.getTeleportLocation().getX())
-                        .set(PORTS.TELEPORT_WORLD_Y, port.getTeleportLocation().getY())
-                        .set(PORTS.TELEPORT_WORLD_Z, port.getTeleportLocation().getZ())
-                        .set(PORTS.TELEPORT_WORLD_PITCH, port.getTeleportLocation().getPitch())
-                        .set(PORTS.TELEPORT_WORLD_YAW, port.getTeleportLocation().getYaw())
-                        .set(PORTS.BLOCKADED, BooleanUtil.toByte(port.isBlockaded()))
-                        .set(PORTS.TOWN_IDENTIFIER, UUIDUtil.toBytes(port.getTown().getUUID()))
-                        .set(PORTS.TOWN_FEE, port.getTownFee())
-                        .set(PORTS.TRAVEL_NODE_TYPE, port.getType().name())
-                );
-            }
-
-            return queries.toArray(new Query[0]);
         }
 
         /**
          * Saves or updates the provided ports
+         *
          * @param ports ports
          * @implNote The database queries are executed async
          */
@@ -230,8 +231,9 @@ public abstract class Queries {
                     DSLContext context = DB.getContext(con);
 
                     context
-                        .batch(savePortsQueries(context, portsClone))
-                        .execute();
+                        .batched((configuration) -> {
+                            DSLContext ctx;
+                        });
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);
                 }
@@ -243,6 +245,7 @@ public abstract class Queries {
     public static abstract class Carriages {
         /**
          * Used to delete a carriage station
+         *
          * @param station carriage
          * @return completable future
          */
@@ -291,11 +294,12 @@ public abstract class Queries {
 
         /**
          * Used to fetch all carriage stations
+         *
          * @return list of carriage stations
          */
-        public static CompletableFuture<Set<CarriageStation>> loadAll() {
+        public static CompletableFuture<Map<CarriageStation, Set<UUID>>> loadAllCarriages() {
             return CompletableFuture.supplyAsync(() -> {
-                final Set<CarriageStation> carriages = new HashSet<>();
+                final Map<CarriageStation, Set<UUID>> carriages = new HashMap<>();
 
                 try (
                     Connection con = DB.getConnection()
@@ -351,13 +355,15 @@ public abstract class Queries {
 
                         final var town = TownyAPI.getInstance().getTown(townIdentifier);
 
-                        // TODO Parse remaining fields used in carriage object
+                        CarriageStation carriageStation = new CarriageStation(identifier, name, Settings.findCarriageStationSize(size), signLoc, teleportLoc);
+                        if (town != null) {
+                            carriageStation.setTown(town);
+                        }
+                        carriageStation.setBlockaded(BooleanUtil.fromByte(blockaded));
+                        carriageStation.setTownFee(townFee);
 
                         final Set<UUID> directConnections = loadDirectConnections(context, identifier);
-                        // TODO The final set of carriages will need to be iterated through again, to parse these UUID's into carriages
-
-                        // TODO Construct carriage object and add to result set
-//                        carriages.add(new CarriageStation());
+                        carriages.put(carriageStation, directConnections);
                     }
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);
@@ -369,7 +375,8 @@ public abstract class Queries {
 
         /**
          * Internally used in {@link #saveAllCarriages(Set)} to generate the queries
-         * @param context context
+         *
+         * @param context   context
          * @param carriages carriages
          * @return queries
          */
@@ -471,6 +478,7 @@ public abstract class Queries {
 
         /**
          * Saves or updates the provided carriages
+         *
          * @param carriageStations carriages
          * @implNote The database queries are executed async
          */

@@ -112,6 +112,24 @@ public class Settings {
         updateSizesInRegistries();
     }
 
+    public static PortSize findPortSize(int tier) {
+        for (PortSize portSize : portSizes.values()) {
+            if (tier == portSize.getTier()) {
+                return portSize;
+            }
+        }
+        return ((ArrayList<PortSize>) portSizes.values()).getFirst();
+    }
+
+    public static CarriageStationSize findCarriageStationSize(int tier) {
+        for (CarriageStationSize carriageStationSize : carriageStationSizes.values()) {
+            if (tier == carriageStationSize.getTier()) {
+                return carriageStationSize;
+            }
+        }
+        return ((ArrayList<CarriageStationSize>) carriageStationSizes.values()).getFirst();
+    }
+
     private static void updateSizesInRegistries() {
         for (Port port : TravelNodesManager.getPorts()) {
             boolean found = false;

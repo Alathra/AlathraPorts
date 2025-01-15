@@ -76,4 +76,5 @@ public abstract class DB {
     public static DatabaseType getDB() {
         return DatabaseHolder.getInstance().getDatabaseHandler().getDB();
     }
+
 }

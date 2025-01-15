@@ -3,6 +3,11 @@ package io.github.alathra.alathraports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.database.Queries;
 import io.github.alathra.alathraports.database.handler.DatabaseHandlerBuilder;
 import io.github.alathra.alathraports.hook.*;
 import io.github.alathra.alathraports.listener.ListenerHandler;
@@ -11,6 +16,8 @@ import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 /**
  * Main class.
@@ -87,12 +94,16 @@ public class AlathraPorts extends JavaPlugin {
             Logger.get().info(ColorParser.of("<green>Vault has been found on this server. Vault support enabled.").build());
         } else {
             Logger.get().warn(ColorParser.of("<yellow>Vault is not installed on this server. Vault support has been disabled.").build());
+            Logger.get().error(ColorParser.of("<red>Vault is a hard dependency. Plugin disabling...").build());
+            this.getServer().getPluginManager().disablePlugin(this);
         }
 
         if (townyHook.isTownyLoaded()) {
             Logger.get().info(ColorParser.of("<green>Towny has been found on this server. Towny support enabled.").build());
         } else {
             Logger.get().warn(ColorParser.of("<yellow>Towny is not installed on this server. Towny support has been disabled.").build());
+            Logger.get().error(ColorParser.of("<red>Vault is a hard dependency. Plugin disabling...").build());
+            this.getServer().getPluginManager().disablePlugin(this);
         }
 
         if (combatLogXHook.isCombatLogXLoaded()) {
@@ -106,6 +117,9 @@ public class AlathraPorts extends JavaPlugin {
         } else {
             Logger.get().warn(ColorParser.of("<yellow>Dynmap is not installed on this server. Dynmap support has been disabled.").build());
         }
+
+        registerPortsFromDB();
+        registerCarriageStationsFromDB();
 
     }
 
@@ -155,6 +169,59 @@ public class AlathraPorts extends JavaPlugin {
     @NotNull
     public static DynmapHook getDynmapHook() {
         return dynmapHook;
+    }
+
+    public static void registerPortsFromDB() {
+        Queries.Ports.loadAllPorts().thenAccept(data -> {
+            for (Port port : data) {
+                try {
+                    TravelNodesManager.registerPort(port);
+                } catch (TravelNodeRegisterException e) {
+                    io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public static void registerCarriageStationsFromDB() {
+        Queries.Carriages.loadAllCarriages().thenAccept(data -> {
+            for (CarriageStation carriageStation : data.keySet()) {
+                // Register carriage station
+                try {
+                    TravelNodesManager.registerCarriageStation(carriageStation);
+                } catch (TravelNodeRegisterException e) {
+                    io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
+                    continue;
+                }
+                // Match UUID of direct connections in registered carriage stations and add
+                for (UUID uuid : data.get(carriageStation)) {
+                    for (CarriageStation registeredCarriageStation : TravelNodesManager.getCarriageStations()) {
+                        if (registeredCarriageStation.isSimilar(carriageStation)) {
+                            continue;
+                        }
+                        if (uuid.equals(registeredCarriageStation.getUuid())) {
+                            carriageStation.addDirectConnection(registeredCarriageStation);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public static void saveAllPortsToDB() {
+        Queries.Ports.saveAllPorts(TravelNodesManager.getPorts());
+    }
+
+    public static void saveAllCarriageStationsToDB() {
+        Queries.Carriages.saveAllCarriages(TravelNodesManager.getCarriageStations());
+    }
+
+    public static void deletePortFromDB(Port port) {
+        Queries.Ports.deletePortQuery(port);
+    }
+
+    public static void deleteCarriageStationFromDB(CarriageStation carriageStation) {
+        Queries.Carriages.deleteCarriageQuery(carriageStation);
     }
 
 }

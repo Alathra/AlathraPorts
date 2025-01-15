@@ -1,12 +1,14 @@
 package io.github.alathra.alathraports.core;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.ports.PortSize;
+import io.github.alathra.alathraports.utility.DB;
 import io.github.alathra.alathraports.utility.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -32,10 +34,19 @@ public class TravelNodesManager {
             switch(travelNode.type) {
                 case PORT:
                     registerPort((Port) travelNode);
+                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
+                        AlathraPorts.getDynmapHook().placePortMarker((Port) travelNode);
+                        AlathraPorts.getDynmapHook().placePortRangeMarker((Port) travelNode);
+                    }
+                    AlathraPorts.saveAllPortsToDB();
                     creator.sendMessage(ColorParser.of("<green>Port " + travelNode.getName() + " has been created").build());
                     break;
                 case CARRIAGE_STATION:
                     registerCarriageStation((CarriageStation) travelNode);
+                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
+                        AlathraPorts.getDynmapHook().placeCarriageStationMarker((CarriageStation) travelNode);
+                    }
+                    AlathraPorts.saveAllCarriageStationsToDB();
                     creator.sendMessage(ColorParser.of("<green>Carriage Station " + travelNode.getName() + " has been created").build());
                     break;
             }
@@ -95,6 +106,11 @@ public class TravelNodesManager {
                 if(deregisterPort((Port) travelNode)) {
                     Block signBlock = travelNode.getSignLocation().getBlock();
                     signBlock.setType(Material.AIR);
+                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
+                        AlathraPorts.getDynmapHook().removePortMarker((Port) travelNode);
+                        AlathraPorts.getDynmapHook().removePortRangeMarker((Port) travelNode);
+                    }
+                    AlathraPorts.deletePortFromDB((Port) travelNode);
                     if (deleter != null) {
                         deleter.sendMessage(ColorParser.of("<yellow>Port " + travelNode.getName() + " has been deleted").build());
                     }
@@ -108,6 +124,11 @@ public class TravelNodesManager {
                 if(deregisterCarriageStation((CarriageStation) travelNode)) {
                     Block signBlock = travelNode.getSignLocation().getBlock();
                     signBlock.setType(Material.AIR);
+                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
+                        AlathraPorts.getDynmapHook().removeCarriageStationMarker((CarriageStation) travelNode);
+                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                    }
+                    AlathraPorts.deleteCarriageStationFromDB((CarriageStation) travelNode);
                     if (deleter != null) {
                         deleter.sendMessage(ColorParser.of("<yellow>Carriage Station " + travelNode.getName() + " has been deleted").build());
                     }

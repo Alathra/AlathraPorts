@@ -178,9 +178,9 @@ tasks {
 //            modrinth("carbon", "2.1.0-beta.21")
 //            github("jpenilla", "MiniMOTD", "v2.0.13", "minimotd-bukkit-2.0.13.jar")
 //            hangar("squaremap", "1.2.0")
-//            url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
-            github("MilkBowl", "Vault", "1.7.3", "Vault.jar")
-            github("PlaceholderAPI", "PlaceholderAPI", "2.11.4", "PlaceholderAPI-2.11.4.jar")
+            github("TheNewEconomy", "EconomyCore", "0.1.3.4", "TNE-Paper-0.1.3.4-Release-1.jar")
+            github("TheNewEconomy", "VaultUnlocked", "2.3.0", "VaultUnlocked-2.3.0.jar")
+            modrinth("dynmap", "3.7-beta-7")
         }
     }
 }
@@ -205,8 +205,8 @@ bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
 
     // Misc properties
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
-    depend = listOf()
-    softDepend = listOf("Vault", "ProtocolLib", "PlaceholderAPI")
+    depend = listOf("Towny", "Vault")
+    softDepend = listOf("CombatLogX", "dynmap")
 }
 
 flyway {
