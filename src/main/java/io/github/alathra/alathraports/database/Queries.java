@@ -142,7 +142,6 @@ public abstract class Queries {
          *
          * @param context context
          * @param port   port
-         * @return queries
          */
         private static void savePortsQueries(DSLContext context, final Port port) {
             final @Nullable UUID town = port.getTown() == null ? null : port.getTown().getUUID();
@@ -210,7 +209,6 @@ public abstract class Queries {
                     .set(PORTS.TOWN_FEE, port.getTownFee())
                     .set(PORTS.TRAVEL_NODE_TYPE, port.getType().name())
                     .execute();
-
         }
 
         /**
@@ -232,7 +230,8 @@ public abstract class Queries {
 
                     context
                         .batched((configuration) -> {
-                            DSLContext ctx;
+                            for (final Port port : portsClone)
+                                savePortsQueries(configuration.dsl(), port);
                         });
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);
@@ -377,103 +376,94 @@ public abstract class Queries {
          * Internally used in {@link #saveAllCarriages(Set)} to generate the queries
          *
          * @param context   context
-         * @param carriages carriages
-         * @return queries
+         * @param station carriage
          */
-        private static Query[] saveCarriagesQueries(DSLContext context, final Set<CarriageStation> carriages) {
-            final List<Query> queries = new ArrayList<>();
+        private static void saveCarriagesQueries(DSLContext context, final CarriageStation station) {
+            final @Nullable UUID town = station.getTown() == null ? null : station.getTown().getUUID();
 
-            for (final CarriageStation station : carriages) {
-                final @Nullable UUID town = station.getTown() == null ? null : station.getTown().getUUID();
+            context
+                .insertInto(
+                    CARRIAGESTATIONS,
+                    CARRIAGESTATIONS.IDENTIFIER,
+                    CARRIAGESTATIONS._NAME,
+                    CARRIAGESTATIONS.TRAVEL_NODE_SIZE,
+                    CARRIAGESTATIONS.SIGN_WORLD_IDENTIFIER,
+                    CARRIAGESTATIONS.SIGN_WORLD_X,
+                    CARRIAGESTATIONS.SIGN_WORLD_Y,
+                    CARRIAGESTATIONS.SIGN_WORLD_Z,
+                    CARRIAGESTATIONS.SIGN_WORLD_PITCH,
+                    CARRIAGESTATIONS.SIGN_WORLD_YAW,
+                    CARRIAGESTATIONS.TELEPORT_WORLD_IDENTIFIER,
+                    CARRIAGESTATIONS.TELEPORT_WORLD_X,
+                    CARRIAGESTATIONS.TELEPORT_WORLD_Y,
+                    CARRIAGESTATIONS.TELEPORT_WORLD_Z,
+                    CARRIAGESTATIONS.TELEPORT_WORLD_PITCH,
+                    CARRIAGESTATIONS.TELEPORT_WORLD_YAW,
+                    CARRIAGESTATIONS.BLOCKADED,
+                    CARRIAGESTATIONS.TOWN_IDENTIFIER,
+                    CARRIAGESTATIONS.TOWN_FEE,
+                    CARRIAGESTATIONS.TRAVEL_NODE_TYPE
+                )
+                .values(
+                    UUIDUtil.toBytes(station.getUuid()),
+                    station.getName(),
+                    station.getSize().getTier(),
+                    UUIDUtil.toBytes(station.getSignLocation().getWorld().getUID()),
+                    station.getSignLocation().getX(),
+                    station.getSignLocation().getY(),
+                    station.getSignLocation().getZ(),
+                    station.getSignLocation().getPitch(),
+                    station.getSignLocation().getYaw(),
+                    UUIDUtil.toBytes(station.getTeleportLocation().getWorld().getUID()),
+                    station.getTeleportLocation().getX(),
+                    station.getTeleportLocation().getY(),
+                    station.getTeleportLocation().getZ(),
+                    station.getTeleportLocation().getPitch(),
+                    station.getTeleportLocation().getYaw(),
+                    BooleanUtil.toByte(station.isBlockaded()),
+                    UUIDUtil.toBytes(town),
+                    station.getTownFee(),
+                    station.getType().name()
+                )
+                .onDuplicateKeyUpdate()
+                .set(CARRIAGESTATIONS._NAME, station.getName())
+                .set(CARRIAGESTATIONS.TRAVEL_NODE_SIZE, station.getSize().getTier())
+                .set(CARRIAGESTATIONS.SIGN_WORLD_IDENTIFIER, UUIDUtil.toBytes(station.getSignLocation().getWorld().getUID()))
+                .set(CARRIAGESTATIONS.SIGN_WORLD_X, station.getSignLocation().getX())
+                .set(CARRIAGESTATIONS.SIGN_WORLD_Y, station.getSignLocation().getY())
+                .set(CARRIAGESTATIONS.SIGN_WORLD_Z, station.getSignLocation().getZ())
+                .set(CARRIAGESTATIONS.SIGN_WORLD_PITCH, station.getSignLocation().getPitch())
+                .set(CARRIAGESTATIONS.SIGN_WORLD_YAW, station.getSignLocation().getYaw())
+                .set(CARRIAGESTATIONS.TELEPORT_WORLD_IDENTIFIER, UUIDUtil.toBytes(station.getTeleportLocation().getWorld().getUID()))
+                .set(CARRIAGESTATIONS.TELEPORT_WORLD_X, station.getTeleportLocation().getX())
+                .set(CARRIAGESTATIONS.TELEPORT_WORLD_Y, station.getTeleportLocation().getY())
+                .set(CARRIAGESTATIONS.TELEPORT_WORLD_Z, station.getTeleportLocation().getZ())
+                .set(CARRIAGESTATIONS.TELEPORT_WORLD_PITCH, station.getTeleportLocation().getPitch())
+                .set(CARRIAGESTATIONS.TELEPORT_WORLD_YAW, station.getTeleportLocation().getYaw())
+                .set(CARRIAGESTATIONS.BLOCKADED, BooleanUtil.toByte(station.isBlockaded()))
+                .set(CARRIAGESTATIONS.TOWN_IDENTIFIER, UUIDUtil.toBytes(station.getTown().getUUID()))
+                .set(CARRIAGESTATIONS.TOWN_FEE, station.getTownFee())
+                .set(CARRIAGESTATIONS.TRAVEL_NODE_TYPE, station.getType().name())
+                .execute();
 
-                queries.add(
-                    context
-                        .insertInto(
-                            CARRIAGESTATIONS,
-                            CARRIAGESTATIONS.IDENTIFIER,
-                            CARRIAGESTATIONS._NAME,
-                            CARRIAGESTATIONS.TRAVEL_NODE_SIZE,
-                            CARRIAGESTATIONS.SIGN_WORLD_IDENTIFIER,
-                            CARRIAGESTATIONS.SIGN_WORLD_X,
-                            CARRIAGESTATIONS.SIGN_WORLD_Y,
-                            CARRIAGESTATIONS.SIGN_WORLD_Z,
-                            CARRIAGESTATIONS.SIGN_WORLD_PITCH,
-                            CARRIAGESTATIONS.SIGN_WORLD_YAW,
-                            CARRIAGESTATIONS.TELEPORT_WORLD_IDENTIFIER,
-                            CARRIAGESTATIONS.TELEPORT_WORLD_X,
-                            CARRIAGESTATIONS.TELEPORT_WORLD_Y,
-                            CARRIAGESTATIONS.TELEPORT_WORLD_Z,
-                            CARRIAGESTATIONS.TELEPORT_WORLD_PITCH,
-                            CARRIAGESTATIONS.TELEPORT_WORLD_YAW,
-                            CARRIAGESTATIONS.BLOCKADED,
-                            CARRIAGESTATIONS.TOWN_IDENTIFIER,
-                            CARRIAGESTATIONS.TOWN_FEE,
-                            CARRIAGESTATIONS.TRAVEL_NODE_TYPE
-                        )
-                        .values(
-                            UUIDUtil.toBytes(station.getUuid()),
-                            station.getName(),
-                            station.getSize().getTier(),
-                            UUIDUtil.toBytes(station.getSignLocation().getWorld().getUID()),
-                            station.getSignLocation().getX(),
-                            station.getSignLocation().getY(),
-                            station.getSignLocation().getZ(),
-                            station.getSignLocation().getPitch(),
-                            station.getSignLocation().getYaw(),
-                            UUIDUtil.toBytes(station.getTeleportLocation().getWorld().getUID()),
-                            station.getTeleportLocation().getX(),
-                            station.getTeleportLocation().getY(),
-                            station.getTeleportLocation().getZ(),
-                            station.getTeleportLocation().getPitch(),
-                            station.getTeleportLocation().getYaw(),
-                            BooleanUtil.toByte(station.isBlockaded()),
-                            UUIDUtil.toBytes(town),
-                            station.getTownFee(),
-                            station.getType().name()
-                        )
-                        .onDuplicateKeyUpdate()
-                        .set(CARRIAGESTATIONS._NAME, station.getName())
-                        .set(CARRIAGESTATIONS.TRAVEL_NODE_SIZE, station.getSize().getTier())
-                        .set(CARRIAGESTATIONS.SIGN_WORLD_IDENTIFIER, UUIDUtil.toBytes(station.getSignLocation().getWorld().getUID()))
-                        .set(CARRIAGESTATIONS.SIGN_WORLD_X, station.getSignLocation().getX())
-                        .set(CARRIAGESTATIONS.SIGN_WORLD_Y, station.getSignLocation().getY())
-                        .set(CARRIAGESTATIONS.SIGN_WORLD_Z, station.getSignLocation().getZ())
-                        .set(CARRIAGESTATIONS.SIGN_WORLD_PITCH, station.getSignLocation().getPitch())
-                        .set(CARRIAGESTATIONS.SIGN_WORLD_YAW, station.getSignLocation().getYaw())
-                        .set(CARRIAGESTATIONS.TELEPORT_WORLD_IDENTIFIER, UUIDUtil.toBytes(station.getTeleportLocation().getWorld().getUID()))
-                        .set(CARRIAGESTATIONS.TELEPORT_WORLD_X, station.getTeleportLocation().getX())
-                        .set(CARRIAGESTATIONS.TELEPORT_WORLD_Y, station.getTeleportLocation().getY())
-                        .set(CARRIAGESTATIONS.TELEPORT_WORLD_Z, station.getTeleportLocation().getZ())
-                        .set(CARRIAGESTATIONS.TELEPORT_WORLD_PITCH, station.getTeleportLocation().getPitch())
-                        .set(CARRIAGESTATIONS.TELEPORT_WORLD_YAW, station.getTeleportLocation().getYaw())
-                        .set(CARRIAGESTATIONS.BLOCKADED, BooleanUtil.toByte(station.isBlockaded()))
-                        .set(CARRIAGESTATIONS.TOWN_IDENTIFIER, UUIDUtil.toBytes(station.getTown().getUUID()))
-                        .set(CARRIAGESTATIONS.TOWN_FEE, station.getTownFee())
-                        .set(CARRIAGESTATIONS.TRAVEL_NODE_TYPE, station.getType().name())
-                );
+            for (TravelNode targetStation : station.getDirectConnections()) {
+                context
+                    .deleteFrom(CARRIAGESTATIONS_CONNECTIONS)
+                    .where(CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_IDENTIFIER.eq(UUIDUtil.toBytes(station.getUuid())))
+                    .execute();
 
-                for (TravelNode targetStation : station.getDirectConnections()) {
-                    queries.add(
-                        context
-                            .deleteFrom(CARRIAGESTATIONS_CONNECTIONS)
-                            .where(CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_IDENTIFIER.eq(UUIDUtil.toBytes(station.getUuid())))
-                    );
-                    queries.add(
-                        context
-                            .insertInto(
-                                CARRIAGESTATIONS_CONNECTIONS,
-                                CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_IDENTIFIER,
-                                CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_TARGET_IDENTIFIER
-                            )
-                            .values(
-                                UUIDUtil.toBytes(station.getUuid()),
-                                UUIDUtil.toBytes(targetStation.getUuid())
-                            )
-                    );
-                }
+                context
+                    .insertInto(
+                        CARRIAGESTATIONS_CONNECTIONS,
+                        CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_IDENTIFIER,
+                        CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_TARGET_IDENTIFIER
+                    )
+                    .values(
+                        UUIDUtil.toBytes(station.getUuid()),
+                        UUIDUtil.toBytes(targetStation.getUuid())
+                    )
+                    .execute();
             }
-
-            return queries.toArray(new Query[0]);
         }
 
         /**
@@ -493,9 +483,10 @@ public abstract class Queries {
                 ) {
                     DSLContext context = DB.getContext(con);
 
-                    context
-                        .batch(saveCarriagesQueries(context, carriagesClone))
-                        .execute();
+                    context.batched(configuration -> {
+                        for (final CarriageStation carriageStation : carriagesClone)
+                            saveCarriagesQueries(configuration.dsl(), carriageStation);
+                    });
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);
                 }
