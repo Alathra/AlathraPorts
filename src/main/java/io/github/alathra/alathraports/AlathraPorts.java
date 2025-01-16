@@ -17,6 +17,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -172,40 +175,38 @@ public class AlathraPorts extends JavaPlugin {
     }
 
     public static void registerPortsFromDB() {
-        Queries.Ports.loadAllPorts().thenAccept(data -> {
-            for (Port port : data) {
-                try {
-                    TravelNodesManager.registerPort(port);
-                } catch (TravelNodeRegisterException e) {
-                    io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
-                }
+        final Set<Port> ports = Queries.Ports.loadAllPorts();
+        for (Port port : ports) {
+            try {
+                TravelNodesManager.registerPort(port);
+            } catch (TravelNodeRegisterException e) {
+                io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
             }
-        });
+        }
     }
 
     public static void registerCarriageStationsFromDB() {
-        Queries.Carriages.loadAllCarriages().thenAccept(data -> {
-            for (CarriageStation carriageStation : data.keySet()) {
-                // Register carriage station
-                try {
-                    TravelNodesManager.registerCarriageStation(carriageStation);
-                } catch (TravelNodeRegisterException e) {
-                    io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
-                    continue;
-                }
-                // Match UUID of direct connections in registered carriage stations and add
-                for (UUID uuid : data.get(carriageStation)) {
-                    for (CarriageStation registeredCarriageStation : TravelNodesManager.getCarriageStations()) {
-                        if (registeredCarriageStation.isSimilar(carriageStation)) {
-                            continue;
-                        }
-                        if (uuid.equals(registeredCarriageStation.getUuid())) {
-                            carriageStation.addDirectConnection(registeredCarriageStation);
-                        }
+        Map<CarriageStation, Set<UUID>> data = Queries.Carriages.loadAllCarriages();
+        for (CarriageStation carriageStation : data.keySet()) {
+            // Register carriage station
+            try {
+                TravelNodesManager.registerCarriageStation(carriageStation);
+            } catch (TravelNodeRegisterException e) {
+                io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
+                continue;
+            }
+            // Match UUID of direct connections in registered carriage stations and add
+            for (UUID uuid : data.get(carriageStation)) {
+                for (CarriageStation registeredCarriageStation : TravelNodesManager.getCarriageStations()) {
+                    if (registeredCarriageStation.isSimilar(carriageStation)) {
+                        continue;
+                    }
+                    if (uuid.equals(registeredCarriageStation.getUuid())) {
+                        carriageStation.addDirectConnection(registeredCarriageStation);
                     }
                 }
             }
-        });
+        }
     }
 
     public static void saveAllPortsToDB() {
