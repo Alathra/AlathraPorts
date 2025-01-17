@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.database.config;
 
-import io.github.alathra.alathraports.database.DatabaseType;
+import io.github.alathra.alathraports.database.handler.DatabaseType;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;

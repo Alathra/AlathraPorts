@@ -3,20 +3,26 @@ package io.github.alathra.alathraports.database.handler;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.config.ConfigHandler;
-import io.github.alathra.alathraports.database.DatabaseType;
+import io.github.alathra.alathraports.core.TravelNodesManager;
+import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
+import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
+import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.database.Queries;
 import io.github.alathra.alathraports.database.config.DatabaseConfig;
 import io.github.alathra.alathraports.database.exception.DatabaseInitializationException;
-import io.github.alathra.alathraports.database.pool.ConnectionPoolFactory;
 import io.github.alathra.alathraports.database.exception.DatabaseMigrationException;
-import io.github.alathra.alathraports.database.migration.MigrationHandler;
 import io.github.alathra.alathraports.database.jooq.JooqContext;
+import io.github.alathra.alathraports.database.migration.MigrationHandler;
+import io.github.alathra.alathraports.database.pool.ConnectionPoolFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Class that handles HikariCP connection pool, jOOQ and Flyway migrations.
@@ -27,15 +33,15 @@ public class DatabaseHandler implements Reloadable {
     private @Nullable DatabaseConfig databaseConfig = null;
     private @Nullable ConfigHandler configHandler = null;
     private final Logger logger;
-    private boolean isRunning = false;
+    private boolean isReady = false; // If the connection pool is connected and working, and Flyway migrations executed without any errors during startup.
 
     /**
      * Instantiates a new Database handler.
      *
      * @param configHandler the config handler
-     * @param logger         the logger
+     * @param logger        the logger
      */
-    public DatabaseHandler(@NotNull ConfigHandler configHandler, Logger logger) {
+    DatabaseHandler(@NotNull ConfigHandler configHandler, Logger logger) {
         this.configHandler = configHandler;
         this.logger = logger;
     }
@@ -46,7 +52,8 @@ public class DatabaseHandler implements Reloadable {
      * @param databaseConfig the database config
      * @param logger         the logger
      */
-    public DatabaseHandler(@NotNull DatabaseConfig databaseConfig, Logger logger) {
+    @TestOnly
+    DatabaseHandler(@NotNull DatabaseConfig databaseConfig, Logger logger) {
         this.databaseConfig = databaseConfig;
         this.logger = logger;
     }
@@ -63,10 +70,11 @@ public class DatabaseHandler implements Reloadable {
 
             // Start connection pool
             startup();
+            migrate();
         } catch (DatabaseInitializationException e) {
             logger.error("[DB] Database initialization error: {}", e.getMessage());
         } finally {
-            if (!isRunning()) {
+            if (!isReady()) {
                 logger.warn("[DB] Error while initializing database. Functionality will be limited.");
             }
         }
@@ -84,7 +92,7 @@ public class DatabaseHandler implements Reloadable {
      */
     @Override
     public void onDisable() {
-        if (!isRunning())
+        if (!isReady())
             return;
 
         try {
@@ -99,8 +107,8 @@ public class DatabaseHandler implements Reloadable {
      *
      * @return the boolean
      */
-    public boolean isRunning() {
-        return isRunning;
+    public boolean isReady() {
+        return isReady;
     }
 
     /**
@@ -161,9 +169,13 @@ public class DatabaseHandler implements Reloadable {
     }
 
     /**
-     * Creates a connection pool using HikariCP and executes Flyway migrations using jOOQ.
+     * Creates a connection pool using HikariCP and setups jOOQ DSLContext.
+     * Should always be followed by running Flyway migrations with {@link #migrate()}.
      */
     public void startup() throws DatabaseInitializationException {
+        if (isReady())
+            return;
+
         if (databaseConfig == null)
             throw new DatabaseInitializationException("Attempted to start a database connection pool but database config is null!");
 
@@ -199,18 +211,13 @@ public class DatabaseHandler implements Reloadable {
             databaseConfig.getDatabaseType().getSQLDialect(),
             databaseConfig.getTablePrefix()
         );
-
-        // Migrate with Flyway
-        migrate();
-
-        isRunning = true;
     }
 
     /**
      * Closes the connection pool.
      */
     public void shutdown() {
-        if (!isRunning())
+        if (!isReady())
             return;
 
         logger.info("[DB] Shutting down database pool...");
@@ -227,21 +234,25 @@ public class DatabaseHandler implements Reloadable {
 
         connectionPool.close();
         connectionPool = null;
-        isRunning = false;
+        isReady = false;
 
         logger.info("[DB] Closed database pool.");
     }
 
     /**
      * Execute database migrations with Flyway.
+     * Should always be run following the database being started using {@link #startup()}.
      */
-    private void migrate() throws DatabaseInitializationException {
+    public void migrate() throws DatabaseInitializationException {
         try {
             new MigrationHandler(
                 connectionPool,
                 databaseConfig
             )
                 .migrate();
+
+            // If we got here without errors the database is working correctly
+            isReady = true;
         } catch (DatabaseMigrationException e) {
             throw new DatabaseInitializationException("Failed to migrate database schemas to new version! Please backup your database and report the issue.", e);
         }

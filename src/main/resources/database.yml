@@ -2,7 +2,7 @@
 database:
   # Available types: "sqlite", "h2", "mysql", "mariadb"
   type: "sqlite"
-  table-prefix: "example_"
+  table-prefix: "alathraports_"
 
   # Authentication
   host: "localhost"

@@ -3,7 +3,8 @@
 ##############################
 .mtj.tmp/
 *.class
-*.jar
+**/*.jar
+!**/libs/*.jar
 *.war
 *.ear
 *.nar

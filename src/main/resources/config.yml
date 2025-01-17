@@ -1,8 +1,115 @@
-# Update Checker Settings
-update-checker:
-  enable: true
-  console: true # Post message to console
-  op: true # Send update notification to opped players on join
+GlobalSettings:
+  # Minimum distance a new port/carriage station can be from an existing port/carriage station
+  minimumDistance: 10
+  # Base cost for a journey
+  baseCost: 5.00
+  # Base cost for traveling to a node with an animal
+  animalBaseCost: 5.00
+  # Icon for when a port is blockaded (Material)
+  blockadeIcon: SKELETON_SKULL
+  # Show all blockaded ports in the travel menu
+  showBlockaded: true
+  # Automatically remove a port/carriage station if its associated town is deleted
+  removeOnTownDelete: true
+  # How often the ports/carriages will be saved to the database in seconds
+  dataSaveInterval: 1800
 
-# Translation, specify the language file to use, for example `en-US` which will load `/translations/en-US.yml`
-translation: "en-US"
+PortSettings:
+  sizes:
+    # An identifier used in to define this port size. Name has no bearing on code
+    tiny:
+      # A weight used in calculations. Higher tiers should have longer ranges, faster speeds and lower costs
+      tier: 1
+      # Name that will be referred to in the front-end when referencing this port size
+      name: "Jetty"
+      # Distance (radius) this port can facilitate in travel in blocks
+      range: 500
+      # Cost per 100 blocks traveled
+      cost: 16.00
+      # Blocks per second
+      speed: 25.00
+      # The maximum fee that the town can charge on a journey to this port
+      maxTownFee: 0.05
+      # How far the player can be from the port location before any ongoing journeys will be halted
+      journeyHaltRadius: 20.00
+      # The icon that will display in the travel menu
+      icon: JUNGLE_BOAT
+    small:
+      tier: 2
+      name: "Dockyard"
+      range: 1000
+      cost: 12.00
+      speed: 30.00
+      maxTownFee: 0.10
+      journeyHaltRadius: 30.00
+      icon: BIRCH_BOAT
+    medium:
+      tier: 3
+      name: "Marina"
+      range: 2000
+      cost: 8.00
+      speed: 50.00
+      maxTownFee: 0.15
+      journeyHaltRadius: 40.00
+      icon: OAK_BOAT
+    large:
+      tier: 4
+      name: "Harbor"
+      range: 3000
+      cost: 6.00
+      speed: 60.00
+      maxTownFee: 0.20
+      journeyHaltRadius: 50.00
+      icon: DARK_OAK_BOAT
+    superLarge:
+      tier: 5
+      name: "Megaport"
+      range: 5000
+      cost: 5.00
+      speed: 80.00
+      maxTownFee: 0.25
+      journeyHaltRadius: 60.00
+      icon: MANGROVE_BOAT
+
+CarriageStationSettings:
+  sizes:
+    # An identifier used in to define this carriage station size. Name has no bearing on code
+    small:
+      # A weight used in calculations. Higher tiers should have longer ranges, faster speeds and lower costs
+      tier: 1
+      # Name that will be referred to in the front-end when referencing this port size
+      name: "Small"
+      # Cost per 100 blocks traveled
+      cost: 16.00
+      # Blocks per second
+      speed: 25.00
+      # The maximum fee that the town can charge on a journey to this port
+      maxTownFee: 0.05
+      # How far the player can be from the carriage station location before any ongoing journeys will be halted
+      journeyHaltRadius: 20.00
+      # The icon that will display in the travel menu
+      icon: SADDLE
+    medium:
+      tier: 2
+      name: "Medium"
+      cost: 12.00
+      speed: 30.00
+      maxTownFee: 0.10
+      journeyHaltRadius: 30.00
+      icon: SADDLE
+    large:
+      tier: 3
+      name: "Large"
+      cost: 8.00
+      speed: 50.00
+      maxTownFee: 0.20
+      journeyHaltRadius: 40.00
+      icon: SADDLE
+
+DynmapSettings:
+  # Layer priority for the marker set. Prevents conflicting layers
+  # Player/Default Markers is 1
+  # Dynmap-Towny is 2
+  TravelNodeLayerPriority: 3
+  PortRangeLayerPriority: 4
+  CarriageConnectionsLayerPriority: 5
