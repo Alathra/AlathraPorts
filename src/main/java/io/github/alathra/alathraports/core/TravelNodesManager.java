@@ -1,7 +1,6 @@
 package io.github.alathra.alathraports.core;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
-import dev.jorel.commandapi.CommandAPIBukkit;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
@@ -127,7 +126,7 @@ public class TravelNodesManager {
                     signBlock.setType(Material.AIR);
                     if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                         AlathraPorts.getDynmapHook().removeCarriageStationMarker((CarriageStation) travelNode);
-                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                        AlathraPorts.getDynmapHook().removeCarriageStationConnectionMarkers((CarriageStation) travelNode);
                     }
                     DBAction.deleteCarriageStationFromDB((CarriageStation) travelNode);
                     if (deleter != null) {
@@ -158,7 +157,7 @@ public class TravelNodesManager {
         carriageStation1.removeIfDirectlyConnected(carriageStation2);
         carriageStation2.removeIfDirectlyConnected(carriageStation1);
         if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+            AlathraPorts.getDynmapHook().removeCarriageStationConnectionMarker(carriageStation1, carriageStation2);
         }
         DBAction.saveAllCarriageStationsToDB();
         disconnector.sendMessage(ColorParser.of("<yellow>Carriage Station connection removed").build());

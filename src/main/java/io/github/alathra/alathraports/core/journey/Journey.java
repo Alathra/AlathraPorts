@@ -16,7 +16,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public class Journey {
     // The current index of the travel nodes, the index of the port location of the player in a journey
     private int currentIndex;
     // The current bukkit task (if any) that is running, the scheduled task (delay) the next teleport in the journey
-    private BukkitTask currentTravelTask;
+    private int currentTravelTask;
     // Non-null if the player is mounted when the journey starts (i.e. horse)
     private Entity mounted;
     // The number of animals the player is bringing with them on the journey (mounted + leashed)
@@ -112,7 +111,7 @@ public class Journey {
         }
 
         int time = getTime(nodes.get(currentIndex), nodes.get(currentIndex+1));
-        currentTravelTask = Bukkit.getServer().getScheduler().runTaskLater(AlathraPorts.getInstance(), () -> {
+        currentTravelTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AlathraPorts.getInstance(), () -> {
             // Take money from player for each node traveled
             updateNumAnimals();
             final Economy economy = AlathraPorts.getVaultHook().getEconomy();
@@ -121,11 +120,10 @@ public class Journey {
             // Attempt to add tax to town bank, if applicable
             if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                TravelNode intermediateDestination = nodes.get(currentIndex+1);
-               if (intermediateDestination.getTown() == null) {
-                   return;
+               if (intermediateDestination.getTown() != null) {
+                   double tax = getCost(nodes.get(currentIndex), intermediateDestination) * intermediateDestination.getTownFee();
+                   TownyHook.addToTownBank(intermediateDestination, tax);
                }
-               double tax = getCost(nodes.get(currentIndex), intermediateDestination) * intermediateDestination.getTownFee();
-               TownyHook.addToTownBank(intermediateDestination, tax);
             }
             currentIndex++;
             player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
@@ -152,9 +150,7 @@ public class Journey {
     // Interrupt an ongoing journey
     public void halt() {
         halted = true;
-        if (currentTravelTask != null) {
-            currentTravelTask.cancel();
-        }
+        Bukkit.getServer().getScheduler().cancelTask(currentTravelTask);
         player.sendMessage(ColorParser.of("<red>Your journey to <light_purple>" + destination.getName() + " <red>has been halted").build());
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }

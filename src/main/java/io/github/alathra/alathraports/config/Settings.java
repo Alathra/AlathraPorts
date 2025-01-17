@@ -30,6 +30,7 @@ public class Settings {
     public static Material BLOCKADE_ICON;
     public static boolean SHOW_BLOCKADED;
     public static boolean REMOVE_PORT_ON_TOWN_DELETE;
+    public static int DATA_SAVE_INTERVAL;
     public static Map<String, PortSize> portSizes = new HashMap<>();
     public static Map<String, CarriageStationSize> carriageStationSizes = new HashMap<>();
     public static int TRAVEL_NODES_DYNMAP_LAYER;
@@ -52,6 +53,7 @@ public class Settings {
         }
         SHOW_BLOCKADED = getConfig().getOrDefault("GlobalSettings.showBlockaded", true);
         REMOVE_PORT_ON_TOWN_DELETE = getConfig().getOrDefault("GlobalSettings.removeOnTownDelete", true);
+        DATA_SAVE_INTERVAL = getConfig().getOrDefault("GlobalSettings.dataSaveInterval", 1800);
         updateSizes();
         TRAVEL_NODES_DYNMAP_LAYER = getConfig().getOrDefault("DynmapSettings.TravelNodeLayerPriority",3);
         PORT_RANGES_DYNMAP_LAYER = getConfig().getOrDefault("DynmapSettings.PortRangeLayerPriority",4);

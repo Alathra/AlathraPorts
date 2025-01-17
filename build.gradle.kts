@@ -166,7 +166,7 @@ tasks {
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.21")
+        minecraftVersion("1.21.1")
 
         // IntelliJ IDEA debugger setup: https://docs.papermc.io/paper/dev/debugging#using-a-remote-debugger
         jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-DPaper.IgnoreJavaVersion=true", "-Dcom.mojang.eula.agree=true", "-DIReallyKnowWhatIAmDoingISwear", "-Dpaper.playerconnection.keepalive=6000")
@@ -175,9 +175,6 @@ tasks {
 
         // Automatically install dependencies
         downloadPlugins {
-//            modrinth("carbon", "2.1.0-beta.21")
-//            github("jpenilla", "MiniMOTD", "v2.0.13", "minimotd-bukkit-2.0.13.jar")
-//            hangar("squaremap", "1.2.0")
             github("TheNewEconomy", "EconomyCore", "0.1.3.4", "TNE-Paper-0.1.3.4-Release-1.jar")
             github("TheNewEconomy", "VaultUnlocked", "2.3.0", "VaultUnlocked-2.3.0.jar")
             modrinth("dynmap", "3.7-beta-7")

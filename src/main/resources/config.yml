@@ -11,6 +11,8 @@ GlobalSettings:
   showBlockaded: true
   # Automatically remove a port/carriage station if its associated town is deleted
   removeOnTownDelete: true
+  # How often the ports/carriages will be saved to the database in seconds
+  dataSaveInterval: 1800
 
 PortSettings:
   sizes:

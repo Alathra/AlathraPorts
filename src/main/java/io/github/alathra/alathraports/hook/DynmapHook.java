@@ -173,7 +173,7 @@ public class DynmapHook implements Reloadable {
     }
 
     public void placePortMarker(Port port) {
-        String markerID = port.getName() + "__port";
+        String markerID = port.getUuid() + "__port";
         String infobox =
             "<div class=\\\"regioninfo\\\">" +
                 "<div class=\"\\infowindow\\\">" +
@@ -203,7 +203,7 @@ public class DynmapHook implements Reloadable {
     }
 
     public void placeCarriageStationMarker(CarriageStation carriageStation) {
-        String markerID = carriageStation.getName() + "__carriage_station";
+        String markerID = carriageStation.getUuid() + "__carriage_station";
         String infobox =
             "<div class=\\\"regioninfo\\\">" +
                 "<div class=\"\\infowindow\\\">" +
@@ -233,7 +233,7 @@ public class DynmapHook implements Reloadable {
     }
 
     public void placePortRangeMarker(Port port) {
-        String markerID = port.getName() + "__port_range";
+        String markerID = port.getUuid() + "__port_range";
         int range = ((PortSize) port.getSize()).getRange();
         CircleMarker circleMarker = portRangeMarkerSet.createCircleMarker(
             markerID, // String ID
@@ -257,7 +257,7 @@ public class DynmapHook implements Reloadable {
     }
 
     public void placeCarriageConnectionMarker(CarriageStation carriageStation1, CarriageStation carriageStation2) {
-        String markerID = carriageStation1.getName() + carriageStation2.getName() + "__carriage_connection";
+        String markerID = carriageStation1.getUuid() + "-" + carriageStation2.getUuid() + "__carriage_connection";
         PolyLineMarker polyLineMarker =  carriageConnectionsMarkerSet.createPolyLineMarker(
             markerID, // String ID
             carriageStation1.getName() + "-" + carriageStation2.getName() + " Connection", // Label
@@ -271,23 +271,42 @@ public class DynmapHook implements Reloadable {
     }
 
     public void removePortMarker(Port port) {
-        Marker marker = mainMarkerSet.findMarker(port.getName() + "__port");
+        Marker marker = mainMarkerSet.findMarker(port.getUuid()+ "__port");
         if (marker != null) {
             marker.deleteMarker();
         }
     }
 
     public void removeCarriageStationMarker(CarriageStation carriageStation) {
-        Marker marker = mainMarkerSet.findMarker(carriageStation.getName() + "__carriage_station");
+        Marker marker = mainMarkerSet.findMarker(carriageStation.getUuid() + "__carriage_station");
         if (marker != null) {
             marker.deleteMarker();
         }
     }
 
     public void removePortRangeMarker(Port port) {
-        CircleMarker circleMarker = portRangeMarkerSet.findCircleMarker(port.getName() + "__port_range");
+        CircleMarker circleMarker = portRangeMarkerSet.findCircleMarker(port.getUuid() + "__port_range");
         if (circleMarker != null) {
             circleMarker.deleteMarker();
+        }
+    }
+
+    public void removeCarriageStationConnectionMarker(CarriageStation carriageStation1, CarriageStation carriageStation2) {
+        String markerID1 = carriageStation1.getUuid() + "-" + carriageStation2.getUuid() + "__carriage_connection";
+        String markerID2 = carriageStation2.getUuid() + "-" + carriageStation1.getUuid() + "__carriage_connection";
+        PolyLineMarker polyLineMarker1 = carriageConnectionsMarkerSet.findPolyLineMarker(markerID1);
+        PolyLineMarker polyLineMarker2 = carriageConnectionsMarkerSet.findPolyLineMarker(markerID2);
+        if (polyLineMarker1 != null) {
+            polyLineMarker1.deleteMarker();
+        }
+        if (polyLineMarker2 != null) {
+            polyLineMarker2.deleteMarker();
+        }
+    }
+
+    public void removeCarriageStationConnectionMarkers(CarriageStation carriageStation) {
+        for (TravelNode connection : carriageStation.getDirectConnections()) {
+            removeCarriageStationConnectionMarker(carriageStation, (CarriageStation) connection);
         }
     }
 
@@ -306,9 +325,16 @@ public class DynmapHook implements Reloadable {
         placeCarriageStationMarker(carriageStation);
     }
 
-    public void refreshCarriageStationConnectionMarkers() {
-        clearAllMarkers(carriageConnectionsMarkerSet);
-        placeAllCarriageConnectionMarkers();
+    public void refreshCarriageStationConnectionMarker(CarriageStation carriageStation1, CarriageStation carriageStation2) {
+        removeCarriageStationConnectionMarker(carriageStation1, carriageStation2);
+        placeCarriageConnectionMarker(carriageStation1, carriageStation2);
+    }
+
+    public void refreshCarriageStationConnectionMarkers(CarriageStation carriageStation) {
+        for (TravelNode connection : carriageStation.getDirectConnections()) {
+            removeCarriageStationConnectionMarker(carriageStation, (CarriageStation) connection);
+            placeCarriageConnectionMarker(carriageStation, (CarriageStation) connection);
+        }
     }
 
 }

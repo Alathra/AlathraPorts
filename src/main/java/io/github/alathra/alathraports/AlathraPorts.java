@@ -83,11 +83,6 @@ public class AlathraPorts extends JavaPlugin {
         DB.getHandler().onEnable();
         commandHandler.onEnable();
         listenerHandler.onEnable();
-        vaultHook.onEnable();
-        papiHook.onEnable();
-        townyHook.onEnable();
-        combatLogXHook.onEnable();
-        dynmapHook.onEnable();
 
         if (!DB.isReady()) {
             Logger.get().warn(ColorParser.of("<yellow>DatabaseHolder handler failed to start. Database support has been disabled.").build());
@@ -124,11 +119,19 @@ public class AlathraPorts extends JavaPlugin {
 
         DBAction.registerPortsFromDB();
         DBAction.registerCarriageStationsFromDB();
+        DBAction.initPeriodicDBSaving();
+
+        vaultHook.onEnable();
+        papiHook.onEnable();
+        townyHook.onEnable();
+        combatLogXHook.onEnable();
+        dynmapHook.onEnable();
 
     }
 
     @Override
     public void onDisable() {
+        DBAction.stopPeriodicDBSaving();
         configHandler.onDisable();
         DB.getHandler().onDisable();
         commandHandler.onDisable();

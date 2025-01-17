@@ -15,6 +15,7 @@ import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
+import io.github.alathra.alathraports.database.DBAction;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -246,6 +247,7 @@ public class PortsCommand {
                                         AlathraPorts.getDynmapHook().refreshPortMarker(port);
                                         AlathraPorts.getDynmapHook().refreshPortRangeMarker(port);
                                     }
+                                    DBAction.saveAllPortsToDB();
                                     sender.sendMessage(ColorParser.of("<green>Port name has been changed").build());
                                 } catch (TravelNodeRegisterException e) {
                                     // Revert sign change, registration failed
@@ -275,6 +277,7 @@ public class PortsCommand {
                                         AlathraPorts.getDynmapHook().refreshPortMarker(port);
                                         AlathraPorts.getDynmapHook().refreshPortRangeMarker(port);
                                     }
+                                    DBAction.saveAllPortsToDB();
                                     sender.sendMessage(ColorParser.of("<green>Port size has been changed").build());
                                 } catch (TravelNodeRegisterException e) {
                                     // Revert sign change, registration failed
@@ -309,6 +312,7 @@ public class PortsCommand {
                                         AlathraPorts.getDynmapHook().refreshPortMarker(port);
                                         AlathraPorts.getDynmapHook().refreshPortRangeMarker(port);
                                     }
+                                    DBAction.saveAllPortsToDB();
                                     if (newLocation.equals(sender.getLocation())) {
                                         sender.sendMessage(ColorParser.of("<green>Port teleport location has been changed to your current location").build());
                                     } else {
@@ -342,8 +346,9 @@ public class PortsCommand {
                                     TravelNodesManager.reRegisterCarriageStation(carriageStation);
                                     if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                         AlathraPorts.getDynmapHook().refreshCarriageStationMarker(carriageStation);
-                                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                     }
+                                    DBAction.saveAllCarriageStationsToDB();
                                     sender.sendMessage(ColorParser.of("<green>Carriage station name has been changed").build());
                                 } catch (TravelNodeRegisterException e) {
                                     // Revert sign change, registration failed
@@ -371,8 +376,9 @@ public class PortsCommand {
                                     carriageStation.setDefaultTax();
                                     if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                         AlathraPorts.getDynmapHook().refreshCarriageStationMarker(carriageStation);
-                                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                     }
+                                    DBAction.saveAllCarriageStationsToDB();
                                     sender.sendMessage(ColorParser.of("<green>Carriage station size has been changed").build());
                                 } catch (TravelNodeRegisterException e) {
                                     // Revert sign change, registration failed
@@ -405,8 +411,9 @@ public class PortsCommand {
                                     TravelNodesManager.reRegisterCarriageStation(carriageStation);
                                     if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                         AlathraPorts.getDynmapHook().refreshCarriageStationMarker(carriageStation);
-                                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                                        AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                     }
+                                    DBAction.saveAllCarriageStationsToDB();
                                     if (newLocation.equals(sender.getLocation())) {
                                         sender.sendMessage(ColorParser.of("<green>Carriage station teleport location has been changed to your current location").build());
                                     } else {
@@ -452,13 +459,14 @@ public class PortsCommand {
                             }
                             Location oldSignLocation = port.getSignLocation();
                             try {
-                                TravelNodesManager.reRegisterPort(port);
                                 switch (blockFace) {
                                     case UP, DOWN:
                                         if (block.getRelative(BlockFace.UP).isEmpty()) {
                                             Location newSignLocation = block.getRelative(BlockFace.UP).getLocation();
                                             port.setSignLocation(newSignLocation);
                                             port.setTeleportLocation(newSignLocation);
+                                            TravelNodesManager.reRegisterPort(port);
+                                            DBAction.saveAllPortsToDB();
                                             if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                                 AlathraPorts.getDynmapHook().refreshPortMarker(port);
                                                 AlathraPorts.getDynmapHook().refreshPortRangeMarker(port);
@@ -472,6 +480,8 @@ public class PortsCommand {
                                             Location newSignLocation = block.getRelative(blockFace).getLocation();
                                             port.setSignLocation(newSignLocation);
                                             port.setTeleportLocation(newSignLocation);
+                                            TravelNodesManager.reRegisterPort(port);
+                                            DBAction.saveAllPortsToDB();
                                             if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                                 AlathraPorts.getDynmapHook().refreshPortMarker(port);
                                                 AlathraPorts.getDynmapHook().refreshPortRangeMarker(port);
@@ -518,16 +528,17 @@ public class PortsCommand {
                             }
                             Location oldSignLocation = carriageStation.getSignLocation();
                             try {
-                                TravelNodesManager.reRegisterCarriageStation(carriageStation);
                                 switch (blockFace) {
                                     case UP, DOWN:
                                         if (block.getRelative(BlockFace.UP).isEmpty()) {
                                             Location newSignLocation = block.getRelative(BlockFace.UP).getLocation();
                                             carriageStation.setSignLocation(newSignLocation);
                                             carriageStation.setTeleportLocation(newSignLocation);
+                                            TravelNodesManager.reRegisterCarriageStation(carriageStation);
+                                            DBAction.saveAllCarriageStationsToDB();
                                             if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                                 AlathraPorts.getDynmapHook().refreshCarriageStationMarker(carriageStation);
-                                                AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                                                AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                             }
                                         } else {
                                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement above block").build());
@@ -538,9 +549,11 @@ public class PortsCommand {
                                             Location newSignLocation = block.getRelative(blockFace).getLocation();
                                             carriageStation.setSignLocation(newSignLocation);
                                             carriageStation.setTeleportLocation(newSignLocation);
+                                            TravelNodesManager.reRegisterCarriageStation(carriageStation);
+                                            DBAction.saveAllCarriageStationsToDB();
                                             if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                                                 AlathraPorts.getDynmapHook().refreshCarriageStationMarker(carriageStation);
-                                                AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+                                                AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                             }
                                         } else {
                                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Could not find safe sign placement on the block face").build());
