@@ -15,7 +15,6 @@ import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
-import io.github.alathra.alathraports.utility.DB;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -654,22 +653,7 @@ public class PortsCommand {
                     .executesPlayer((Player sender, CommandArguments args) -> {
                         CarriageStation carriageStation1 = (CarriageStation) args.get("firstCarriage_station");
                         CarriageStation carriageStation2 = (CarriageStation) args.get("secondCarriage_station");
-                        if (carriageStation1 == null || carriageStation2 == null) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument(s)").build());
-                        }
-                        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Identical carriage station arguments").build());
-                        }
-                        if (carriageStation1.getDirectConnections().contains(carriageStation2) && carriageStation2.getDirectConnections().contains(carriageStation1)) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>This connection already exists").build());
-                        }
-                        carriageStation1.addDirectConnection(carriageStation2);
-                        carriageStation2.addDirectConnection(carriageStation1);
-                        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                            AlathraPorts.getDynmapHook().placeCarriageConnectionMarker(carriageStation1, carriageStation2);
-                        }
-                        AlathraPorts.saveAllCarriageStationsToDB();
-                        sender.sendMessage(ColorParser.of("<green>Carriage Station connection established").build());
+                        TravelNodesManager.connectCarriageStation(carriageStation1, carriageStation2, sender);
                     })
             );
     }
@@ -686,23 +670,7 @@ public class PortsCommand {
                     .executesPlayer((Player sender, CommandArguments args) -> {
                         CarriageStation carriageStation1 = (CarriageStation) args.get("firstCarriage_station");
                         CarriageStation carriageStation2 = (CarriageStation) args.get("secondCarriage_station");
-                        if (carriageStation1 == null || carriageStation2 == null) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument(s)").build());
-                        }
-                        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Identical carriage station arguments").build());
-                        }
-                        if (!(carriageStation1.getDirectConnections().contains(carriageStation2)) && !(carriageStation2.getDirectConnections().contains(carriageStation1))) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>There is no connection here").build());
-                        }
-                        carriageStation1.removeIfDirectlyConnected(carriageStation2);
-                        carriageStation2.removeIfDirectlyConnected(carriageStation1);
-                        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                            AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
-                        }
-                        AlathraPorts.saveAllCarriageStationsToDB();
-                        sender.sendMessage(ColorParser.of("<yellow>Carriage Station connection removed").build());
-
+                        TravelNodesManager.disconnectCarriageStations(carriageStation1, carriageStation2, sender);
                     })
             );
     }

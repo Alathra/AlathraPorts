@@ -1,6 +1,7 @@
 package io.github.alathra.alathraports.core;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import dev.jorel.commandapi.CommandAPIBukkit;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
@@ -8,7 +9,7 @@ import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.ports.PortSize;
-import io.github.alathra.alathraports.utility.DB;
+import io.github.alathra.alathraports.database.DBAction;
 import io.github.alathra.alathraports.utility.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -38,7 +39,7 @@ public class TravelNodesManager {
                         AlathraPorts.getDynmapHook().placePortMarker((Port) travelNode);
                         AlathraPorts.getDynmapHook().placePortRangeMarker((Port) travelNode);
                     }
-                    AlathraPorts.saveAllPortsToDB();
+                    DBAction.saveAllPortsToDB();
                     creator.sendMessage(ColorParser.of("<green>Port " + travelNode.getName() + " has been created").build());
                     break;
                 case CARRIAGE_STATION:
@@ -46,7 +47,7 @@ public class TravelNodesManager {
                     if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
                         AlathraPorts.getDynmapHook().placeCarriageStationMarker((CarriageStation) travelNode);
                     }
-                    AlathraPorts.saveAllCarriageStationsToDB();
+                    DBAction.saveAllCarriageStationsToDB();
                     creator.sendMessage(ColorParser.of("<green>Carriage Station " + travelNode.getName() + " has been created").build());
                     break;
             }
@@ -110,7 +111,7 @@ public class TravelNodesManager {
                         AlathraPorts.getDynmapHook().removePortMarker((Port) travelNode);
                         AlathraPorts.getDynmapHook().removePortRangeMarker((Port) travelNode);
                     }
-                    AlathraPorts.deletePortFromDB((Port) travelNode);
+                    DBAction.deletePortFromDB((Port) travelNode);
                     if (deleter != null) {
                         deleter.sendMessage(ColorParser.of("<yellow>Port " + travelNode.getName() + " has been deleted").build());
                     }
@@ -128,7 +129,7 @@ public class TravelNodesManager {
                         AlathraPorts.getDynmapHook().removeCarriageStationMarker((CarriageStation) travelNode);
                         AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
                     }
-                    AlathraPorts.deleteCarriageStationFromDB((CarriageStation) travelNode);
+                    DBAction.deleteCarriageStationFromDB((CarriageStation) travelNode);
                     if (deleter != null) {
                         deleter.sendMessage(ColorParser.of("<yellow>Carriage Station " + travelNode.getName() + " has been deleted").build());
                     }
@@ -139,6 +140,48 @@ public class TravelNodesManager {
                 }
                 break;
         }
+    }
+
+    public static void disconnectCarriageStations(CarriageStation carriageStation1, CarriageStation carriageStation2, Player disconnector) {
+        if (carriageStation1 == null || carriageStation2 == null) {
+            disconnector.sendMessage(ColorParser.of("<red>Invalid carriage station argument(s)").build());
+            return;
+        }
+        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
+            disconnector.sendMessage(ColorParser.of("<red>Identical carriage station arguments").build());
+            return;
+        }
+        if (!(carriageStation1.getDirectConnections().contains(carriageStation2)) && !(carriageStation2.getDirectConnections().contains(carriageStation1))) {
+            disconnector.sendMessage(ColorParser.of("<red>There is no connection here").build());
+            return;
+        }
+        carriageStation1.removeIfDirectlyConnected(carriageStation2);
+        carriageStation2.removeIfDirectlyConnected(carriageStation1);
+        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
+            AlathraPorts.getDynmapHook().refreshCarriageStationConnectionMarkers();
+        }
+        DBAction.saveAllCarriageStationsToDB();
+        disconnector.sendMessage(ColorParser.of("<yellow>Carriage Station connection removed").build());
+    }
+
+    public static void connectCarriageStation(CarriageStation carriageStation1, CarriageStation carriageStation2, Player connector) {
+        if (carriageStation1 == null || carriageStation2 == null) {
+            connector.sendMessage(ColorParser.of("<red>Invalid carriage station argument(s)").build());
+            return;
+        }
+        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
+            connector.sendMessage(ColorParser.of("<red>Identical carriage station arguments").build());
+        }
+        if (carriageStation1.getDirectConnections().contains(carriageStation2) && carriageStation2.getDirectConnections().contains(carriageStation1)) {
+            connector.sendMessage(ColorParser.of("<red>This connection already exists").build());
+        }
+        carriageStation1.addDirectConnection(carriageStation2);
+        carriageStation2.addDirectConnection(carriageStation1);
+        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
+            AlathraPorts.getDynmapHook().placeCarriageConnectionMarker(carriageStation1, carriageStation2);
+        }
+        DBAction.saveAllCarriageStationsToDB();
+        connector.sendMessage(ColorParser.of("<green>Carriage Station connection established").build());
     }
 
     public static void registerPort(Port newPort) throws TravelNodeRegisterException {
@@ -164,15 +207,6 @@ public class TravelNodesManager {
                 if (newPort.getTeleportLocation().distance(port.getTeleportLocation()) <= Settings.MINIMUM_PORT_DISTANCE) {
                     throw new TravelNodeRegisterException("Travel Node Failed to Register: New port with name \"" + newPort.getName() + "\" has a teleport location that is too close to a registered port");
                 }
-            }
-            // if the port sign location block is not a sign
-            if (Tag.ALL_SIGNS.isTagged(newPort.getSignLocation().getBlock().getType())) {
-                throw new TravelNodeRegisterException("Travel Node Failed to Register: New port with name \"" + newPort.getName() + "\" has a block that is not a sign at its sign location");
-            }
-            // if the port's tp location is not air blocks and is not over water, so a bad location
-            if ( !(newPort.getTeleportLocation().getBlock().getType().isAir() && newPort.getTeleportLocation().getBlock().getRelative(BlockFace.UP).getType().isAir())
-                || !(newPort.getTeleportLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid()) ) {
-                throw new TravelNodeRegisterException("Travel Node Failed to Register: New port with name \"" + newPort.getName() + "\" has an unsafe teleport location");
             }
         }
         // register port
@@ -202,15 +236,6 @@ public class TravelNodesManager {
                 if (newCarriageStation.getTeleportLocation().distance(carriageStation.getTeleportLocation()) <= Settings.MINIMUM_PORT_DISTANCE) {
                     throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has a teleport location that is too close to a registered port");
                 }
-            }
-            // if the carriage station sign location block is not a sign
-            if (Tag.ALL_SIGNS.isTagged(newCarriageStation.getSignLocation().getBlock().getType())) {
-                throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has a block that is not a sign at its sign location");
-            }
-            // if the carriage station's tp location is not air blocks and is not over water, so a bad location
-            if ( !(newCarriageStation.getTeleportLocation().getBlock().getType().isAir() && newCarriageStation.getTeleportLocation().getBlock().getRelative(BlockFace.UP).getType().isAir())
-                || !(newCarriageStation.getTeleportLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid()) ) {
-                throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has an unsafe teleport location");
             }
         }
         // register caravan

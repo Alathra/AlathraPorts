@@ -7,6 +7,7 @@ import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.core.ports.Port;
+import io.github.alathra.alathraports.database.DBAction;
 import io.github.alathra.alathraports.database.Queries;
 import io.github.alathra.alathraports.database.handler.DatabaseHandlerBuilder;
 import io.github.alathra.alathraports.hook.*;
@@ -121,8 +122,8 @@ public class AlathraPorts extends JavaPlugin {
             Logger.get().warn(ColorParser.of("<yellow>Dynmap is not installed on this server. Dynmap support has been disabled.").build());
         }
 
-        registerPortsFromDB();
-        registerCarriageStationsFromDB();
+        DBAction.registerPortsFromDB();
+        DBAction.registerCarriageStationsFromDB();
 
     }
 
@@ -172,57 +173,6 @@ public class AlathraPorts extends JavaPlugin {
     @NotNull
     public static DynmapHook getDynmapHook() {
         return dynmapHook;
-    }
-
-    public static void registerPortsFromDB() {
-        final Set<Port> ports = Queries.Ports.loadAllPorts();
-        for (Port port : ports) {
-            try {
-                TravelNodesManager.registerPort(port);
-            } catch (TravelNodeRegisterException e) {
-                io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
-            }
-        }
-    }
-
-    public static void registerCarriageStationsFromDB() {
-        Map<CarriageStation, Set<UUID>> data = Queries.Carriages.loadAllCarriages();
-        for (CarriageStation carriageStation : data.keySet()) {
-            // Register carriage station
-            try {
-                TravelNodesManager.registerCarriageStation(carriageStation);
-            } catch (TravelNodeRegisterException e) {
-                io.github.alathra.alathraports.utility.Logger.get().warn(e.getMessage());
-                continue;
-            }
-            // Match UUID of direct connections in registered carriage stations and add
-            for (UUID uuid : data.get(carriageStation)) {
-                for (CarriageStation registeredCarriageStation : TravelNodesManager.getCarriageStations()) {
-                    if (registeredCarriageStation.isSimilar(carriageStation)) {
-                        continue;
-                    }
-                    if (uuid.equals(registeredCarriageStation.getUuid())) {
-                        carriageStation.addDirectConnection(registeredCarriageStation);
-                    }
-                }
-            }
-        }
-    }
-
-    public static void saveAllPortsToDB() {
-        Queries.Ports.saveAllPorts(TravelNodesManager.getPorts());
-    }
-
-    public static void saveAllCarriageStationsToDB() {
-        Queries.Carriages.saveAllCarriages(TravelNodesManager.getCarriageStations());
-    }
-
-    public static void deletePortFromDB(Port port) {
-        Queries.Ports.deletePortQuery(port);
-    }
-
-    public static void deleteCarriageStationFromDB(CarriageStation carriageStation) {
-        Queries.Carriages.deleteCarriageQuery(carriageStation);
     }
 
 }

@@ -14,6 +14,7 @@ import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.Material;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.ArrayList;
 
@@ -138,8 +139,11 @@ public class Settings {
                     port.setSize(portSize);
                     found = true;
                 }
-                if (!found) {
-                    port.setSize(((ArrayList<PortSize>) portSizes.values()).getFirst());
+            }
+            if (!found) {
+                Iterator<PortSize> iterator = portSizes.values().iterator();
+                if (iterator.hasNext()) {
+                    port.setSize(iterator.next());
                 }
             }
         }
@@ -151,8 +155,11 @@ public class Settings {
                     carriageStation.setSize(carriageStationSize);
                     found = true;
                 }
-                if (!found) {
-                    carriageStation.setSize(new ArrayList<>(carriageStationSizes.values()).getFirst());
+            }
+            if (!found) {
+                Iterator<CarriageStationSize> iterator = carriageStationSizes.values().iterator();
+                if (iterator.hasNext()) {
+                    carriageStation.setSize(iterator.next());
                 }
             }
         }
