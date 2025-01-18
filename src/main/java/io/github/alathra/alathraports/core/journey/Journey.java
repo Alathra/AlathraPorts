@@ -9,11 +9,11 @@ import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.hook.TownyHook;
 import io.github.alathra.alathraports.utility.Logger;
-import io.papermc.paper.entity.Leashable;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -61,7 +61,7 @@ public class Journey {
         }
 
         // Journey must be at least 2 ports and origin and destination must be correctly in path
-        if (nodes == null || nodes.isEmpty() || nodes.size() < 2 || !(origin.equals(nodes.getFirst())) || !(destination.equals(nodes.getLast()))) {
+        if (nodes == null || nodes.isEmpty() || nodes.size() < 2 || !(origin.equals(nodes.get(0))) || !(destination.equals(nodes.get(nodes.size()-1)))) {
             isValid = false;
         }
 
@@ -226,11 +226,18 @@ public class Journey {
         List<Entity> leashedAnimals = new ArrayList<>();
         // Get nearby entities in 20 block radius
         for (Entity entity : player.getNearbyEntities(12,12,12)) {
-            if (entity instanceof Leashable leashable) {
-                if (leashable.isLeashed() && leashable.getLeashHolder().equals(player)) {
-                    leashedAnimals.add(leashable);
+            if (entity instanceof LivingEntity livingEntity) {
+                try {
+                    if (livingEntity.getLeashHolder() instanceof Player playerEntity) {
+                        if (playerEntity.equals(player)) {
+                            leashedAnimals.add(entity);
+                        }
+                    }
+                } catch (IllegalStateException e) {
+                    continue;
                 }
             }
+
         }
         return leashedAnimals;
     }

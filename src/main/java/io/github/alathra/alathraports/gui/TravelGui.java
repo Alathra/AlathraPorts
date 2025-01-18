@@ -23,7 +23,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -106,7 +105,6 @@ public class TravelGui {
                 Journey ongoing = JourneyManager.getJourneyFromPlayer(player);
                 if (ongoing != null) {
                     if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(reachableNode)) {
-                        nodeItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
                         nodeItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                         nodeItemMeta.lore(List.of(
                             ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
@@ -152,7 +150,6 @@ public class TravelGui {
                                 ColorParser.of("").build(),
                                 ColorParser.of("<dark_red>This port is being blockaded and is unreachable everywhere").build()
                             ));
-                            blockadedPortMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
                             blockadedPortMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                             blockadedPortItem.setItemMeta(blockadedPortMeta);
                             gui.addItem(ItemBuilder.from(blockadedPortItem).asGuiItem());
@@ -173,7 +170,6 @@ public class TravelGui {
                                 ColorParser.of("").build(),
                                 ColorParser.of("<dark_red>This carriage station is being blockaded and is unreachable everywhere").build()
                             ));
-                            blockadedCarriageStationMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
                             blockadedCarriageStationMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                             blockadedCarriageStationItem.setItemMeta(blockadedCarriageStationMeta);
                             gui.addItem(ItemBuilder.from(blockadedCarriageStationItem).asGuiItem());
@@ -198,7 +194,6 @@ public class TravelGui {
                         ColorParser.of("").build(),
                         ColorParser.of("<dark_red>This port is being blockaded. All other ports are unreachable").build()
                     ));
-                    portItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
                     portItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     portItem.setItemMeta(portItemMeta);
                     gui.setItem(1, 5, ItemBuilder.from(portItem).asGuiItem());
@@ -212,7 +207,6 @@ public class TravelGui {
                         ColorParser.of("").build(),
                         ColorParser.of("<dark_red>This carriage station is being blockaded. All other carriage stations are unreachable").build()
                     ));
-                    carriageStationItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
                     carriageStationItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     carriageStationItem.setItemMeta(carriageStationItemMeta);
                     gui.setItem(1, 5, ItemBuilder.from(carriageStationItem).asGuiItem());
@@ -227,7 +221,6 @@ public class TravelGui {
         nodeItemMeta.lore(List.of(
             ColorParser.of("<gold>Size: <red>" + travelNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
         ));
-        nodeItemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
         nodeItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         nodeItem.setItemMeta(nodeItemMeta);
         gui.setItem(1, 5, ItemBuilder.from(nodeItem).asGuiItem());

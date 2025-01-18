@@ -121,7 +121,7 @@ public class Settings {
                 return portSize;
             }
         }
-        return ((ArrayList<PortSize>) portSizes.values()).getFirst();
+        return ((ArrayList<PortSize>) portSizes.values()).get(0);
     }
 
     public static CarriageStationSize findCarriageStationSize(int tier) {
@@ -130,7 +130,7 @@ public class Settings {
                 return carriageStationSize;
             }
         }
-        return ((ArrayList<CarriageStationSize>) carriageStationSizes.values()).getFirst();
+        return ((ArrayList<CarriageStationSize>) carriageStationSizes.values()).get(0);
     }
 
     private static void updateSizesInRegistries() {

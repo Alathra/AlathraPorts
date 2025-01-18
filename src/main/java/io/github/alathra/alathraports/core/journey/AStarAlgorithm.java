@@ -75,7 +75,7 @@ public class AStarAlgorithm {
 
 		while (cameFrom.containsKey(current)) {
 			current = cameFrom.get(current);
-			path.addFirst(current);
+			path.add(0, current);
 		}
 
 		return path;

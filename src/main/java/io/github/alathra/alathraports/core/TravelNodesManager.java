@@ -217,11 +217,11 @@ public class TravelNodesManager {
 
             // check for similar or matching carriage station
             if (newCarriageStation.isSimilar(carriageStation)) {
-                throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" is too similar to or matches a registered port");
+                throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" is too similar to or matches a registered carriage station");
             }
             // if the carriage station's name matches one of a registered carriage station
             if (newCarriageStation.getName().equalsIgnoreCase(carriageStation.getName())) {
-                throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" matches the name of a registered port");
+                throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" matches the name of a registered carriage station");
             }
             // if carriage station has locations with different worlds... somehow
             if (!newCarriageStation.getSignLocation().getWorld().equals(newCarriageStation.getTeleportLocation().getWorld())) {
@@ -230,14 +230,14 @@ public class TravelNodesManager {
             // if carriage station is too close to a registered carriage station
             if (newCarriageStation.getSignLocation().getWorld().equals(carriageStation.getSignLocation().getWorld())) {
                 if (newCarriageStation.getSignLocation().distance(carriageStation.getSignLocation()) <= Settings.MINIMUM_PORT_DISTANCE) {
-                    throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has a sign location that is too close to a registered port");
+                    throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has a sign location that is too close to a registered carriage station");
                 }
                 if (newCarriageStation.getTeleportLocation().distance(carriageStation.getTeleportLocation()) <= Settings.MINIMUM_PORT_DISTANCE) {
-                    throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has a teleport location that is too close to a registered port");
+                    throw new TravelNodeRegisterException("Travel Node Failed to Register: New carriage station with name \"" + newCarriageStation.getName() + "\" has a teleport location that is too close to a registered carriage station");
                 }
             }
         }
-        // register caravan
+        // register carriage station
         carriageStations.add(newCarriageStation);
     }
 
