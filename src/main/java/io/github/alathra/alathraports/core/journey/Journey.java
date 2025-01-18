@@ -107,7 +107,16 @@ public class Journey {
     public void travel() {
         if (!isValid  || !(JourneyManager.getJourneys().contains(this)) || halted) {
             halt();
+            stop();
             return;
+        }
+
+        if (AlathraPorts.getCombatLogXHook().isCombatLogXLoaded()) {
+            if (AlathraPorts.getCombatLogXHook().isInCombat(player)) {
+                halt();
+                stop();
+                return;
+            }
         }
 
         int time = getTime(nodes.get(currentIndex), nodes.get(currentIndex+1));
