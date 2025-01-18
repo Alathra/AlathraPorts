@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 public class CombatLogXHook implements Reloadable {
 
     private final AlathraPorts plugin;
-    private ICombatLogX combatLogXAPI;
-    private ICombatManager combatManager;
+    private static ICombatLogX combatLogXAPI;
+    private static ICombatManager combatManager;
 
     public CombatLogXHook(AlathraPorts plugin) {
         this.plugin = plugin;
@@ -46,7 +46,7 @@ public class CombatLogXHook implements Reloadable {
         return combatLogXAPI;
     }
 
-    boolean isInCombat(Player player) {
+    public boolean isInCombat(Player player) {
         return combatManager.isInCombat(player);
     }
 
