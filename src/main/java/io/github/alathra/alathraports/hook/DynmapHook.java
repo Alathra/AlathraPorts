@@ -251,7 +251,7 @@ public class DynmapHook implements Reloadable {
             return;
         }
         circleMarker.setFillStyle(
-            0.25, // Opacity %
+            0.05, // Opacity %
             0xFF0000 // Color (Red)
         );
     }

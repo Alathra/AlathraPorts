@@ -101,7 +101,7 @@ public class AlathraPorts extends JavaPlugin {
             Logger.get().info(ColorParser.of("<green>Towny has been found on this server. Towny support enabled.").build());
         } else {
             Logger.get().warn(ColorParser.of("<yellow>Towny is not installed on this server. Towny support has been disabled.").build());
-            Logger.get().error(ColorParser.of("<red>Vault is a hard dependency. Plugin disabling...").build());
+            Logger.get().error(ColorParser.of("<red>Towny is a hard dependency. Plugin disabling...").build());
             this.getServer().getPluginManager().disablePlugin(this);
         }
 

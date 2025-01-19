@@ -29,8 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class TravelGui {
 
@@ -88,26 +87,40 @@ public class TravelGui {
         final Economy economy = AlathraPorts.getVaultHook().getEconomy();
         // code to prevent animal calculations being run more than once
         int numAnimals = -1;
-        for (TravelNode reachableNode : travelNode.getPossibleConnections() ) {
+        final List<Journey> journeys = new ArrayList<>();
+        // Find possible journeys
+        for (TravelNode reachableNode : travelNode.getPossibleConnections()) {
             Journey journey = new Journey(travelNode, reachableNode, player);
             if (numAnimals == -1) {
                 journey.updateNumAnimals();
                 numAnimals = journey.getNumAnimals();
             }
             journey.setNumAnimals(numAnimals);
-            ItemStack nodeItem = new ItemStack(reachableNode.getSize().getIcon());
+            journeys.add(new Journey(travelNode, reachableNode, player));
+        }
+        // Re-order journeys from low to high based on cost
+        journeys.sort(new Comparator<Journey>() {
+            @Override
+            public int compare(Journey o1, Journey o2) {
+                return Double.compare(o1.getTotalCost(), o2.getTotalCost());
+            }
+        });
+
+        // Place node buttons for each journey
+        for (Journey journey : journeys) {
+            ItemStack nodeItem = new ItemStack(journey.getDestination().getSize().getIcon());
             ItemMeta nodeItemMeta = nodeItem.getItemMeta();
-            nodeItemMeta.displayName(ColorParser.of("<blue><bold>" + reachableNode.getName()).build().decoration(TextDecoration.ITALIC, false));
+            nodeItemMeta.displayName(ColorParser.of("<blue><bold>" + journey.getDestination().getName()).build().decoration(TextDecoration.ITALIC, false));
             if (JourneyManager.isPlayerInOngoingJourney(player)) {
                 nodeItemMeta.lore(List.of(
-                    ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
+                    ColorParser.of("<gold>Size: <red>" + journey.getDestination().getSize().getName()).build().decoration(TextDecoration.ITALIC, false)
                 ));
                 Journey ongoing = JourneyManager.getJourneyFromPlayer(player);
                 if (ongoing != null) {
-                    if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(reachableNode)) {
+                    if (ongoing.getNodes().get(journey.getCurrentIndex()).equals(journey.getDestination())) {
                         nodeItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                         nodeItemMeta.lore(List.of(
-                            ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                            ColorParser.of("<gold>Size: <red>" + journey.getDestination().getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
                             ColorParser.of("").build(),
                             ColorParser.of("<green>YOU ARE HERE").build().decoration(TextDecoration.ITALIC, false)
                         ));
@@ -115,7 +128,7 @@ public class TravelGui {
                 }
             } else {
                 nodeItemMeta.lore(List.of(
-                    ColorParser.of("<gold>Size: <red>" + reachableNode.getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
+                    ColorParser.of("<gold>Size: <red>" + journey.getDestination().getSize().getName()).build().decoration(TextDecoration.ITALIC, false),
                     ColorParser.of("<gold>Cost: " + economy.format(journey.getTotalCost())).build().decoration(TextDecoration.ITALIC, false),
                     ColorParser.of("<gold>Travel Time: " + journey.getTotalTime() + " seconds").build().decoration(TextDecoration.ITALIC, false),
                     ColorParser.of("").build(),
