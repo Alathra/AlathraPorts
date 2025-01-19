@@ -115,7 +115,7 @@ tasks {
 
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
-        options.release.set(17)
+        options.release.set(21)
         options.compilerArgs.addAll(arrayListOf("-Xlint:all", "-Xlint:-processing", "-Xdiags:verbose"))
 
         dependsOn(jooqCodegen) // Generate jOOQ sources before compilation
@@ -198,7 +198,7 @@ bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
     description = "${project.description}"
     authors = listOf("ShermansWorld")
     contributors = listOf("darksaid98")
-    apiVersion = "1.20"
+    apiVersion = "1.21"
 
     // Misc properties
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
