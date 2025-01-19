@@ -1,4 +1,4 @@
-<h1 style="text-align:center;">Paper Plugin Template (Gradle)</h1>
+<h1 style="text-align:center;">Alathra Ports 2.0</h1>
 <p style="text-align:center;">
     <img alt="GitHub License" src="https://img.shields.io/github/license/Alathra/Template-Gradle-Plugin?style=for-the-badge&color=blue&labelColor=141417">
     <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/Alathra/Template-Gradle-Plugin/total?style=for-the-badge&labelColor=141417">
