@@ -98,13 +98,8 @@ public class TravelGui {
             journey.setNumAnimals(numAnimals);
             journeys.add(new Journey(travelNode, reachableNode, player));
         }
-        // Re-order journeys from low to high based on cost
-        journeys.sort(new Comparator<Journey>() {
-            @Override
-            public int compare(Journey j1, Journey j2) {
-                return j1.getDestination().getName().compareTo(j2.getDestination().getName());
-            }
-        });
+        // Re-order journeys based on alphabetical order of destination name
+        journeys.sort(Comparator.comparing(j -> j.getDestination().getName()));
 
         // Place node buttons for each journey
         for (Journey journey : journeys) {
