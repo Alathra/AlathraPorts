@@ -101,8 +101,8 @@ public class TravelGui {
         // Re-order journeys from low to high based on cost
         journeys.sort(new Comparator<Journey>() {
             @Override
-            public int compare(Journey o1, Journey o2) {
-                return Double.compare(o1.getTotalCost(), o2.getTotalCost());
+            public int compare(Journey j1, Journey j2) {
+                return j1.getDestination().getName().compareTo(j2.getDestination().getName());
             }
         });
 
