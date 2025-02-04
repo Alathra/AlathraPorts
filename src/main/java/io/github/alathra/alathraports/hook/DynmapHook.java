@@ -337,4 +337,13 @@ public class DynmapHook implements Reloadable {
         }
     }
 
+    public void refreshAllMarkers() {
+        clearAllMarkers(mainMarkerSet);
+        clearAllMarkers(portRangeMarkerSet);
+        clearAllMarkers(carriageConnectionsMarkerSet);
+        placeAllPortMarkers();
+        placeAllPortRangeMarkers();
+        placeAllCarriageConnectionMarkers();
+    }
+
 }

@@ -18,7 +18,7 @@ val mainPackage = "${project.group}.${project.name.lowercase()}"
 applyCustomVersion()
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21)) // Configure the java toolchain. This allows gradle to auto-provision JDK 21 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17)) // Configure the java toolchain. This allows gradle to auto-provision JDK 21 on systems that only have JDK 8 installed for example.
     withJavadocJar() // Enable javadoc jar generation
     withSourcesJar() // Enable sources jar generation
 }
