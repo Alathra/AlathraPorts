@@ -44,6 +44,7 @@ public class ConfigHandler implements Reloadable {
     public void reloadConfig() {
         cfg.forceReload();
         Settings.update();
+        AlathraPorts.getDynmapHook().refreshAllMarkers();
     }
 
     public void reloadDBConfig() {
