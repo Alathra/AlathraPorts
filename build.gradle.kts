@@ -175,9 +175,7 @@ tasks {
 
         // Automatically install dependencies
         downloadPlugins {
-            github("TheNewEconomy", "EconomyCore", "0.1.3.4", "TNE-Paper-0.1.3.4-Release-1.jar")
-            github("TheNewEconomy", "VaultUnlocked", "2.3.0", "VaultUnlocked-2.3.0.jar")
-            modrinth("dynmap", "3.7-beta-7")
+            modrinth("dynmap", "3.7-beta-8")
         }
     }
 }
