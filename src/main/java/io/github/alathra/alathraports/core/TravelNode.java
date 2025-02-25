@@ -155,16 +155,16 @@ public abstract class TravelNode implements Cloneable {
         return townFee;
     }
 
-    public boolean setTownFee(double fee) {
-        if (size.maxTownFee < fee) {
-            return false;
+    public void setTownFee(double fee) {
+        if (fee > size.maxTownFee) {
+            townFee = size.maxTownFee;
+            return;
         }
         if (fee < 0) {
             townFee = 0.0;
-            return false;
+            return;
         }
         this.townFee = fee;
-        return true;
     }
 
     public UUID getUuid() {

@@ -1,12 +1,12 @@
 [versions]
 crate = "2.1.0"
 commandapi = "9.7.0"
-flyway = "11.1.0"
+flyway = "11.3.3"
 
 [libraries]
 # Core dependencies
-annotations = "org.jetbrains:annotations:26.0.1"
-paper-api = "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+annotations = "org.jetbrains:annotations:26.0.2"
+paper-api = "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
 morepaperlib = "space.arim.morepaperlib:morepaperlib:0.4.4"
 
 # API dependencies
@@ -19,22 +19,21 @@ triumph-gui = "dev.triumphteam:triumph-gui:3.1.11"
 # Plugin dependencies
 bstats = "org.bstats:bstats-bukkit:3.1.0"
 vault = "com.github.MilkBowl:VaultAPI:1.7.1"
-packetevents = "com.github.retrooper:packetevents-spigot:2.7.0"
 placeholderapi = "me.clip:placeholderapi:2.11.6"
-towny = "com.palmergames.bukkit.towny:towny:0.101.1.0"
-dynmap = "us.dynmap:dynmap-api:2.5"
+towny = "com.palmergames.bukkit.towny:towny:0.101.1.4"
+dynmap = "us.dynmap:DynmapCoreAPI:3.7-beta-6"
 
 # Database dependencies
 hikaricp = "com.zaxxer:HikariCP:6.2.1"
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
-jooq = "org.jooq:jooq:3.19.16"
+jooq = "org.jooq:jooq:3.20.1"
 
 # JDBC drivers
 h2 = "com.h2database:h2:2.3.232"
-sqlite = "org.xerial:sqlite-jdbc:3.47.1.0"
-mysql = "com.mysql:mysql-connector-j:9.1.0"
-mariadb = "org.mariadb.jdbc:mariadb-java-client:3.5.1"
+sqlite = "org.xerial:sqlite-jdbc:3.49.1.0"
+mysql = "com.mysql:mysql-connector-j:9.2.0"
+mariadb = "org.mariadb.jdbc:mariadb-java-client:3.5.2"
 
 # Testing
 junit-bom = "org.junit:junit-bom:5.11.4"
@@ -56,5 +55,5 @@ testcontainers = ["testcontainers-jupiter", "testcontainers-mysql", "testcontain
 shadow = "com.gradleup.shadow:8.3.5"
 run-paper = "xyz.jpenilla.run-paper:2.3.1"
 plugin-yml = "net.minecrell.plugin-yml.bukkit:0.6.0"
-flyway = "org.flywaydb.flyway:11.1.0"
-jooq = "org.jooq.jooq-codegen-gradle:3.19.16"
+flyway = "org.flywaydb.flyway:11.3.3"
+jooq = "org.jooq.jooq-codegen-gradle:3.20.1"

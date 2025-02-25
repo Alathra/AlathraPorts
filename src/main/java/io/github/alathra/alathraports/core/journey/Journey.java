@@ -135,13 +135,18 @@ public class Journey {
                }
             }
             currentIndex++;
-            player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-            player.getWorld().playSound(player, Sound.ITEM_CHORUS_FRUIT_TELEPORT, 1, 1);
             if (mounted != null) {
                 mounted.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
             }
-            for (Entity entity : getLeasedAnimals()) {
+            List<LivingEntity> leashedAnimals = getLeasedAnimals();
+            for (LivingEntity entity : leashedAnimals) {
+                entity.setLeashHolder(null);
                 entity.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }
+            player.teleport(nodes.get(currentIndex).getTeleportLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+            player.getWorld().playSound(player, Sound.ITEM_CHORUS_FRUIT_TELEPORT, 1, 1);
+            for (LivingEntity entity : leashedAnimals) {
+                entity.setLeashHolder(player);
             }
             // If at destination (last node)
             if (currentIndex == nodes.size()-1) {
@@ -231,20 +236,18 @@ public class Journey {
     }
 
     // Get the number of animals the player currently has leaded
-    public List<Entity> getLeasedAnimals() {
-        List<Entity> leashedAnimals = new ArrayList<>();
+    public List<LivingEntity> getLeasedAnimals() {
+        List<LivingEntity> leashedAnimals = new ArrayList<>();
         // Get nearby entities in 20 block radius
         for (Entity entity : player.getNearbyEntities(12,12,12)) {
             if (entity instanceof LivingEntity livingEntity) {
                 try {
                     if (livingEntity.getLeashHolder() instanceof Player playerEntity) {
                         if (playerEntity.equals(player)) {
-                            leashedAnimals.add(entity);
+                            leashedAnimals.add(livingEntity);
                         }
                     }
-                } catch (IllegalStateException e) {
-                    continue;
-                }
+                } catch (IllegalStateException ignored) {}
             }
 
         }

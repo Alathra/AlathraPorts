@@ -8,12 +8,12 @@ import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.ports.PortSize;
-import org.dynmap.DynmapAPI;
+import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.*;
 
 public class DynmapHook implements Reloadable {
     private final AlathraPorts plugin;
-    private DynmapAPI dynmapAPI;
+    private DynmapCommonAPI dynmapAPI;
     private MarkerAPI markerAPI;
 
     private MarkerSet mainMarkerSet;
@@ -37,7 +37,7 @@ public class DynmapHook implements Reloadable {
             return;
         }
 
-        dynmapAPI = (DynmapAPI) plugin.getServer().getPluginManager().getPlugin("dynmap");
+        dynmapAPI = (DynmapCommonAPI) plugin.getServer().getPluginManager().getPlugin("dynmap");
         if (dynmapAPI != null) {
             markerAPI = dynmapAPI.getMarkerAPI();
         }
