@@ -20,7 +20,7 @@ triumph-gui = "dev.triumphteam:triumph-gui:3.1.11"
 bstats = "org.bstats:bstats-bukkit:3.1.0"
 vault = "com.github.MilkBowl:VaultAPI:1.7.1"
 placeholderapi = "me.clip:placeholderapi:2.11.6"
-towny = "com.palmergames.bukkit.towny:towny:0.101.1.4"
+towny = "com.palmergames.bukkit.towny:towny:0.101.1.5"
 dynmap = "us.dynmap:DynmapCoreAPI:3.7-beta-6"
 
 # Database dependencies
