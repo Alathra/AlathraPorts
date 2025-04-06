@@ -125,6 +125,12 @@ public class Journey {
             updateNumAnimals();
             final Economy economy = AlathraPorts.getVaultHook().getEconomy();
             final double cost = getCost(nodes.get(currentIndex), nodes.get(currentIndex+1));
+            if (economy.getBalance(player) < cost) {
+                player.sendMessage(ColorParser.of("<red>You no longer have enough funds to complete this journey").build());
+                halt();
+                stop();
+                return;
+            }
             economy.withdrawPlayer(player, cost);
             // Attempt to add tax to town bank, if applicable
             if (AlathraPorts.getTownyHook().isTownyLoaded()) {
