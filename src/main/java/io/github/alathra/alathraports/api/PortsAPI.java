@@ -24,8 +24,6 @@ import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.foreign.PaddingLayout;
-import java.text.ParsePosition;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -48,6 +46,10 @@ public class PortsAPI {
 
     public static boolean isBlockaded(TravelNode node) {
         return node.isBlockaded();
+    }
+
+    public static void openTravelMenu(Player player, TravelNode travelNode) {
+        GuiHandler.generateTravelGui(player, travelNode);
     }
 
     public static @Nullable Port createAbstractPort(String name, PortSize portSize, Location baseLocation, Location teleportLocation) {
@@ -98,8 +100,26 @@ public class PortsAPI {
         }
     }
 
-    public static void openPortMenu(Player player, TravelNode port) {
-        GuiHandler.generateTravelGui(player, port);
+    public static boolean isPortUpgradable(Port port) {
+        int highestTier = 1;
+        for (PortSize portSize : Settings.portSizes.values()) {
+            if (portSize.getTier() > highestTier)
+                highestTier = portSize.getTier();
+        }
+        return port.getSize().getTier() < highestTier;
+    }
+
+    public static boolean upgradePort(Port port) {
+        if (!isPortUpgradable(port))
+            return false;
+
+        for (PortSize portSize : Settings.portSizes.values()) {
+            if (portSize.getTier() == port.getSize().getTier()+1) {
+                port.setSize(portSize);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static @Nullable Port getPortByName(String name) {
@@ -247,8 +267,26 @@ public class PortsAPI {
         }
     }
 
-    public static void openCarriageStationMenu(Player player, CarriageStation carriageStation) {
-        GuiHandler.generateTravelGui(player, carriageStation);
+    public static boolean isCarriageStationUpgradable(CarriageStation carriageStation) {
+        int highestTier = 1;
+        for (CarriageStationSize carriageStationSize : Settings.carriageStationSizes.values()) {
+            if (carriageStationSize.getTier() > highestTier)
+                highestTier = carriageStationSize.getTier();
+        }
+        return carriageStation.getSize().getTier() < highestTier;
+    }
+
+    public static boolean upgradePort(CarriageStation carriageStation) {
+        if (!isCarriageStationUpgradable(carriageStation))
+            return false;
+
+        for (CarriageStationSize carriageStationSize : Settings.carriageStationSizes.values()) {
+            if (carriageStationSize.getTier() == carriageStation.getSize().getTier()+1) {
+                carriageStation.setSize(carriageStationSize);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static @Nullable CarriageStation getCarriageStationByName(String name) {

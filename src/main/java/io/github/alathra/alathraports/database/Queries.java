@@ -96,6 +96,7 @@ public abstract class Queries {
                     var teleportPitch = record.get(PORTS.TELEPORT_WORLD_PITCH);
                     var teleportYaw = record.get(PORTS.TELEPORT_WORLD_YAW);
                     var blockaded = record.get(PORTS.BLOCKADED);
+                    var abstracted = record.get(PORTS.ABSTRACTED);
                     var townIdentifier = UUIDUtil.fromBytes(record.get(PORTS.TOWN_IDENTIFIER));
                     var townFee = record.get(PORTS.TOWN_FEE);
                     var type = record.get(PORTS.TRAVEL_NODE_TYPE);
@@ -132,6 +133,7 @@ public abstract class Queries {
                         port.setTown(town);
 
                     port.setBlockaded(BooleanUtil.fromByte(blockaded));
+                    port.setAbstract(BooleanUtil.fromByte(abstracted));
                     port.setTownFee(townFee);
                     ports.add(port);
                 }
@@ -180,6 +182,7 @@ public abstract class Queries {
                             port.getTeleportLocation().getPitch(),
                             port.getTeleportLocation().getYaw(),
                             BooleanUtil.toByte(port.isBlockaded()),
+                            BooleanUtil.toByte(port.isAbstract()),
                             UUIDUtil.toBytes(town),
                             port.getTownFee(),
                             port.getType().name()
@@ -280,6 +283,7 @@ public abstract class Queries {
                     var teleportPitch = record.get(CARRIAGESTATIONS.TELEPORT_WORLD_PITCH);
                     var teleportYaw = record.get(CARRIAGESTATIONS.TELEPORT_WORLD_YAW);
                     var blockaded = record.get(CARRIAGESTATIONS.BLOCKADED);
+                    var abstracted = record.get(CARRIAGESTATIONS.ABSTRACTED);
                     var townIdentifier = UUIDUtil.fromBytes(record.get(CARRIAGESTATIONS.TOWN_IDENTIFIER));
                     var townFee = record.get(CARRIAGESTATIONS.TOWN_FEE);
                     var type = record.get(CARRIAGESTATIONS.TRAVEL_NODE_TYPE);
@@ -316,6 +320,7 @@ public abstract class Queries {
                         carriageStation.setTown(town);
 
                     carriageStation.setBlockaded(BooleanUtil.fromByte(blockaded));
+                    carriageStation.setAbstract(BooleanUtil.fromByte(abstracted));
                     carriageStation.setTownFee(townFee);
 
                     final Set<UUID> directConnections = loadDirectConnections(context, identifier);
@@ -370,6 +375,7 @@ public abstract class Queries {
                             station.getTeleportLocation().getPitch(),
                             station.getTeleportLocation().getYaw(),
                             BooleanUtil.toByte(station.isBlockaded()),
+                            BooleanUtil.toByte(station.isAbstract()),
                             UUIDUtil.toBytes(town),
                             station.getTownFee(),
                             station.getType().name()
