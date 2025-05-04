@@ -2,6 +2,7 @@ package io.github.alathra.alathraports.core.journey;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.api.PortsAPI;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
@@ -187,7 +188,7 @@ public class Journey {
     public double getCost(TravelNode node1, TravelNode node2) {
         switch (type) {
             case PORT:
-                PortSize portSize = TravelNodesManager.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
+                PortSize portSize = PortsAPI.getPortSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
                 // Calculate base cost based on port parameters
                 double portCost = Settings.BASE_COST + (portSize != null ? portSize.getCost() : 1.0) * node1.distanceTo(node2) / 100;
                 // Add animal fees (if any)
@@ -197,7 +198,7 @@ public class Journey {
                 // round cost to 2 decimal places
                 return (double) Math.round((portCost * 100)) / 100;
             case CARRIAGE_STATION:
-                CarriageStationSize carriageStationSize = TravelNodesManager.getCarriageStationSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
+                CarriageStationSize carriageStationSize = PortsAPI.getCarriageStationSizeByTier(Math.min(node2.getSize().getTier(), node1.getSize().getTier()));
                 double carriageStationCost = Settings.BASE_COST + (carriageStationSize != null ? carriageStationSize.getCost() : 1.0) * node1.distanceTo(node2) / 100;
                 carriageStationCost += (Settings.BASE_ANIMAL_COST * numAnimals);
                 carriageStationCost += (carriageStationCost * node2.getTownFee());
@@ -221,11 +222,11 @@ public class Journey {
     public int getTime(TravelNode node1, TravelNode node2) {
         return switch (type) {
             case PORT -> {
-                PortSize portSize = TravelNodesManager.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
+                PortSize portSize = PortsAPI.getPortSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
                 yield (int) (Math.round(node1.distanceTo(node2) / (portSize != null ? portSize.getSpeed() : 1.0)) + 5);
             }
             case CARRIAGE_STATION -> {
-                CarriageStationSize carriageStationSize = TravelNodesManager.getCarriageStationSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
+                CarriageStationSize carriageStationSize = PortsAPI.getCarriageStationSizeByTier(Math.min(node1.getSize().getTier(), node2.getSize().getTier()));
                 yield (int) (Math.round(node1.distanceTo(node2) / (carriageStationSize != null ? carriageStationSize.getSpeed() : 1.0)) + 5);
             }
         };

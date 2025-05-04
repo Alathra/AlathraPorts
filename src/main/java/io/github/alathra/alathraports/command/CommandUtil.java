@@ -5,6 +5,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
+import io.github.alathra.alathraports.api.PortsAPI;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
@@ -34,7 +35,7 @@ public abstract class CommandUtil {
 
     public static Argument<PortSize> portSizeArgument(String sizeName) {
         return new CustomArgument<PortSize, String>(new StringArgument(sizeName), info -> {
-            PortSize size = TravelNodesManager.getPortSizeByName(info.input());
+            PortSize size = PortsAPI.getPortSizeByName(info.input());
             if (size == null) {
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of("<Red>Invalid port size argument").build());
             }
@@ -46,7 +47,7 @@ public abstract class CommandUtil {
 
     public static Argument<CarriageStationSize> carriageStationSizeArgument(String sizeName) {
         return new CustomArgument<CarriageStationSize, String>(new StringArgument(sizeName), info -> {
-            CarriageStationSize size = TravelNodesManager.getCarriageStationSizeByName(info.input());
+            CarriageStationSize size = PortsAPI.getCarriageStationSizeByName(info.input());
             if (size == null) {
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of("<Red>Invalid carriage station size argument").build());
             }
@@ -58,7 +59,7 @@ public abstract class CommandUtil {
 
     public static Argument<Port> portArgument(String nodeName) {
         return new CustomArgument<Port, String>(new StringArgument(nodeName), info -> {
-            Port port = TravelNodesManager.getPortByName(info.input());
+            Port port = PortsAPI.getPortByName(info.input());
             if (port == null) {
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of("<Red>Invalid port name argument").build());
             }
@@ -70,7 +71,7 @@ public abstract class CommandUtil {
 
     public static Argument<CarriageStation> carriageStationArgument(String nodeName) {
         return new CustomArgument<CarriageStation, String>(new StringArgument(nodeName), info -> {
-            CarriageStation carriageStation = TravelNodesManager.getCarriageStationByName(info.input());
+            CarriageStation carriageStation = PortsAPI.getCarriageStationByName(info.input());
             if (carriageStation == null) {
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of("<Red>Invalid carriage station name argument").build());
             }

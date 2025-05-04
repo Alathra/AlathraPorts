@@ -2,23 +2,19 @@ package io.github.alathra.alathraports.core;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.api.PortsAPI;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.core.ports.Port;
-import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.database.DBAction;
 import io.github.alathra.alathraports.utility.Logger;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
@@ -28,6 +24,14 @@ public class TravelNodesManager {
 
     private static final Set<Port> ports = new HashSet<>();
     private static final Set<CarriageStation> carriageStations = new HashSet<>();
+
+    public static Set<Port> getPorts() {
+        return ports;
+    }
+
+    public static Set<CarriageStation> getCarriageStations() {
+        return carriageStations;
+    }
 
     public static void createTravelNodeFromSign(Player creator, TravelNode travelNode, BlockFace blockFace) {
         try {
@@ -279,7 +283,7 @@ public class TravelNodesManager {
     }
 
     public static boolean reRegisterPort(Port modifiedPort) throws TravelNodeRegisterException {
-        Port originalPort = getPortByID(modifiedPort.getUuid());
+        Port originalPort = PortsAPI.getPortByUUID(modifiedPort.getUuid());
         // Port could not be found in registry, failed to de-register
         if (originalPort == null) {
             return false;
@@ -298,7 +302,7 @@ public class TravelNodesManager {
     }
 
     public static boolean reRegisterCarriageStation(CarriageStation modifiedcarriageStation) throws TravelNodeRegisterException {
-        CarriageStation originalCarriageStation = getCarriageStationByID(modifiedcarriageStation.getUuid());
+        CarriageStation originalCarriageStation =  PortsAPI.getCarriageStationByUUID(modifiedcarriageStation.getUuid());
         // Carriage station could not be found in registry, failed to de-register
         if (originalCarriageStation == null) {
             return false;
@@ -314,54 +318,6 @@ public class TravelNodesManager {
             throw new TravelNodeRegisterException(e.getMessage());
         }
         return true;
-    }
-
-    public static boolean isPortSign(Block block) {
-        if (!(block.getState() instanceof Sign sign)) {
-            return false;
-        }
-        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
-            return false;
-        }
-        if (sign.getSide(Side.FRONT).line(0).equals(Port.getTagline()) &&
-            sign.getSide(Side.FRONT).line(3).equals(Port.getTagline()) &&
-            sign.getSide(Side.BACK).line(0).equals(Port.getTagline()) &&
-            sign.getSide(Side.BACK).line(3).equals(Port.getTagline())) {
-            for (Port port : ports) {
-                Component frontComponent = sign.getSide(Side.FRONT).line(1);
-                Component backComponent = sign.getSide(Side.FRONT).line(1);
-                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
-                    if (port.getName().contentEquals(frontTextComponent.content()) && port.getName().contentEquals(backTextComponent.content())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean isCarriageStationSign(Block block) {
-        if (!(block.getState() instanceof Sign sign)) {
-            return false;
-        }
-        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
-            return false;
-        }
-        if (sign.getSide(Side.FRONT).line(0).equals(CarriageStation.getTagline()) &&
-            sign.getSide(Side.FRONT).line(3).equals(CarriageStation.getTagline()) &&
-            sign.getSide(Side.BACK).line(0).equals(CarriageStation.getTagline()) &&
-            sign.getSide(Side.BACK).line(3).equals(CarriageStation.getTagline())) {
-            for (CarriageStation carriageStation : carriageStations) {
-                Component frontComponent = sign.getSide(Side.FRONT).line(1);
-                Component backComponent = sign.getSide(Side.FRONT).line(1);
-                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
-                    if (carriageStation.getName().contentEquals(frontTextComponent.content()) && carriageStation.getName().contentEquals(backTextComponent.content())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     public static boolean isAttachedToTravelNodeSign(Block block) {
@@ -386,148 +342,20 @@ public class TravelNodesManager {
                 // If above block is a standing sign port sign
                 if (i == 0) {
                     if (isStandingSign) {
-                        if (isPortSign(adjacentBlocks[i]) || isCarriageStationSign(adjacentBlocks[i])) {
+                        if (PortsAPI.isPortSign(adjacentBlocks[i]) || PortsAPI.isCarriageStationSign(adjacentBlocks[i])) {
                             return true;
                         }
                     }
                 }
 
                 // If sides of block contain a wall sign port sign
-                if (isWallSign && i != 0 && isPortSign(adjacentBlocks[i]) || isCarriageStationSign(adjacentBlocks[i])) {
+                if (isWallSign && i != 0 && PortsAPI.isPortSign(adjacentBlocks[i]) || PortsAPI.isCarriageStationSign(adjacentBlocks[i])) {
                     BlockFace facing = ((Directional) adjacentBlocks[i].getBlockData()).getFacing();
                     return adjacentBlocks[i].getRelative(facing.getOppositeFace()).getLocation().equals(block.getLocation());
                 }
             }
         }
         return false;
-    }
-
-    public static Port getPortByName(String name) {
-        for (Port port : ports) {
-            if (port.getName().equalsIgnoreCase(name)) {
-                return port;
-            }
-        }
-        return null;
-    }
-
-    public static CarriageStation getCarriageStationByName(String name) {
-        for (CarriageStation carriageStation : carriageStations) {
-            if (carriageStation.getName().equalsIgnoreCase(name)) {
-                return carriageStation;
-            }
-        }
-        return null;
-    }
-
-    public static Port getPortByID(UUID uuid) {
-        for (Port port : ports) {
-            if (port.getUuid().equals(uuid)) {
-                return port;
-            }
-        }
-        return null;
-    }
-
-    public static CarriageStation getCarriageStationByID(UUID uuid) {
-        for (CarriageStation carriageStation : carriageStations) {
-            if (carriageStation.getUuid().equals(uuid)) {
-                return carriageStation;
-            }
-        }
-        return null;
-    }
-
-    public static Port getPortFromSign(Block block) {
-        if (!(block.getState() instanceof Sign sign)) {
-            return null;
-        }
-        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
-            return null;
-        }
-        if (sign.getSide(Side.FRONT).line(0).equals(Port.getTagline()) &&
-            sign.getSide(Side.FRONT).line(3).equals(Port.getTagline()) &&
-            sign.getSide(Side.BACK).line(0).equals(Port.getTagline()) &&
-            sign.getSide(Side.BACK).line(3).equals(Port.getTagline())) {
-            for (Port port : TravelNodesManager.getPorts()) {
-                Component frontComponent = sign.getSide(Side.FRONT).line(1);
-                Component backComponent = sign.getSide(Side.FRONT).line(1);
-                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
-                    if (port.getName().contentEquals(frontTextComponent.content()) && port.getName().contentEquals(backTextComponent.content())) {
-                        return port;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static CarriageStation getCarriageStationFromSign(Block block) {
-        if (!(block.getState() instanceof Sign sign)) {
-            return null;
-        }
-        if (!(Tag.STANDING_SIGNS.isTagged(sign.getType()) || Tag.WALL_SIGNS.isTagged(sign.getType()))) {
-            return null;
-        }
-        if (sign.getSide(Side.FRONT).line(0).equals(CarriageStation.getTagline()) &&
-            sign.getSide(Side.FRONT).line(3).equals(CarriageStation.getTagline()) &&
-            sign.getSide(Side.BACK).line(0).equals(CarriageStation.getTagline()) &&
-            sign.getSide(Side.BACK).line(3).equals(CarriageStation.getTagline())) {
-            for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {
-                Component frontComponent = sign.getSide(Side.FRONT).line(1);
-                Component backComponent = sign.getSide(Side.FRONT).line(1);
-                if ((frontComponent instanceof TextComponent frontTextComponent) && (backComponent instanceof TextComponent backTextComponent)) {
-                    if (carriageStation.getName().contentEquals(frontTextComponent.content()) && carriageStation.getName().contentEquals(backTextComponent.content())) {
-                        return carriageStation;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static PortSize getPortSizeByName(String name) {
-        for (Map.Entry<String, PortSize> entry : Settings.portSizes.entrySet()) {
-            if (name.equalsIgnoreCase(entry.getKey())) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public static CarriageStationSize getCarriageStationSizeByName(String name) {
-        for (Map.Entry<String, CarriageStationSize> entry : Settings.carriageStationSizes.entrySet()) {
-            if (name.equalsIgnoreCase(entry.getKey())) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public static PortSize getPortSizeByTier(int tier) {
-        for (PortSize size : Settings.portSizes.values()) {
-            if (tier == size.getTier()) {
-                return size;
-            }
-        }
-        return null;
-    }
-
-    public static CarriageStationSize getCarriageStationSizeByTier(int tier) {
-        for (CarriageStationSize size : Settings.carriageStationSizes.values()) {
-            if (tier == size.getTier()) {
-                return size;
-            }
-        }
-        return null;
-    }
-
-    public static Set<Port> getPorts() {
-        return ports;
-    }
-
-    public static Set<CarriageStation> getCarriageStations() {
-        return carriageStations;
     }
 
 }

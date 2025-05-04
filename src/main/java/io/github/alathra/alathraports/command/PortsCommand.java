@@ -8,6 +8,7 @@ import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.AlathraPorts;
+import io.github.alathra.alathraports.api.PortsAPI;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
@@ -183,7 +184,12 @@ public class PortsCommand {
                       if (port == null) {
                           throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid port argument").build());
                       }
-                      TravelNodesManager.deleteTravelNodeWithSign(sender, port);
+                      if (port.isAbstract()) {
+                          PortsAPI.deleteAbstractPort(port);
+                          sender.sendMessage(ColorParser.of("<yellow>Abstract port " + port.getName() + " has been deleted").build());
+                      } else {
+                          TravelNodesManager.deleteTravelNodeWithSign(sender, port);
+                      }
                   }),
               new CommandAPICommand("carriage_station")
                   .withArguments(
@@ -194,7 +200,12 @@ public class PortsCommand {
                       if (carriageStation == null) {
                           throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument").build());
                       }
-                      TravelNodesManager.deleteTravelNodeWithSign(sender, carriageStation);
+                      if (carriageStation.isAbstract()) {
+                          PortsAPI.deleteAbstractCarriageStation(carriageStation);
+                          sender.sendMessage(ColorParser.of("<yellow>Abstract carriage station " + carriageStation.getName() + " has been deleted").build());
+                      } else {
+                          TravelNodesManager.deleteTravelNodeWithSign(sender, carriageStation);
+                      }
                   })
             );
     }
@@ -444,6 +455,9 @@ public class PortsCommand {
                         if (port == null) {
                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid port argument").build());
                         }
+                        if (port.isAbstract()) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot do this with an abstract port").build());
+                        }
                         RayTraceResult rayTrace = sender.rayTraceBlocks(5, FluidCollisionMode.NEVER);
                         if (rayTrace != null) {
                             Block block = rayTrace.getHitBlock();
@@ -512,6 +526,9 @@ public class PortsCommand {
                         CarriageStation carriageStation = (CarriageStation) args.get("targetCarriage_station");
                         if (carriageStation == null) {
                             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument").build());
+                        }
+                        if (carriageStation.isAbstract()) {
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot do this with an abstract carriage station").build());
                         }
                         RayTraceResult rayTrace = sender.rayTraceBlocks(5, FluidCollisionMode.NEVER);
                         if (rayTrace != null) {
@@ -709,6 +726,4 @@ public class PortsCommand {
                     })
             );
     }
-
-
 }

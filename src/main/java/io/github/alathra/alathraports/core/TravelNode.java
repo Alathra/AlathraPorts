@@ -32,6 +32,8 @@ public abstract class TravelNode implements Cloneable {
     protected World world;
     // The type of travel node this is (Port or Carriage Station)
     protected TravelNodeType type;
+    // If the travel node was created via API, not a sign
+    protected Boolean isAbstract;
 
     public enum TravelNodeType {
         PORT,
@@ -213,6 +215,14 @@ public abstract class TravelNode implements Cloneable {
 
     public void setBlockaded(boolean isBlockaded) {
         this.isBlockaded = isBlockaded;
+    }
+
+    public void setAbstract(boolean isAbstract) {
+        this.isAbstract = isAbstract;
+    }
+
+    public boolean isAbstract() {
+        return isAbstract;
     }
 
     public TravelNodeType getType() {
