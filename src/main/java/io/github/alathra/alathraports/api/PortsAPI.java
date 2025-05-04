@@ -110,16 +110,22 @@ public class PortsAPI {
     }
 
     public static boolean upgradePort(Port port) {
-        if (!isPortUpgradable(port))
+        Port clone = port.clone();
+        if (!isPortUpgradable(clone)) {
             return false;
-
+        }
         for (PortSize portSize : Settings.portSizes.values()) {
-            if (portSize.getTier() == port.getSize().getTier()+1) {
-                port.setSize(portSize);
-                return true;
+            if (portSize.getTier() == clone.getSize().getTier()+1) {
+                clone.setSize(portSize);
             }
         }
-        return false;
+        try {
+            TravelNodesManager.reRegisterPort(clone);
+            return true;
+        } catch (TravelNodeRegisterException e) {
+            Logger.get().warn(e.getMessage());
+            return false;
+        }
     }
 
     public static @Nullable Port getPortByName(String name) {
@@ -276,17 +282,23 @@ public class PortsAPI {
         return carriageStation.getSize().getTier() < highestTier;
     }
 
-    public static boolean upgradePort(CarriageStation carriageStation) {
-        if (!isCarriageStationUpgradable(carriageStation))
+    public static boolean upgradeCarriageStation(CarriageStation carriageStation) {
+        CarriageStation clone = carriageStation.clone();
+        if (!isCarriageStationUpgradable(clone)) {
             return false;
-
+        }
         for (CarriageStationSize carriageStationSize : Settings.carriageStationSizes.values()) {
-            if (carriageStationSize.getTier() == carriageStation.getSize().getTier()+1) {
-                carriageStation.setSize(carriageStationSize);
-                return true;
+            if (carriageStationSize.getTier() == clone.getSize().getTier()+1) {
+                clone.setSize(carriageStationSize);
             }
         }
-        return false;
+        try {
+            TravelNodesManager.reRegisterCarriageStation(clone);
+            return true;
+        } catch (TravelNodeRegisterException e) {
+            Logger.get().warn(e.getMessage());
+            return false;
+        }
     }
 
     public static @Nullable CarriageStation getCarriageStationByName(String name) {
