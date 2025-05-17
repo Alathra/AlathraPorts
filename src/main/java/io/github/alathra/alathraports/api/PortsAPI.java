@@ -1,6 +1,7 @@
 package io.github.alathra.alathraports.api;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
@@ -55,6 +56,10 @@ public class PortsAPI {
     public static @Nullable Port createAbstractPort(String name, PortSize portSize, Location baseLocation, Location teleportLocation) {
         Port port = new Port(name, portSize, baseLocation, teleportLocation);
         port.setAbstract(true);
+        Town town = TownyAPI.getInstance().getTown(baseLocation);
+        if (town != null) {
+            port.setTown(town);
+        }
         try {
             TravelNodesManager.registerPort(port);
         } catch (TravelNodeRegisterException e) {
@@ -70,20 +75,7 @@ public class PortsAPI {
     }
 
     public static @Nullable Port createAbstractPort(String name, Location location) {
-        Port port = new Port(name, Settings.findPortSize(1), location, location);
-        port.setAbstract(true);
-        try {
-            TravelNodesManager.registerPort(port);
-        } catch (TravelNodeRegisterException e) {
-            Logger.get().warn(e.getMessage());
-            return null;
-        }
-        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().placePortMarker(port);
-            AlathraPorts.getDynmapHook().placePortRangeMarker(port);
-        }
-        DBAction.saveAllPortsToDB();
-        return port;
+        return createAbstractPort(name, Settings.findPortSize(1), location, location);
     }
 
     public static boolean deleteAbstractPort(Port port) {
@@ -117,6 +109,7 @@ public class PortsAPI {
         for (PortSize portSize : Settings.portSizes.values()) {
             if (portSize.getTier() == clone.getSize().getTier()+1) {
                 clone.setSize(portSize);
+                break;
             }
         }
         try {
@@ -230,6 +223,10 @@ public class PortsAPI {
     public static @Nullable CarriageStation createAbstractCarriageStation(String name, CarriageStationSize carriageStationSize, Location baseLocation, Location teleportLocation) {
         CarriageStation carriageStation = new CarriageStation(name, carriageStationSize, baseLocation, teleportLocation);
         carriageStation.setAbstract(true);
+        Town town = TownyAPI.getInstance().getTown(baseLocation);
+        if (town != null) {
+            carriageStation.setTown(town);
+        }
         try {
             TravelNodesManager.registerCarriageStation(carriageStation);
         } catch (TravelNodeRegisterException e) {
@@ -244,19 +241,7 @@ public class PortsAPI {
     }
 
     public static @Nullable CarriageStation createAbstractCarriageStation(String name, Location location) {
-        CarriageStation carriageStation = new CarriageStation(name, Settings.findCarriageStationSize(1), location, location);
-        carriageStation.setAbstract(true);
-        try {
-            TravelNodesManager.reRegisterCarriageStation(carriageStation);
-        } catch (TravelNodeRegisterException e) {
-            Logger.get().warn(e.getMessage());
-            return null;
-        }
-        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().placeCarriageStationMarker(carriageStation);
-        }
-        DBAction.saveAllCarriageStationsToDB();
-        return carriageStation;
+        return createAbstractCarriageStation(name, Settings.findCarriageStationSize(1), location, location);
     }
 
     public static boolean deleteAbstractCarriageStation(CarriageStation carriageStation) {
@@ -290,6 +275,7 @@ public class PortsAPI {
         for (CarriageStationSize carriageStationSize : Settings.carriageStationSizes.values()) {
             if (carriageStationSize.getTier() == clone.getSize().getTier()+1) {
                 clone.setSize(carriageStationSize);
+                break;
             }
         }
         try {
