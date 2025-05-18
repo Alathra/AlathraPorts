@@ -238,7 +238,7 @@ public abstract class Queries {
                 DSLContext context = DB.getContext(con);
 
                 Result<Record> result = context.select()
-                    .from(PORTS)
+                    .from(CARRIAGESTATIONS)
                     .fetch();
 
                 for (Record record : result) {
