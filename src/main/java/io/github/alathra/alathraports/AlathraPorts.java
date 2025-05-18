@@ -3,12 +3,7 @@ package io.github.alathra.alathraports;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
-import io.github.alathra.alathraports.core.TravelNodesManager;
-import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
-import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
-import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.database.DBAction;
-import io.github.alathra.alathraports.database.Queries;
 import io.github.alathra.alathraports.database.handler.DatabaseHandlerBuilder;
 import io.github.alathra.alathraports.hook.*;
 import io.github.alathra.alathraports.listener.ListenerHandler;
@@ -17,11 +12,6 @@ import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Main class.
@@ -38,6 +28,7 @@ public class AlathraPorts extends JavaPlugin {
     private static TownyHook townyHook;
     private static CombatLogXHook combatLogXHook;
     private static DynmapHook dynmapHook;
+    private static WorldguardHook worldguardHook;
 
     /**
      * Gets plugin instance.
@@ -65,6 +56,7 @@ public class AlathraPorts extends JavaPlugin {
         townyHook = new TownyHook(instance);
         combatLogXHook = new CombatLogXHook(instance);
         dynmapHook = new DynmapHook(instance);
+        worldguardHook = new WorldguardHook(instance);
 
         configHandler.onLoad();
         DB.getHandler().onLoad();
@@ -75,6 +67,7 @@ public class AlathraPorts extends JavaPlugin {
         townyHook.onLoad();
         combatLogXHook.onLoad();
         dynmapHook.onLoad();
+        worldguardHook.onLoad();
     }
 
     @Override
@@ -117,6 +110,12 @@ public class AlathraPorts extends JavaPlugin {
             Logger.get().warn(ColorParser.of("<yellow>Dynmap is not installed on this server. Dynmap support has been disabled.").build());
         }
 
+        if (worldguardHook.isWorldGuardLoaded()) {
+            Logger.get().info(ColorParser.of("<green>Worldguard has been found on this server. Worldguard support enabled.").build());
+        } else {
+            Logger.get().warn(ColorParser.of("<yellow>Worldguard is not installed on this server. Worldguard support has been disabled.").build());
+        }
+
         DBAction.registerPortsFromDB();
         DBAction.registerCarriageStationsFromDB();
         DBAction.initPeriodicDBSaving();
@@ -126,6 +125,7 @@ public class AlathraPorts extends JavaPlugin {
         townyHook.onEnable();
         combatLogXHook.onEnable();
         dynmapHook.onEnable();
+        worldguardHook.onEnable();
 
     }
 
@@ -141,6 +141,7 @@ public class AlathraPorts extends JavaPlugin {
         townyHook.onDisable();
         combatLogXHook.onDisable();
         dynmapHook.onDisable();
+        worldguardHook.onDisable();
     }
 
     /**
@@ -176,6 +177,11 @@ public class AlathraPorts extends JavaPlugin {
     @NotNull
     public static DynmapHook getDynmapHook() {
         return dynmapHook;
+    }
+
+    @NotNull
+    public static WorldguardHook getWorldguardHook() {
+        return worldguardHook;
     }
 
 }

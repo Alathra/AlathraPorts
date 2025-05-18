@@ -1,6 +1,10 @@
 package io.github.alathra.alathraports.config;
 
 import com.github.milkdrinkers.crate.Config;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
@@ -11,12 +15,11 @@ import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.core.ports.PortSizeBuilder;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeSizeSerialException;
 import io.github.alathra.alathraports.utility.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Settings {
 
@@ -100,6 +103,7 @@ public class Settings {
                     carriageStationSizes.put(formattedName, new CarriageStationSizeBuilder()
                         .setTier(getConfig().getInt(baseKey + "tier"))
                         .setName(getConfig().getString(baseKey + "name"))
+                        .setRange(getConfig().getInt(baseKey + "range"))
                         .setCost(getConfig().getDouble(baseKey + "cost"))
                         .setSpeed(getConfig().getDouble(baseKey + "speed"))
                         .setMaxTownFee(getConfig().getDouble(baseKey + "maxTownFee"))
@@ -165,5 +169,24 @@ public class Settings {
                 }
             }
         }
+    }
+
+    public static World getWorld() {
+        return Bukkit.getWorld(getConfig().getString("GlobalSettings.world"));
+    }
+
+    public static Set<ProtectedRegion> getCarriageStationRegions() {
+        Set<ProtectedRegion> regions = new HashSet<>();
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(new BukkitWorld(getWorld()));
+        if (regionManager == null) {
+            return regions;
+        }
+        for (String regionName : getConfig().getStringList("CarriageStationSettings.regions")) {
+            ProtectedRegion region = regionManager.getRegion(regionName);
+            if (region != null) {
+                regions.add(region);
+            }
+        }
+        return regions;
     }
 }

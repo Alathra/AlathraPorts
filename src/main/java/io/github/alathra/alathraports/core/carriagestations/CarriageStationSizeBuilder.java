@@ -6,6 +6,7 @@ import org.bukkit.Material;
 public class CarriageStationSizeBuilder {
     private int tier;
     private String name;
+    private int range;
     private double cost;
     private double speed;
     private double maxTownFee;
@@ -19,6 +20,11 @@ public class CarriageStationSizeBuilder {
 
     public CarriageStationSizeBuilder setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public CarriageStationSizeBuilder setRange(int range) {
+        this.range = range;
         return this;
     }
 
@@ -48,9 +54,9 @@ public class CarriageStationSizeBuilder {
     }
 
     public CarriageStationSize createPortSize() throws TravelNodeSizeSerialException {
-        if (tier == 0 || name.isEmpty() || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
+        if (tier == 0 || name.isEmpty() || range == 0 || cost == 0.0 || speed == 0.0 || journeyHaltRadius == 0.0 || icon == null) {
             throw new TravelNodeSizeSerialException("Carriage Station Size Failed to Serialize: Config contains error in carriage station size section");
         }
-        return new CarriageStationSize(tier, name, cost, speed, maxTownFee, journeyHaltRadius, icon);
+        return new CarriageStationSize(tier, name, range, cost, speed, maxTownFee, journeyHaltRadius, icon);
     }
 }

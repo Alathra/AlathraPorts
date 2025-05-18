@@ -43,26 +43,14 @@ public class DBAction {
     }
 
     public static void registerCarriageStationsFromDB() {
-        Map<CarriageStation, Set<UUID>> data = Queries.Carriages.loadAllCarriages();
-        for (CarriageStation carriageStation : data.keySet()) {
-            // Register carriage station
+        final Set<CarriageStation> carriageStations = Queries.Carriages.loadAllCarriageStations();
+        for (CarriageStation carriageStation : carriageStations) {
             try {
                 TravelNodesManager.registerCarriageStation(carriageStation);
             } catch (TravelNodeRegisterException e) {
+                // Prune port since it couldn't be registered
+                deleteCarriageStationFromDB(carriageStation);
                 Logger.get().warn(e.getMessage());
-            }
-        }
-        for (CarriageStation carriageStation : data.keySet()) {
-            // Match UUID of direct connections in registered carriage stations and add
-            for (UUID uuid : data.get(carriageStation)) {
-                for (CarriageStation registeredCarriageStation : TravelNodesManager.getCarriageStations()) {
-                    if (registeredCarriageStation.isSimilar(carriageStation)) {
-                        continue;
-                    }
-                    if (uuid.equals(registeredCarriageStation.getUuid())) {
-                        carriageStation.addDirectConnection(registeredCarriageStation);
-                    }
-                }
             }
         }
     }

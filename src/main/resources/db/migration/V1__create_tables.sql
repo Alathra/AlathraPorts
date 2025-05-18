@@ -45,9 +45,3 @@ CREATE TABLE IF NOT EXISTS "${tablePrefix}carriagestations" (
     "travel_node_type" TINYTEXT NOT NULL,
     PRIMARY KEY ("identifier")
 );
-CREATE UNIQUE INDEX "${tablePrefix}carriagestations_identifier" ON "${tablePrefix}carriagestations" ("identifier"); -- Indexes and Unique indexed must be created in separate statements due to SQLite
-
-CREATE TABLE IF NOT EXISTS "${tablePrefix}carriagestations_connections" (
-    "carriage_station_identifier" BINARY(16) NOT NULL,
-    "carriage_station_target_identifier" BINARY(16) NOT NULL
-);

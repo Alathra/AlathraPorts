@@ -17,11 +17,11 @@ commandapi-shade = { module = "dev.jorel:commandapi-bukkit-shade", version.ref =
 triumph-gui = "dev.triumphteam:triumph-gui:3.1.11"
 
 # Plugin dependencies
-bstats = "org.bstats:bstats-bukkit:3.1.0"
 vault = "com.github.MilkBowl:VaultAPI:1.7.1"
 placeholderapi = "me.clip:placeholderapi:2.11.6"
 towny = "com.palmergames.bukkit.towny:towny:0.101.1.6"
 dynmap = "us.dynmap:DynmapCoreAPI:3.7-beta-6"
+worldguardbukkit = "com.sk89q.worldguard:worldguard-bukkit:7.0.9"
 
 # Database dependencies
 hikaricp = "com.zaxxer:HikariCP:6.2.1"

@@ -145,48 +145,6 @@ public class TravelNodesManager {
         }
     }
 
-    public static void disconnectCarriageStations(CarriageStation carriageStation1, CarriageStation carriageStation2, Player disconnector) {
-        if (carriageStation1 == null || carriageStation2 == null) {
-            disconnector.sendMessage(ColorParser.of("<red>Invalid carriage station argument(s)").build());
-            return;
-        }
-        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
-            disconnector.sendMessage(ColorParser.of("<red>Identical carriage station arguments").build());
-            return;
-        }
-        if (!(carriageStation1.getDirectConnections().contains(carriageStation2)) && !(carriageStation2.getDirectConnections().contains(carriageStation1))) {
-            disconnector.sendMessage(ColorParser.of("<red>There is no connection here").build());
-            return;
-        }
-        carriageStation1.removeIfDirectlyConnected(carriageStation2);
-        carriageStation2.removeIfDirectlyConnected(carriageStation1);
-        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().removeCarriageStationConnectionMarker(carriageStation1, carriageStation2);
-        }
-        DBAction.saveAllCarriageStationsToDB();
-        disconnector.sendMessage(ColorParser.of("<yellow>Carriage Station connection removed").build());
-    }
-
-    public static void connectCarriageStation(CarriageStation carriageStation1, CarriageStation carriageStation2, Player connector) {
-        if (carriageStation1 == null || carriageStation2 == null) {
-            connector.sendMessage(ColorParser.of("<red>Invalid carriage station argument(s)").build());
-            return;
-        }
-        if (carriageStation1.equals(carriageStation2) || carriageStation1.isSimilar(carriageStation2)) {
-            connector.sendMessage(ColorParser.of("<red>Identical carriage station arguments").build());
-        }
-        if (carriageStation1.getDirectConnections().contains(carriageStation2) && carriageStation2.getDirectConnections().contains(carriageStation1)) {
-            connector.sendMessage(ColorParser.of("<red>This connection already exists").build());
-        }
-        carriageStation1.addDirectConnection(carriageStation2);
-        carriageStation2.addDirectConnection(carriageStation1);
-        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().placeCarriageConnectionMarker(carriageStation1, carriageStation2);
-        }
-        DBAction.saveAllCarriageStationsToDB();
-        connector.sendMessage(ColorParser.of("<green>Carriage Station connection established").build());
-    }
-
     public static void registerPort(Port newPort) throws TravelNodeRegisterException {
         for (Port port : ports) {
 
@@ -261,25 +219,18 @@ public class TravelNodesManager {
     }
 
     public static boolean deregisterCarriageStation(CarriageStation targetCarriageStation) {
-        boolean found = false;
         if (carriageStations.contains(targetCarriageStation)) {
             carriageStations.remove(targetCarriageStation);
-            found = true;
+            return true;
         } else {
             for (CarriageStation carriageStation : carriageStations) {
                 if (targetCarriageStation.isSimilar(carriageStation)) {
                     carriageStations.remove(carriageStation);
-                    found = true;
-                    break;
+                    return true;
                 }
             }
         }
-        if (found) {
-            for (CarriageStation carriageStation : carriageStations) {
-                carriageStation.removeIfDirectlyConnected(targetCarriageStation);
-            }
-        }
-        return found;
+        return false;
     }
 
     public static boolean reRegisterPort(Port modifiedPort) throws TravelNodeRegisterException {

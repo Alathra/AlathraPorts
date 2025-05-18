@@ -7,7 +7,6 @@ import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.ports.Port;
-import io.github.alathra.alathraports.database.schema.tables.records.CarriagestationsConnectionsRecord;
 import io.github.alathra.alathraports.database.schema.tables.records.CarriagestationsRecord;
 import io.github.alathra.alathraports.database.schema.tables.records.PortsRecord;
 import io.github.alathra.alathraports.utility.DB;
@@ -207,7 +206,7 @@ public abstract class Queries {
          * @return completable future
          */
         public static CompletableFuture<Void> deleteCarriageQuery(final CarriageStation station) {
-            final CarriageStation stationClone = station.clone();
+            final CarriageStation carriageStationClone = station.clone();
 
             return CompletableFuture.runAsync(() -> {
                 try (
@@ -216,15 +215,8 @@ public abstract class Queries {
                     DSLContext context = DB.getContext(con);
 
                     context
-                        .batch(
-                            context
-                                .deleteFrom(CARRIAGESTATIONS)
-                                .where(CARRIAGESTATIONS.IDENTIFIER.eq(UUIDUtil.toBytes(stationClone.getUuid()))),
-                            context
-                                .deleteFrom(CARRIAGESTATIONS_CONNECTIONS)
-                                .where(CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_IDENTIFIER.eq(UUIDUtil.toBytes(stationClone.getUuid())))
-                                .or(CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_TARGET_IDENTIFIER.eq(UUIDUtil.toBytes(stationClone.getUuid())))
-                        )
+                        .deleteFrom(CARRIAGESTATIONS)
+                        .where(CARRIAGESTATIONS.IDENTIFIER.eq(UUIDUtil.toBytes(carriageStationClone.getUuid())))
                         .execute();
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);
@@ -232,30 +224,13 @@ public abstract class Queries {
             });
         }
 
-        private static Set<UUID> loadDirectConnections(DSLContext context, UUID carriageStationIdentifier) {
-            Result<Record> result = context.select()
-                .from(CARRIAGESTATIONS_CONNECTIONS)
-                .where(CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_IDENTIFIER.eq(UUIDUtil.toBytes(carriageStationIdentifier)))
-                .fetch();
-
-            final Set<UUID> directConnections = new HashSet<>();
-
-            for (Record record : result) {
-                directConnections.add(
-                    UUIDUtil.fromBytes(record.get(CARRIAGESTATIONS_CONNECTIONS.CARRIAGE_STATION_TARGET_IDENTIFIER))
-                );
-            }
-
-            return directConnections;
-        }
-
         /**
          * Used to fetch all carriage stations
          *
          * @return list of carriage stations
          */
-        public static Map<CarriageStation, Set<UUID>> loadAllCarriages() {
-            final Map<CarriageStation, Set<UUID>> carriages = new HashMap<>();
+        public static Set<CarriageStation> loadAllCarriageStations() {
+            final Set<CarriageStation> carriageStations = new HashSet<>();
 
             try (
                 Connection con = DB.getConnection()
@@ -263,7 +238,7 @@ public abstract class Queries {
                 DSLContext context = DB.getContext(con);
 
                 Result<Record> result = context.select()
-                    .from(CARRIAGESTATIONS)
+                    .from(PORTS)
                     .fetch();
 
                 for (Record record : result) {
@@ -290,7 +265,7 @@ public abstract class Queries {
 
                     final World signWorld = Bukkit.getWorld(signIdentifier);
                     if (signWorld == null) {
-                        Logger.get().warn(ColorParser.of("<yellow>Invalid world uuid for carriage <object>, skipping...")
+                        Logger.get().warn(ColorParser.of("<yellow>Invalid world uuid for port <object>, skipping...")
                             .parseMinimessagePlaceholder("object", name)
                             .build()
                         );
@@ -301,7 +276,7 @@ public abstract class Queries {
 
                     final World teleportWorld = Bukkit.getWorld(teleportIdentifier);
                     if (teleportWorld == null) {
-                        Logger.get().warn(ColorParser.of("<yellow>Invalid world uuid for carriage <object>, skipping...")
+                        Logger.get().warn(ColorParser.of("<yellow>Invalid world uuid for port <object>, skipping...")
                             .parseMinimessagePlaceholder("object", name)
                             .build()
                         );
@@ -322,15 +297,12 @@ public abstract class Queries {
                     carriageStation.setBlockaded(BooleanUtil.fromByte(blockaded));
                     carriageStation.setAbstract(BooleanUtil.fromByte(abstracted));
                     carriageStation.setTownFee(townFee);
-
-                    final Set<UUID> directConnections = loadDirectConnections(context, identifier);
-                    carriages.put(carriageStation, directConnections);
+                    carriageStations.add(carriageStation);
                 }
             } catch (SQLException e) {
                 Logger.get().error("SQL Query threw an error!", e);
             }
-
-            return carriages;
+            return carriageStations;
         }
 
 
@@ -353,8 +325,6 @@ public abstract class Queries {
 
 
                     final List<CarriagestationsRecord> carriageStationsRecords = new ArrayList<>();
-                    final List<CarriagestationsConnectionsRecord> connectionsRecords = new ArrayList<>();
-
 
                     carriagesClone.forEach(station -> {
                         final @Nullable UUID town = station.getTown() == null ? null : station.getTown().getUUID();
@@ -380,20 +350,9 @@ public abstract class Queries {
                             station.getTownFee(),
                             station.getType().name()
                         ));
-
-                        for (TravelNode targetStation : station.getDirectConnections()) {
-                            connectionsRecords.add(new CarriagestationsConnectionsRecord(
-                                UUIDUtil.toBytes(station.getUuid()),
-                                UUIDUtil.toBytes(targetStation.getUuid())
-                            ));
-                        }
                     });
 
                     context.batchMerge(carriageStationsRecords).execute();
-
-                    context.delete(CARRIAGESTATIONS_CONNECTIONS).execute();
-
-                    context.batchInsert(connectionsRecords).execute();
 
                 } catch (SQLException e) {
                     Logger.get().error("SQL Query threw an error!", e);

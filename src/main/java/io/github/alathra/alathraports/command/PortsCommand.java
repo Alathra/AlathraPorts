@@ -9,7 +9,6 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.api.PortsAPI;
-import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.core.ports.Port;
@@ -42,10 +41,7 @@ public class PortsCommand {
                 moveCommand(),
                 teleportCommand(),
                 reloadCommand(),
-                blockade(),
-                connect(),
-                disconnect(),
-                listConnections()
+                blockade()
             )
             .executesPlayer(this::helpCommand)
             .register();
@@ -84,6 +80,7 @@ public class PortsCommand {
                                     if(block.getRelative(BlockFace.UP).isEmpty()) {
                                         Location signLocation = block.getRelative(BlockFace.UP).getLocation();
                                         Port port = new Port(nodeName, portSize, signLocation, signLocation);
+                                        port.setAbstract(false);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             port.findTown();
                                             port.setDefaultTax();
@@ -97,6 +94,7 @@ public class PortsCommand {
                                     if(block.getRelative(blockFace).isEmpty()) {
                                         Location signLocation = block.getRelative(blockFace).getLocation();
                                         Port port = new Port(nodeName, portSize, signLocation, signLocation);
+                                        port.setAbstract(false);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             port.findTown();
                                             port.setDefaultTax();
@@ -139,6 +137,7 @@ public class PortsCommand {
                                     if(block.getRelative(BlockFace.UP).isEmpty()) {
                                         Location signLocation = block.getRelative(BlockFace.UP).getLocation();
                                         CarriageStation carriageStation = new CarriageStation(nodeName, carriageStationSize, signLocation, signLocation);
+                                        carriageStation.setAbstract(false);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             carriageStation.findTown();
                                             carriageStation.setDefaultTax();
@@ -152,6 +151,7 @@ public class PortsCommand {
                                     if(block.getRelative(blockFace).isEmpty()) {
                                         Location signLocation = block.getRelative(blockFace).getLocation();
                                         CarriageStation carriageStation = new CarriageStation(nodeName, carriageStationSize, signLocation, signLocation);
+                                        carriageStation.setAbstract(false);
                                         if (AlathraPorts.getTownyHook().isTownyLoaded()) {
                                             carriageStation.findTown();
                                             carriageStation.setDefaultTax();
@@ -667,62 +667,6 @@ public class PortsCommand {
                             carriageStation.setBlockaded(true);
                             sender.sendMessage(ColorParser.of("<yellow>The carriage station of <light_purple>" + carriageStation.getName() + " <yellow>is now blockaded. This is not a global announcement").build());
                         }
-                    })
-            );
-    }
-
-    public CommandAPICommand connect() {
-        return new CommandAPICommand("connect")
-            .withPermission(ADMIN_PERM)
-            .withSubcommands(
-                new CommandAPICommand("carriage_station")
-                    .withArguments(
-                        CommandUtil.carriageStationArgument("firstCarriage_station"),
-                        CommandUtil.carriageStationArgument("secondCarriage_station")
-                    )
-                    .executesPlayer((Player sender, CommandArguments args) -> {
-                        CarriageStation carriageStation1 = (CarriageStation) args.get("firstCarriage_station");
-                        CarriageStation carriageStation2 = (CarriageStation) args.get("secondCarriage_station");
-                        TravelNodesManager.connectCarriageStation(carriageStation1, carriageStation2, sender);
-                    })
-            );
-    }
-
-    public CommandAPICommand disconnect() {
-        return new CommandAPICommand("disconnect")
-            .withPermission(ADMIN_PERM)
-            .withSubcommands(
-                new CommandAPICommand("carriage_station")
-                    .withArguments(
-                        CommandUtil.carriageStationArgument("firstCarriage_station"),
-                        CommandUtil.carriageStationArgument("secondCarriage_station")
-                    )
-                    .executesPlayer((Player sender, CommandArguments args) -> {
-                        CarriageStation carriageStation1 = (CarriageStation) args.get("firstCarriage_station");
-                        CarriageStation carriageStation2 = (CarriageStation) args.get("secondCarriage_station");
-                        TravelNodesManager.disconnectCarriageStations(carriageStation1, carriageStation2, sender);
-                    })
-            );
-    }
-
-    public CommandAPICommand listConnections() {
-        return new CommandAPICommand("list_connections")
-            .withPermission(ADMIN_PERM)
-            .withSubcommands(
-                new CommandAPICommand("carriage_station")
-                    .withArguments(
-                        CommandUtil.carriageStationArgument("targetCarriage_station")
-                    )
-                    .executesPlayer((Player sender, CommandArguments args) -> {
-                        CarriageStation carriageStation = (CarriageStation) args.get("targetCarriage_station");
-                        if (carriageStation == null) {
-                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid carriage station argument(s)").build());
-                        }
-                        String directConnections = "<yellow>Direct Connections: ";
-                        for (TravelNode connection : carriageStation.getDirectConnections()) {
-                            directConnections += connection.getName() + ", ";
-                        }
-                        sender.sendMessage(ColorParser.of(directConnections).build());
                     })
             );
     }

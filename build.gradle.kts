@@ -42,6 +42,7 @@ repositories {
         }
     }
     maven("https://repo.mikeprimm.com/") // Dynmap-API
+    maven("https://maven.enginehub.org/repo/") // WorldGuard
 }
 
 dependencies {
@@ -63,7 +64,6 @@ dependencies {
     }
 
     // Plugin Dependencies
-    implementation(libs.bstats)
     compileOnly(libs.vault)
     compileOnly(libs.placeholderapi) {
         exclude("me.clip.placeholderapi.libs", "kyori")
@@ -74,6 +74,7 @@ dependencies {
     compileOnly(libs.dynmap)
     compileOnly(files("libs/BlueSlimeCore-2.9.6.431.jar"))
     compileOnly(files("libs/CombatLogX-11.5.0.1242.jar"))
+    compileOnly(libs.worldguardbukkit)
 
     // Database dependencies - Core
     implementation(libs.hikaricp)
@@ -200,7 +201,7 @@ bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
 
     // Misc properties
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
-    depend = listOf("Towny", "Vault")
+    depend = listOf("Towny", "Vault", "WorldGuard")
     softDepend = listOf("CombatLogX", "dynmap")
 }
 

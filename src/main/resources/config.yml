@@ -1,4 +1,6 @@
 GlobalSettings:
+  # The world where ports/carriages can exist
+  world: "world"
   # Minimum distance a new port/carriage station can be from an existing port/carriage station
   minimumDistance: 10
   # Base cost for a journey
@@ -72,6 +74,11 @@ PortSettings:
       icon: MANGROVE_BOAT
 
 CarriageStationSettings:
+  # The regions that group carriage stations together. Carriage stations can only connect to other carriage station in the same region
+  regions:
+    - "test1"
+    - "test2"
+    - "test3"
   sizes:
     # An identifier used in to define this carriage station size. Name has no bearing on code
     small:
@@ -79,6 +86,8 @@ CarriageStationSettings:
       tier: 1
       # Name that will be referred to in the front-end when referencing this port size
       name: "Small"
+      # Distance (radius) this port can facilitate in travel in blocks
+      range: 1000
       # Cost per 100 blocks traveled
       cost: 16.00
       # Blocks per second
@@ -92,6 +101,7 @@ CarriageStationSettings:
     medium:
       tier: 2
       name: "Medium"
+      range: 2000
       cost: 12.00
       speed: 30.00
       maxTownFee: 0.10
@@ -100,6 +110,7 @@ CarriageStationSettings:
     large:
       tier: 3
       name: "Large"
+      range: 3000
       cost: 8.00
       speed: 50.00
       maxTownFee: 0.20
