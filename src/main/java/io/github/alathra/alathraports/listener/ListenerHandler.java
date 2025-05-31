@@ -2,6 +2,7 @@ package io.github.alathra.alathraports.listener;
 
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
+import io.github.alathra.alathraports.hook.Hook;
 import io.github.alathra.alathraports.listener.portlisteners.SignListeners;
 import io.github.alathra.alathraports.listener.portlisteners.external.TownyListeners;
 
@@ -21,16 +22,13 @@ public class ListenerHandler implements Reloadable {
     }
 
     @Override
-    public void onLoad() {
+    public void onLoad(AlathraPorts plugin) {
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable(AlathraPorts plugin) {
         // Register listeners here
-        if (AlathraPorts.getVaultHook().isVaultLoaded()) {
-            plugin.getServer().getPluginManager().registerEvents(new VaultListener(), plugin);
-        }
-        if (AlathraPorts.getTownyHook().isTownyLoaded()) {
+        if (Hook.getTownyHook().isHookLoaded()) {
             plugin.getServer().getPluginManager().registerEvents(new TownyListeners(), plugin);
         }
 
@@ -38,6 +36,6 @@ public class ListenerHandler implements Reloadable {
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable(AlathraPorts plugin) {
     }
 }

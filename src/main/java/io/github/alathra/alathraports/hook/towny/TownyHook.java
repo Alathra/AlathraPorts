@@ -1,28 +1,22 @@
-package io.github.alathra.alathraports.hook;
+package io.github.alathra.alathraports.hook.towny;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.core.TravelNode;
+import io.github.alathra.alathraports.hook.AbstractHook;
+import io.github.alathra.alathraports.hook.Hook;
 
-public class TownyHook implements Reloadable {
-
-    private final AlathraPorts plugin;
+public class TownyHook extends AbstractHook {
     private TownyAPI townyAPI;
 
     public TownyHook(AlathraPorts plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @Override
-    public void onLoad() {
-
-    }
-
-    @Override
-    public void onEnable() {
-        if (!isTownyLoaded()) {
+    public void onEnable(AlathraPorts plugin) {
+        if (!isHookLoaded()) {
             return;
         }
 
@@ -30,12 +24,14 @@ public class TownyHook implements Reloadable {
     }
 
     @Override
-    public void onDisable() {
-
+    public void onDisable(AlathraPorts plugin) {
+        if (!isHookLoaded())
+            return;
     }
 
-    public boolean isTownyLoaded() {
-        return plugin.getServer().getPluginManager().isPluginEnabled("Towny");
+    @Override
+    public boolean isHookLoaded() {
+        return isPluginPresent(Hook.Towny.getPluginName()) && isPluginEnabled(Hook.Towny.getPluginName());
     }
 
     public TownyAPI getTownyAPI() {

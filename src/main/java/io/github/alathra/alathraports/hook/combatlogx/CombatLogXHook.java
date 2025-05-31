@@ -1,31 +1,25 @@
-package io.github.alathra.alathraports.hook;
+package io.github.alathra.alathraports.hook.combatlogx;
 
 import com.github.sirblobman.combatlogx.api.ICombatLogX;
 import com.github.sirblobman.combatlogx.api.manager.ICombatManager;
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.Reloadable;
+import io.github.alathra.alathraports.hook.AbstractHook;
+import io.github.alathra.alathraports.hook.Hook;
 import org.bukkit.entity.Player;
 
-public class CombatLogXHook implements Reloadable {
+public class CombatLogXHook extends AbstractHook {
 
-    private final AlathraPorts plugin;
     private static ICombatLogX combatLogXAPI;
     private static ICombatManager combatManager;
 
     public CombatLogXHook(AlathraPorts plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @Override
-    public void onLoad() {
-
-    }
-
-    @Override
-    public void onEnable() {
-        if (!isCombatLogXLoaded()) {
+    public void onEnable(AlathraPorts plugin) {
+        if (!isHookLoaded())
             return;
-        }
 
         combatLogXAPI = (ICombatLogX) plugin.getServer().getPluginManager().getPlugin("CombatLogX");
         if (combatLogXAPI != null) {
@@ -34,12 +28,14 @@ public class CombatLogXHook implements Reloadable {
     }
 
     @Override
-    public void onDisable() {
-
+    public void onDisable(AlathraPorts plugin) {
+        if (!isHookLoaded())
+            return;
     }
 
-    public boolean isCombatLogXLoaded() {
-        return plugin.getServer().getPluginManager().isPluginEnabled("CombatLogX");
+    @Override
+    public boolean isHookLoaded() {
+        return isPluginPresent(Hook.CombatLogX.getPluginName()) && isPluginEnabled(Hook.CombatLogX.getPluginName());
     }
 
     public ICombatLogX getCombatLogXAPI() {
@@ -49,5 +45,4 @@ public class CombatLogXHook implements Reloadable {
     public boolean isInCombat(Player player) {
         return combatManager.isInCombat(player);
     }
-
 }

@@ -3,6 +3,7 @@ package io.github.alathra.alathraports.core;
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
+import io.github.alathra.alathraports.hook.Hook;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -136,7 +137,7 @@ public abstract class TravelNode implements Cloneable {
 
     // Find the town in which the port exists. If no town found then it will be set to null
     public void findTown() {
-        town = AlathraPorts.getTownyHook().getTownyAPI().getTown(signLocation);
+        town = Hook.getTownyHook().getTownyAPI().getTown(signLocation);
     }
 
     public void setDefaultTax() {

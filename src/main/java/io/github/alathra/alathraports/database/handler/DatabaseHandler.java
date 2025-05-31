@@ -1,6 +1,7 @@
 package io.github.alathra.alathraports.database.handler;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.config.ConfigHandler;
 import io.github.alathra.alathraports.core.TravelNodesManager;
@@ -62,7 +63,7 @@ public class DatabaseHandler implements Reloadable {
      * On plugin load.
      */
     @Override
-    public void onLoad() {
+    public void onLoad(AlathraPorts plugin) {
         try {
             // Load database config from file, or use provided databaseConfig from constructor
             if (configHandler != null)
@@ -84,14 +85,14 @@ public class DatabaseHandler implements Reloadable {
      * On plugin enable.
      */
     @Override
-    public void onEnable() {
+    public void onEnable(AlathraPorts plugin) {
     }
 
     /**
      * On plugin disable.
      */
     @Override
-    public void onDisable() {
+    public void onDisable(AlathraPorts plugin) {
         if (!isReady())
             return;
 

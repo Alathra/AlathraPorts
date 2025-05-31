@@ -3,7 +3,6 @@ package io.github.alathra.alathraports.api;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
-import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
@@ -14,6 +13,7 @@ import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.ports.PortSize;
 import io.github.alathra.alathraports.database.DBAction;
 import io.github.alathra.alathraports.gui.GuiHandler;
+import io.github.alathra.alathraports.hook.Hook;
 import io.github.alathra.alathraports.utility.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -66,9 +66,9 @@ public class PortsAPI {
             Logger.get().warn(e.getMessage());
             return null;
         }
-        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().placePortMarker(port);
-            AlathraPorts.getDynmapHook().placePortRangeMarker(port);
+        if (Hook.getDynmapHook().isHookLoaded()) {
+            Hook.getDynmapHook().placePortMarker(port);
+            Hook.getDynmapHook().placePortRangeMarker(port);
         }
         DBAction.saveAllPortsToDB();
         return port;
@@ -80,9 +80,9 @@ public class PortsAPI {
 
     public static boolean deleteAbstractPort(Port port) {
         if (TravelNodesManager.deregisterPort(port)) {
-            if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                AlathraPorts.getDynmapHook().removePortMarker(port);
-                AlathraPorts.getDynmapHook().removePortRangeMarker(port);
+            if (Hook.getDynmapHook().isHookLoaded()) {
+                Hook.getDynmapHook().removePortMarker(port);
+                Hook.getDynmapHook().removePortRangeMarker(port);
             }
             DBAction.deletePortFromDB(port);
             return true;
@@ -140,7 +140,7 @@ public class PortsAPI {
     }
 
     public static @Nullable Port getPortFromTown(Town town) {
-        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+        if (!Hook.getTownyHook().isHookLoaded()) {
             return null;
         }
         for (Port port : TravelNodesManager.getPorts()) {
@@ -233,8 +233,8 @@ public class PortsAPI {
             Logger.get().warn(e.getMessage());
             return null;
         }
-        if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-            AlathraPorts.getDynmapHook().placeCarriageStationMarker(carriageStation);
+        if (Hook.getDynmapHook().isHookLoaded()) {
+            Hook.getDynmapHook().placeCarriageStationMarker(carriageStation);
         }
         DBAction.saveAllCarriageStationsToDB();
         return carriageStation;
@@ -246,9 +246,9 @@ public class PortsAPI {
 
     public static boolean deleteAbstractCarriageStation(CarriageStation carriageStation) {
         if (TravelNodesManager.deregisterCarriageStation(carriageStation)) {
-            if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                AlathraPorts.getDynmapHook().removeCarriageStationMarker(carriageStation);
-                AlathraPorts.getDynmapHook().removeCarriageStationConnectionMarkers(carriageStation);
+            if (Hook.getDynmapHook().isHookLoaded()) {
+                Hook.getDynmapHook().removeCarriageStationMarker(carriageStation);
+                Hook.getDynmapHook().removeCarriageStationConnectionMarkers(carriageStation);
             }
             DBAction.deleteCarriageStationFromDB(carriageStation);
             return true;
@@ -306,7 +306,7 @@ public class PortsAPI {
     }
 
     public static @Nullable CarriageStation getCarriageStationFromTown(Town town) {
-        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+        if (!Hook.getTownyHook().isHookLoaded()) {
             return null;
         }
         for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {

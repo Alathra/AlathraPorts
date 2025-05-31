@@ -4,6 +4,7 @@ import com.github.milkdrinkers.crate.Config;
 import com.github.milkdrinkers.crate.internal.settings.ReloadSetting;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
+import io.github.alathra.alathraports.hook.Hook;
 
 import javax.inject.Singleton;
 
@@ -26,7 +27,7 @@ public class ConfigHandler implements Reloadable {
     }
 
     @Override
-    public void onLoad() {
+    public void onLoad(AlathraPorts plugin) {
         cfg = new Config("config", plugin.getDataFolder().getPath(), plugin.getResource("config.yml")); // Create a config file from the template in our resources folder
         Settings.update();
         cfg.setReloadSetting(ReloadSetting.MANUALLY);
@@ -34,17 +35,17 @@ public class ConfigHandler implements Reloadable {
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable(AlathraPorts plugin) {
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable(AlathraPorts plugin) {
     }
 
     public void reloadConfig() {
         cfg.forceReload();
         Settings.update();
-        AlathraPorts.getDynmapHook().refreshAllMarkers();
+        Hook.getDynmapHook().refreshAllMarkers();
     }
 
     public void reloadDBConfig() {

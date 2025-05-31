@@ -1,4 +1,4 @@
-package io.github.alathra.alathraports.hook;
+package io.github.alathra.alathraports.hook.placeholderapi;
 
 import io.github.alathra.alathraports.AlathraPorts;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;

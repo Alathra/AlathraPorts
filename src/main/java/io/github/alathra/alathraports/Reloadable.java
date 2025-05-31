@@ -7,15 +7,15 @@ public interface Reloadable {
     /**
      * On plugin load.
      */
-    void onLoad();
+    void onLoad(AlathraPorts plugin);
 
     /**
      * On plugin enable.
      */
-    void onEnable();
+    void onEnable(AlathraPorts plugin);
 
     /**
      * On plugin disable.
      */
-    void onDisable();
+    void onDisable(AlathraPorts plugin);
 }

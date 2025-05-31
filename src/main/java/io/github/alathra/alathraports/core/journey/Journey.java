@@ -7,8 +7,8 @@ import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStationSize;
 import io.github.alathra.alathraports.core.ports.PortSize;
-import io.github.alathra.alathraports.core.TravelNodesManager;
-import io.github.alathra.alathraports.hook.TownyHook;
+import io.github.alathra.alathraports.hook.Hook;
+import io.github.alathra.alathraports.hook.towny.TownyHook;
 import io.github.alathra.alathraports.utility.Logger;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -85,7 +85,7 @@ public class Journey {
                 return;
             }
         }
-        final Economy economy = AlathraPorts.getVaultHook().getEconomy();
+        final Economy economy = Hook.getVaultHook().getEconomy();
         double cost = getTotalCost();
         if (economy.getBalance(player) < cost) {
             player.sendMessage(ColorParser.of("<red>You need <gold>" + economy.format(cost) + " <red>to travel to <green>" + destination.getName()).build());
@@ -112,8 +112,8 @@ public class Journey {
             return;
         }
 
-        if (AlathraPorts.getCombatLogXHook().isCombatLogXLoaded()) {
-            if (AlathraPorts.getCombatLogXHook().isInCombat(player)) {
+        if (Hook.getCombatLogXHook().isHookLoaded()) {
+            if (Hook.getCombatLogXHook().isInCombat(player)) {
                 halt();
                 stop();
                 return;
@@ -124,7 +124,7 @@ public class Journey {
         currentTravelTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AlathraPorts.getInstance(), () -> {
             // Take money from player for each node traveled
             updateNumAnimals();
-            final Economy economy = AlathraPorts.getVaultHook().getEconomy();
+            final Economy economy = Hook.getVaultHook().getEconomy();
             final double cost = getCost(nodes.get(currentIndex), nodes.get(currentIndex+1));
             if (economy.getBalance(player) < cost) {
                 player.sendMessage(ColorParser.of("<red>You no longer have enough funds to complete this journey").build());
@@ -134,7 +134,7 @@ public class Journey {
             }
             economy.withdrawPlayer(player, cost);
             // Attempt to add tax to town bank, if applicable
-            if (AlathraPorts.getTownyHook().isTownyLoaded()) {
+            if (Hook.getTownyHook().isHookLoaded()) {
                TravelNode intermediateDestination = nodes.get(currentIndex+1);
                if (intermediateDestination.getTown() != null) {
                    double tax = getCost(nodes.get(currentIndex), intermediateDestination) * intermediateDestination.getTownFee();

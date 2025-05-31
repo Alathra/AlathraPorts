@@ -8,6 +8,7 @@ import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.exceptions.TravelNodeRegisterException;
 import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.database.DBAction;
+import io.github.alathra.alathraports.hook.Hook;
 import io.github.alathra.alathraports.utility.Logger;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -38,17 +39,17 @@ public class TravelNodesManager {
             switch(travelNode.type) {
                 case PORT:
                     registerPort((Port) travelNode);
-                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                        AlathraPorts.getDynmapHook().placePortMarker((Port) travelNode);
-                        AlathraPorts.getDynmapHook().placePortRangeMarker((Port) travelNode);
+                    if (Hook.getDynmapHook().isHookLoaded()) {
+                        Hook.getDynmapHook().placePortMarker((Port) travelNode);
+                        Hook.getDynmapHook().placePortRangeMarker((Port) travelNode);
                     }
                     DBAction.saveAllPortsToDB();
                     creator.sendMessage(ColorParser.of("<green>Port " + travelNode.getName() + " has been created").build());
                     break;
                 case CARRIAGE_STATION:
                     registerCarriageStation((CarriageStation) travelNode);
-                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                        AlathraPorts.getDynmapHook().placeCarriageStationMarker((CarriageStation) travelNode);
+                    if (Hook.getDynmapHook().isHookLoaded()) {
+                        Hook.getDynmapHook().placeCarriageStationMarker((CarriageStation) travelNode);
                     }
                     DBAction.saveAllCarriageStationsToDB();
                     creator.sendMessage(ColorParser.of("<green>Carriage Station " + travelNode.getName() + " has been created").build());
@@ -110,9 +111,9 @@ public class TravelNodesManager {
                 if(deregisterPort((Port) travelNode)) {
                     Block signBlock = travelNode.getSignLocation().getBlock();
                     signBlock.setType(Material.AIR);
-                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                        AlathraPorts.getDynmapHook().removePortMarker((Port) travelNode);
-                        AlathraPorts.getDynmapHook().removePortRangeMarker((Port) travelNode);
+                    if (Hook.getDynmapHook().isHookLoaded()) {
+                        Hook.getDynmapHook().removePortMarker((Port) travelNode);
+                        Hook.getDynmapHook().removePortRangeMarker((Port) travelNode);
                     }
                     DBAction.deletePortFromDB((Port) travelNode);
                     if (deleter != null) {
@@ -128,9 +129,9 @@ public class TravelNodesManager {
                 if(deregisterCarriageStation((CarriageStation) travelNode)) {
                     Block signBlock = travelNode.getSignLocation().getBlock();
                     signBlock.setType(Material.AIR);
-                    if (AlathraPorts.getDynmapHook().isDynmapLoaded()) {
-                        AlathraPorts.getDynmapHook().removeCarriageStationMarker((CarriageStation) travelNode);
-                        AlathraPorts.getDynmapHook().removeCarriageStationConnectionMarkers((CarriageStation) travelNode);
+                    if (Hook.getDynmapHook().isHookLoaded()) {
+                        Hook.getDynmapHook().removeCarriageStationMarker((CarriageStation) travelNode);
+                        Hook.getDynmapHook().removeCarriageStationConnectionMarkers((CarriageStation) travelNode);
                     }
                     DBAction.deleteCarriageStationFromDB((CarriageStation) travelNode);
                     if (deleter != null) {

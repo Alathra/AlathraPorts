@@ -1,18 +1,19 @@
-package io.github.alathra.alathraports.hook;
+package io.github.alathra.alathraports.hook.dynmap;
 
 import io.github.alathra.alathraports.AlathraPorts;
-import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.ports.PortSize;
+import io.github.alathra.alathraports.hook.AbstractHook;
+import io.github.alathra.alathraports.hook.Hook;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.*;
 
-public class DynmapHook implements Reloadable {
-    private final AlathraPorts plugin;
+public class DynmapHook extends AbstractHook {
+
     private DynmapCommonAPI dynmapAPI;
     private MarkerAPI markerAPI;
 
@@ -23,19 +24,19 @@ public class DynmapHook implements Reloadable {
     private MarkerIcon carriageStationIcon;
 
     public DynmapHook(AlathraPorts plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @Override
-    public void onLoad() {
-
-    }
-
-    @Override
-    public void onEnable() {
-        if(!isDynmapLoaded()) {
+    public void onLoad(AlathraPorts plugin) {
+        if (!isHookLoaded())
             return;
-        }
+    }
+
+    @Override
+    public void onEnable(AlathraPorts plugin) {
+        if (!isHookLoaded())
+            return;
 
         dynmapAPI = (DynmapCommonAPI) plugin.getServer().getPluginManager().getPlugin("dynmap");
         if (dynmapAPI != null) {
@@ -48,12 +49,12 @@ public class DynmapHook implements Reloadable {
     }
 
     @Override
-    public void onDisable() {
-
+    public void onDisable(AlathraPorts plugin) {
     }
 
-    public boolean isDynmapLoaded() {
-        return plugin.getServer().getPluginManager().isPluginEnabled("dynmap");
+    @Override
+    public boolean isHookLoaded() {
+        return isPluginPresent(Hook.Dynmap.getPluginName()) && isPluginEnabled(Hook.Dynmap.getPluginName());
     }
 
     // should be called on server enable
@@ -346,5 +347,4 @@ public class DynmapHook implements Reloadable {
         placeAllPortRangeMarkers();
         placeAllCarriageConnectionMarkers();
     }
-
 }

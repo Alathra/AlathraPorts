@@ -18,6 +18,7 @@ import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.core.TravelNodesManager;
 import io.github.alathra.alathraports.core.journey.Journey;
 import io.github.alathra.alathraports.core.journey.JourneyManager;
+import io.github.alathra.alathraports.hook.Hook;
 import io.github.alathra.alathraports.utility.StringUtil;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.milkbowl.vault.economy.Economy;
@@ -84,7 +85,7 @@ public class TravelGui {
 
     public static void generateNodeButtons(PaginatedGui gui, Player player, TravelNode travelNode) {
 
-        final Economy economy = AlathraPorts.getVaultHook().getEconomy();
+        final Economy economy = Hook.getVaultHook().getEconomy();
         // code to prevent animal calculations being run more than once
         int numAnimals = -1;
         final List<Journey> journeys = new ArrayList<>();
@@ -255,7 +256,7 @@ public class TravelGui {
     }
 
     public static void generateTaxRateIcon(PaginatedGui gui, TravelNode travelNode) {
-        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+        if (!Hook.getTownyHook().isHookLoaded()) {
             return;
         }
         if (travelNode.getTown() == null) {
@@ -271,10 +272,10 @@ public class TravelGui {
     }
 
     public static void generateSetTaxButton(PaginatedGui gui, Player player, TravelNode travelNode) {
-        if (!AlathraPorts.getTownyHook().isTownyLoaded()) {
+        if (!Hook.getTownyHook().isHookLoaded()) {
             return;
         }
-        TownyAPI townyAPI = AlathraPorts.getTownyHook().getTownyAPI();
+        TownyAPI townyAPI = Hook.getTownyHook().getTownyAPI();
         if (!player.hasPermission(PortsCommand.ADMIN_PERM)) {
             Resident resident = townyAPI.getResident(player);
             if (resident == null) {

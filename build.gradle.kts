@@ -176,7 +176,7 @@ tasks {
 
         // Automatically install dependencies
         downloadPlugins {
-            modrinth("dynmap", "3.7-beta-8")
+            //modrinth("dynmap", "3.7-beta-8")
         }
     }
 }

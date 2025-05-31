@@ -21,12 +21,12 @@ public class CommandHandler implements Reloadable {
     }
 
     @Override
-    public void onLoad() {
+    public void onLoad(AlathraPorts plugin) {
         CommandAPI.onLoad(new CommandAPIBukkitConfig(plugin).shouldHookPaperReload(true).silentLogs(true));
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable(AlathraPorts plugin) {
         CommandAPI.onEnable();
 
         // Register commands here
@@ -34,7 +34,7 @@ public class CommandHandler implements Reloadable {
     }
 
     @Override
-    public void onDisable() {
+    public void onDisable(AlathraPorts plugin) {
         CommandAPI.onDisable();
     }
 }

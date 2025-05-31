@@ -4,8 +4,9 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
 import io.github.alathra.alathraports.database.DBAction;
+import io.github.alathra.alathraports.database.handler.DatabaseHandler;
 import io.github.alathra.alathraports.database.handler.DatabaseHandlerBuilder;
-import io.github.alathra.alathraports.hook.*;
+import io.github.alathra.alathraports.hook.HookManager;
 import io.github.alathra.alathraports.listener.ListenerHandler;
 import io.github.alathra.alathraports.utility.DB;
 import io.github.alathra.alathraports.utility.Logger;
@@ -13,22 +14,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Main class.
  */
 public class AlathraPorts extends JavaPlugin {
+
     private static AlathraPorts instance;
+
+    // Handlers/Managers
     private ConfigHandler configHandler;
+    private DatabaseHandler databaseHandler;
+    private HookManager hookManager;
     private CommandHandler commandHandler;
     private ListenerHandler listenerHandler;
 
-    // Hooks
-    private static VaultHook vaultHook;
-    private static PAPIHook papiHook;
-    private static TownyHook townyHook;
-    private static CombatLogXHook combatLogXHook;
-    private static DynmapHook dynmapHook;
-    private static WorldguardHook worldguardHook;
+    private List<? extends Reloadable> handlers;
 
     /**
      * Gets plugin instance.
@@ -42,146 +44,71 @@ public class AlathraPorts extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        configHandler = new ConfigHandler(instance);
-        DB.init(
-            new DatabaseHandlerBuilder()
-                .withConfigHandler(configHandler)
-                .withLogger(getComponentLogger())
-                .build()
-        );
-        commandHandler = new CommandHandler(instance);
-        listenerHandler = new ListenerHandler(instance);
-        vaultHook = new VaultHook(instance);
-        papiHook = new PAPIHook(instance);
-        townyHook = new TownyHook(instance);
-        combatLogXHook = new CombatLogXHook(instance);
-        dynmapHook = new DynmapHook(instance);
-        worldguardHook = new WorldguardHook(instance);
 
-        configHandler.onLoad();
-        DB.getHandler().onLoad();
-        commandHandler.onLoad();
-        listenerHandler.onLoad();
-        vaultHook.onLoad();
-        papiHook.onLoad();
-        townyHook.onLoad();
-        combatLogXHook.onLoad();
-        dynmapHook.onLoad();
-        worldguardHook.onLoad();
+        configHandler = new ConfigHandler(this);
+        hookManager = new HookManager(this);
+        databaseHandler = new DatabaseHandlerBuilder()
+            .withConfigHandler(configHandler)
+            .withLogger(getComponentLogger())
+            .build();
+        commandHandler = new CommandHandler(this);
+        listenerHandler = new ListenerHandler(this);
+
+        handlers = List.of(
+            configHandler,
+            hookManager,
+            databaseHandler,
+            commandHandler,
+            listenerHandler
+        );
+
+        DB.init(databaseHandler);
+        for (Reloadable handler : handlers)
+            handler.onLoad(instance);
     }
 
     @Override
     public void onEnable() {
-        configHandler.onEnable();
-        DB.getHandler().onEnable();
-        commandHandler.onEnable();
-        listenerHandler.onEnable();
+
+        for (Reloadable handler : handlers)
+            handler.onEnable(instance);
 
         if (!DB.isReady()) {
             Logger.get().warn(ColorParser.of("<yellow>DatabaseHolder handler failed to start. Database support has been disabled.").build());
             Bukkit.getPluginManager().disablePlugin(this);
         }
 
-        if (vaultHook.isVaultLoaded()) {
-            Logger.get().info(ColorParser.of("<green>Vault has been found on this server. Vault support enabled.").build());
-        } else {
-            Logger.get().warn(ColorParser.of("<yellow>Vault is not installed on this server. Vault support has been disabled.").build());
-            Logger.get().error(ColorParser.of("<red>Vault is a hard dependency. Plugin disabling...").build());
-            this.getServer().getPluginManager().disablePlugin(this);
-        }
-
-        if (townyHook.isTownyLoaded()) {
-            Logger.get().info(ColorParser.of("<green>Towny has been found on this server. Towny support enabled.").build());
-        } else {
-            Logger.get().warn(ColorParser.of("<yellow>Towny is not installed on this server. Towny support has been disabled.").build());
-            Logger.get().error(ColorParser.of("<red>Towny is a hard dependency. Plugin disabling...").build());
-            this.getServer().getPluginManager().disablePlugin(this);
-        }
-
-        if (combatLogXHook.isCombatLogXLoaded()) {
-            Logger.get().info(ColorParser.of("<green>CombatLogX has been found on this server. CombatLogX support enabled.").build());
-        } else {
-            Logger.get().warn(ColorParser.of("<yellow>CombatLogX is not installed on this server. CombatLogX support has been disabled.").build());
-        }
-
-        if (dynmapHook.isDynmapLoaded()) {
-            Logger.get().info(ColorParser.of("<green>Dynmap has been found on this server. Dynmap support enabled.").build());
-        } else {
-            Logger.get().warn(ColorParser.of("<yellow>Dynmap is not installed on this server. Dynmap support has been disabled.").build());
-        }
-
-        if (worldguardHook.isWorldGuardLoaded()) {
-            Logger.get().info(ColorParser.of("<green>Worldguard has been found on this server. Worldguard support enabled.").build());
-        } else {
-            Logger.get().warn(ColorParser.of("<yellow>Worldguard is not installed on this server. Worldguard support has been disabled.").build());
-        }
-
         DBAction.registerPortsFromDB();
         DBAction.registerCarriageStationsFromDB();
         DBAction.initPeriodicDBSaving();
-
-        vaultHook.onEnable();
-        papiHook.onEnable();
-        townyHook.onEnable();
-        combatLogXHook.onEnable();
-        dynmapHook.onEnable();
-        worldguardHook.onEnable();
-
     }
 
     @Override
     public void onDisable() {
         DBAction.stopPeriodicDBSaving();
-        configHandler.onDisable();
-        DB.getHandler().onDisable();
-        commandHandler.onDisable();
-        listenerHandler.onDisable();
-        vaultHook.onDisable();
-        papiHook.onDisable();
-        townyHook.onDisable();
-        combatLogXHook.onDisable();
-        dynmapHook.onDisable();
-        worldguardHook.onDisable();
+
+        for (Reloadable handler : handlers.reversed()) // If reverse doesn't work implement a new List with your desired disable order
+            handler.onDisable(instance);
     }
 
-    /**
-     * Gets config handler.
-     *
-     * @return the config handler
-     */
+
     @NotNull
     public ConfigHandler getConfigHandler() {
         return configHandler;
     }
 
-    /**
-     * Gets vault hook.
-     *
-     * @return the vault hook
-     */
     @NotNull
-    public static VaultHook getVaultHook() {
-        return vaultHook;
+    public DatabaseHandler getDatabaseHandler() {
+        return databaseHandler;
     }
 
     @NotNull
-    public static TownyHook getTownyHook() {
-        return townyHook;
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
     }
 
     @NotNull
-    public static CombatLogXHook getCombatLogXHook() {
-        return combatLogXHook;
+    public ListenerHandler getListenerHandler() {
+        return listenerHandler;
     }
-
-    @NotNull
-    public static DynmapHook getDynmapHook() {
-        return dynmapHook;
-    }
-
-    @NotNull
-    public static WorldguardHook getWorldguardHook() {
-        return worldguardHook;
-    }
-
 }
