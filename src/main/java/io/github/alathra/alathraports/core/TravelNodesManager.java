@@ -39,7 +39,7 @@ public class TravelNodesManager {
             switch(travelNode.type) {
                 case PORT:
                     registerPort((Port) travelNode);
-                    if (Hook.getDynmapHook().isHookLoaded()) {
+                    if (Hook.Dynmap.isLoaded()) {
                         Hook.getDynmapHook().placePortMarker((Port) travelNode);
                         Hook.getDynmapHook().placePortRangeMarker((Port) travelNode);
                     }
@@ -48,7 +48,7 @@ public class TravelNodesManager {
                     break;
                 case CARRIAGE_STATION:
                     registerCarriageStation((CarriageStation) travelNode);
-                    if (Hook.getDynmapHook().isHookLoaded()) {
+                    if (Hook.Dynmap.isLoaded()) {
                         Hook.getDynmapHook().placeCarriageStationMarker((CarriageStation) travelNode);
                     }
                     DBAction.saveAllCarriageStationsToDB();
@@ -111,7 +111,7 @@ public class TravelNodesManager {
                 if(deregisterPort((Port) travelNode)) {
                     Block signBlock = travelNode.getSignLocation().getBlock();
                     signBlock.setType(Material.AIR);
-                    if (Hook.getDynmapHook().isHookLoaded()) {
+                    if (Hook.Dynmap.isLoaded()) {
                         Hook.getDynmapHook().removePortMarker((Port) travelNode);
                         Hook.getDynmapHook().removePortRangeMarker((Port) travelNode);
                     }
@@ -129,7 +129,7 @@ public class TravelNodesManager {
                 if(deregisterCarriageStation((CarriageStation) travelNode)) {
                     Block signBlock = travelNode.getSignLocation().getBlock();
                     signBlock.setType(Material.AIR);
-                    if (Hook.getDynmapHook().isHookLoaded()) {
+                    if (Hook.Dynmap.isLoaded()) {
                         Hook.getDynmapHook().removeCarriageStationMarker((CarriageStation) travelNode);
                         Hook.getDynmapHook().removeCarriageStationConnectionMarkers((CarriageStation) travelNode);
                     }

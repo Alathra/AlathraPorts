@@ -66,7 +66,7 @@ public class PortsAPI {
             Logger.get().warn(e.getMessage());
             return null;
         }
-        if (Hook.getDynmapHook().isHookLoaded()) {
+        if (Hook.Dynmap.isLoaded()) {
             Hook.getDynmapHook().placePortMarker(port);
             Hook.getDynmapHook().placePortRangeMarker(port);
         }
@@ -80,7 +80,7 @@ public class PortsAPI {
 
     public static boolean deleteAbstractPort(Port port) {
         if (TravelNodesManager.deregisterPort(port)) {
-            if (Hook.getDynmapHook().isHookLoaded()) {
+            if (Hook.Dynmap.isLoaded()) {
                 Hook.getDynmapHook().removePortMarker(port);
                 Hook.getDynmapHook().removePortRangeMarker(port);
             }
@@ -233,7 +233,7 @@ public class PortsAPI {
             Logger.get().warn(e.getMessage());
             return null;
         }
-        if (Hook.getDynmapHook().isHookLoaded()) {
+        if (Hook.Dynmap.isLoaded()) {
             Hook.getDynmapHook().placeCarriageStationMarker(carriageStation);
         }
         DBAction.saveAllCarriageStationsToDB();
@@ -246,7 +246,7 @@ public class PortsAPI {
 
     public static boolean deleteAbstractCarriageStation(CarriageStation carriageStation) {
         if (TravelNodesManager.deregisterCarriageStation(carriageStation)) {
-            if (Hook.getDynmapHook().isHookLoaded()) {
+            if (Hook.Dynmap.isLoaded()) {
                 Hook.getDynmapHook().removeCarriageStationMarker(carriageStation);
                 Hook.getDynmapHook().removeCarriageStationConnectionMarkers(carriageStation);
             }

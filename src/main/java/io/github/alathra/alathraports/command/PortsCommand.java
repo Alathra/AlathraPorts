@@ -255,7 +255,7 @@ public class PortsCommand {
                                 port.refreshNodeSign();
                                 try {
                                     TravelNodesManager.reRegisterPort(port);
-                                    if (Hook.getDynmapHook().isHookLoaded()) {
+                                    if (Hook.Dynmap.isLoaded()) {
                                         Hook.getDynmapHook().refreshPortMarker(port);
                                         Hook.getDynmapHook().refreshPortRangeMarker(port);
                                     }
@@ -285,7 +285,7 @@ public class PortsCommand {
                                 try {
                                     TravelNodesManager.reRegisterPort(port);
                                     port.setDefaultTax();
-                                    if (Hook.getDynmapHook().isHookLoaded()) {
+                                    if (Hook.Dynmap.isLoaded()) {
                                         Hook.getDynmapHook().refreshPortMarker(port);
                                         Hook.getDynmapHook().refreshPortRangeMarker(port);
                                     }
@@ -320,7 +320,7 @@ public class PortsCommand {
                                 port.refreshNodeSign();
                                 try {
                                     TravelNodesManager.reRegisterPort(port);
-                                    if (Hook.getDynmapHook().isHookLoaded()) {
+                                    if (Hook.Dynmap.isLoaded()) {
                                         Hook.getDynmapHook().refreshPortMarker(port);
                                         Hook.getDynmapHook().refreshPortRangeMarker(port);
                                     }
@@ -356,7 +356,7 @@ public class PortsCommand {
                                 carriageStation.refreshNodeSign();
                                 try {
                                     TravelNodesManager.reRegisterCarriageStation(carriageStation);
-                                    if (Hook.getDynmapHook().isHookLoaded()) {
+                                    if (Hook.Dynmap.isLoaded()) {
                                         Hook.getDynmapHook().refreshCarriageStationMarker(carriageStation);
                                         Hook.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                     }
@@ -386,7 +386,7 @@ public class PortsCommand {
                                 try {
                                     TravelNodesManager.reRegisterCarriageStation(carriageStation);
                                     carriageStation.setDefaultTax();
-                                    if (Hook.getDynmapHook().isHookLoaded()) {
+                                    if (Hook.Dynmap.isLoaded()) {
                                         Hook.getDynmapHook().refreshCarriageStationMarker(carriageStation);
                                         Hook.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                     }
@@ -421,7 +421,7 @@ public class PortsCommand {
                                 carriageStation.refreshNodeSign();
                                 try {
                                     TravelNodesManager.reRegisterCarriageStation(carriageStation);
-                                    if (Hook.getDynmapHook().isHookLoaded()) {
+                                    if (Hook.Dynmap.isLoaded()) {
                                         Hook.getDynmapHook().refreshCarriageStationMarker(carriageStation);
                                         Hook.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                     }
@@ -482,7 +482,7 @@ public class PortsCommand {
                                             port.setTeleportLocation(newSignLocation);
                                             TravelNodesManager.reRegisterPort(port);
                                             DBAction.saveAllPortsToDB();
-                                            if (Hook.getDynmapHook().isHookLoaded()) {
+                                            if (Hook.Dynmap.isLoaded()) {
                                                 Hook.getDynmapHook().refreshPortMarker(port);
                                                 Hook.getDynmapHook().refreshPortRangeMarker(port);
                                             }
@@ -497,7 +497,7 @@ public class PortsCommand {
                                             port.setTeleportLocation(newSignLocation);
                                             TravelNodesManager.reRegisterPort(port);
                                             DBAction.saveAllPortsToDB();
-                                            if (Hook.getDynmapHook().isHookLoaded()) {
+                                            if (Hook.Dynmap.isLoaded()) {
                                                 Hook.getDynmapHook().refreshPortMarker(port);
                                                 Hook.getDynmapHook().refreshPortRangeMarker(port);
                                             }
@@ -554,7 +554,7 @@ public class PortsCommand {
                                             carriageStation.setTeleportLocation(newSignLocation);
                                             TravelNodesManager.reRegisterCarriageStation(carriageStation);
                                             DBAction.saveAllCarriageStationsToDB();
-                                            if (Hook.getDynmapHook().isHookLoaded()) {
+                                            if (Hook.Dynmap.isLoaded()) {
                                                 Hook.getDynmapHook().refreshCarriageStationMarker(carriageStation);
                                                 Hook.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                             }
@@ -569,7 +569,7 @@ public class PortsCommand {
                                             carriageStation.setTeleportLocation(newSignLocation);
                                             TravelNodesManager.reRegisterCarriageStation(carriageStation);
                                             DBAction.saveAllCarriageStationsToDB();
-                                            if (Hook.getDynmapHook().isHookLoaded()) {
+                                            if (Hook.Dynmap.isLoaded()) {
                                                 Hook.getDynmapHook().refreshCarriageStationMarker(carriageStation);
                                                 Hook.getDynmapHook().refreshCarriageStationConnectionMarkers(carriageStation);
                                             }
