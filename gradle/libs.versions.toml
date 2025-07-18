@@ -27,7 +27,7 @@ worldguardbukkit = "com.sk89q.worldguard:worldguard-bukkit:7.0.13"
 hikaricp = "com.zaxxer:HikariCP:6.2.1"
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
-jooq = "org.jooq:jooq:3.20.2"
+jooq = "org.jooq:jooq:3.20.5"
 
 # JDBC drivers
 h2 = "com.h2database:h2:2.3.232"
@@ -56,4 +56,4 @@ shadow = "com.gradleup.shadow:8.3.5"
 run-paper = "xyz.jpenilla.run-paper:2.3.1"
 plugin-yml = "net.minecrell.plugin-yml.bukkit:0.6.0"
 flyway = "org.flywaydb.flyway:11.3.4"
-jooq = "org.jooq.jooq-codegen-gradle:3.20.2"
+jooq = "org.jooq.jooq-codegen-gradle:3.20.5"
