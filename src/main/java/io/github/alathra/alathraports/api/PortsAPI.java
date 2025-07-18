@@ -139,17 +139,28 @@ public class PortsAPI {
         return null;
     }
 
+    public static @Nullable Port getPortFromTownUUID(UUID townUUID) {
+        if (!Hook.getTownyHook().isHookLoaded()) {
+            return null;
+        }
+        for (Port port : TravelNodesManager.getPorts()) {
+            if (port.getTownUUID() == null)
+                continue;
+            if (port.getTownUUID().equals(townUUID))
+                return port;
+        }
+        return null;
+    }
+
     public static @Nullable Port getPortFromTown(Town town) {
         if (!Hook.getTownyHook().isHookLoaded()) {
             return null;
         }
         for (Port port : TravelNodesManager.getPorts()) {
-            if (port.getTown() == null) {
+            if (port.getTown() == null)
                 continue;
-            }
-            if (port.getTown().equals(town)) {
+            if (port.getTown().equals(town))
                 return port;
-            }
         }
         return null;
     }
@@ -305,17 +316,28 @@ public class PortsAPI {
         return null;
     }
 
+    public static @Nullable CarriageStation getCarriageStationFromTownUUID(UUID townUUID) {
+        if (!Hook.getTownyHook().isHookLoaded()) {
+            return null;
+        }
+        for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {
+            if (carriageStation.getTownUUID() == null)
+                continue;
+            if (carriageStation.getTownUUID().equals(townUUID))
+                return carriageStation;
+        }
+        return null;
+    }
+
     public static @Nullable CarriageStation getCarriageStationFromTown(Town town) {
         if (!Hook.getTownyHook().isHookLoaded()) {
             return null;
         }
         for (CarriageStation carriageStation : TravelNodesManager.getCarriageStations()) {
-            if (carriageStation.getTown() == null) {
+            if (carriageStation.getTown() == null)
                 continue;
-            }
-            if (carriageStation.getTown().equals(town)) {
+            if (carriageStation.getTown().equals(town))
                 return carriageStation;
-            }
         }
         return null;
     }

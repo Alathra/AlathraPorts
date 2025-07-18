@@ -4,7 +4,6 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.config.Settings;
-import io.github.alathra.alathraports.core.TravelNode;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;
 import io.github.alathra.alathraports.core.ports.Port;
 import io.github.alathra.alathraports.database.schema.tables.records.CarriagestationsRecord;

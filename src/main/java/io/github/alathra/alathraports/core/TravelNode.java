@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -25,6 +26,8 @@ public abstract class TravelNode implements Cloneable {
     protected Location teleportLocation;
     // If the travel node is set as blockaded (disables the travel node)
     protected boolean isBlockaded;
+    // The stored UUID of the town associated with the travel node (optional)
+    protected UUID townUUIID;
     // The town associated with the travel node (optional)
     protected Town town;
     // The fee currently being set by the town mayor
@@ -138,6 +141,8 @@ public abstract class TravelNode implements Cloneable {
     // Find the town in which the port exists. If no town found then it will be set to null
     public void findTown() {
         town = Hook.getTownyHook().getTownyAPI().getTown(signLocation);
+        if (town != null)
+            townUUIID = town.getUUID();
     }
 
     public void setDefaultTax() {
@@ -146,13 +151,19 @@ public abstract class TravelNode implements Cloneable {
         }
     }
 
-    public void setTown(Town town) {
+    public void setTown(@NotNull Town town) {
         this.town = town;
+        this.townUUIID = town.getUUID();
     }
 
     public @Nullable Town getTown() {
         return town;
     }
+
+    public @Nullable UUID getTownUUID() {
+        return townUUIID;
+    }
+
 
     public double getTownFee() {
         return townFee;
