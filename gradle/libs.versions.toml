@@ -14,7 +14,7 @@ crate-api = { module = "com.github.milkdrinkers:crate-api", version.ref = "crate
 crate-yaml = { module = "com.github.milkdrinkers:crate-yaml", version.ref = "crate" }
 colorparser = "com.github.milkdrinkers:colorparser:3.0.1"
 commandapi-shade = { module = "dev.jorel:commandapi-bukkit-shade", version.ref = "commandapi" }
-triumph-gui = "dev.triumphteam:triumph-gui:3.1.11"
+triumph-gui = "dev.triumphteam:triumph-gui:3.1.12"
 
 # Plugin dependencies
 vault = "com.github.MilkBowl:VaultAPI:1.7.1"
