@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.command;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;

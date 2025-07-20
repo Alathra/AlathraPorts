@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.core;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.api.PortsAPI;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.carriagestations.CarriageStation;

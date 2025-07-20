@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.config;
 
-import com.github.milkdrinkers.crate.Config;
+import io.github.milkdrinkers.crate.Config;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;

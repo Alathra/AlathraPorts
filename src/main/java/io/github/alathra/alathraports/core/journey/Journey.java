@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.core.journey;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.api.PortsAPI;
 import io.github.alathra.alathraports.config.Settings;

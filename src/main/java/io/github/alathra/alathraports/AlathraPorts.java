@@ -1,6 +1,5 @@
 package io.github.alathra.alathraports;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.command.CommandHandler;
 import io.github.alathra.alathraports.config.ConfigHandler;
 import io.github.alathra.alathraports.database.DBAction;
@@ -10,6 +9,7 @@ import io.github.alathra.alathraports.hook.HookManager;
 import io.github.alathra.alathraports.listener.ListenerHandler;
 import io.github.alathra.alathraports.utility.DB;
 import io.github.alathra.alathraports.utility.Logger;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;

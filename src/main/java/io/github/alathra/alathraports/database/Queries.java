@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.database;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import io.github.alathra.alathraports.config.Settings;

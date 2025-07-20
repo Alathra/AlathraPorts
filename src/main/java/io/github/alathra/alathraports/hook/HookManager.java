@@ -1,9 +1,9 @@
 package io.github.alathra.alathraports.hook;
 
-import com.github.milkdrinkers.colorparser.ColorParser;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.utility.Logger;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 

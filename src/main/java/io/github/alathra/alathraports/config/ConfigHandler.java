@@ -1,10 +1,10 @@
 package io.github.alathra.alathraports.config;
 
-import com.github.milkdrinkers.crate.Config;
-import com.github.milkdrinkers.crate.internal.settings.ReloadSetting;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.Reloadable;
 import io.github.alathra.alathraports.hook.Hook;
+import io.github.milkdrinkers.crate.Config;
+import io.github.milkdrinkers.crate.internal.settings.ReloadSetting;
 
 import javax.inject.Singleton;
 

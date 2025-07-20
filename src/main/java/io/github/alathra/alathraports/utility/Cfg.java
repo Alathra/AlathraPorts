@@ -1,6 +1,6 @@
 package io.github.alathra.alathraports.utility;
 
-import com.github.milkdrinkers.crate.Config;
+import io.github.milkdrinkers.crate.Config;
 import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.config.ConfigHandler;
 import org.jetbrains.annotations.NotNull;

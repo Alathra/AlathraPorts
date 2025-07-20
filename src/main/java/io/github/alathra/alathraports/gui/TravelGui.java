@@ -2,14 +2,13 @@ package io.github.alathra.alathraports.gui;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import com.github.milkdrinkers.colorparser.ColorParser;
+import io.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
-import io.github.alathra.alathraports.AlathraPorts;
 import io.github.alathra.alathraports.command.PortsCommand;
 import io.github.alathra.alathraports.config.Settings;
 import io.github.alathra.alathraports.core.TravelNode;

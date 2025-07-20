@@ -1,7 +1,7 @@
 [versions]
-crate = "2.1.0"
-commandapi = "10.0.1"
-flyway = "11.10.3"
+crate = "4.0.0-RC.2"
+commandapi = "10.1.1"
+flyway = "11.8.2"
 
 [libraries]
 # Core dependencies
@@ -10,9 +10,9 @@ paper-api = "io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT"
 morepaperlib = "space.arim.morepaperlib:morepaperlib:0.4.4"
 
 # API dependencies
-crate-api = { module = "com.github.milkdrinkers:crate-api", version.ref = "crate" }
-crate-yaml = { module = "com.github.milkdrinkers:crate-yaml", version.ref = "crate" }
-colorparser = "com.github.milkdrinkers:colorparser:3.0.1"
+crate-api = { module = "io.github.milkdrinkers:crate-api", version.ref = "crate" }
+crate-yaml = { module = "io.github.milkdrinkers:crate-yaml", version.ref = "crate" }
+colorparser = "io.github.milkdrinkers:colorparser:3.0.1"
 commandapi-shade = { module = "dev.jorel:commandapi-bukkit-shade", version.ref = "commandapi" }
 triumph-gui = "dev.triumphteam:triumph-gui:3.1.12"
 
@@ -27,7 +27,7 @@ worldguardbukkit = "com.sk89q.worldguard:worldguard-bukkit:7.0.13"
 hikaricp = "com.zaxxer:HikariCP:6.2.1"
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
-jooq = "org.jooq:jooq:3.20.5"
+jooq = "org.jooq:jooq:3.20.2"
 
 # JDBC drivers
 h2 = "com.h2database:h2:2.3.232"
@@ -55,5 +55,5 @@ testcontainers = ["testcontainers-jupiter", "testcontainers-mysql", "testcontain
 shadow = "com.gradleup.shadow:8.3.5"
 run-paper = "xyz.jpenilla.run-paper:2.3.1"
 plugin-yml = "net.minecrell.plugin-yml.bukkit:0.6.0"
-flyway = "org.flywaydb.flyway:11.10.3"
-jooq = "org.jooq.jooq-codegen-gradle:3.20.5"
+flyway = "org.flywaydb.flyway:11.8.2"
+jooq = "org.jooq.jooq-codegen-gradle:3.20.2"
