@@ -19,7 +19,7 @@ triumph-gui = "dev.triumphteam:triumph-gui:3.1.12"
 # Plugin dependencies
 vault = "com.github.MilkBowl:VaultAPI:1.7.1"
 placeholderapi = "me.clip:placeholderapi:2.11.6"
-towny = "com.palmergames.bukkit.towny:towny:0.101.2.0"
+towny = "com.palmergames.bukkit.towny:towny:0.101.2.3"
 dynmap = "us.dynmap:DynmapCoreAPI:3.7-beta-6"
 worldguardbukkit = "com.sk89q.worldguard:worldguard-bukkit:7.0.14"
 
